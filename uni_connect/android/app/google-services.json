@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "949122919399",
+    "project_id": "uni-connect-a104f",
+    "storage_bucket": "uni-connect-a104f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949122919399:android:beb45656ed9ab673ac6b42",
+        "android_client_info": {
+          "package_name": "com.example.uni_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYkiI8StFz_kM8Yzy1x5o0Hl4fYS_plz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

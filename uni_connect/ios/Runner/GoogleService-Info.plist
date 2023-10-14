@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDOfk5UjGd1l9leS_4iqkO17I0WIYXR4uE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>949122919399</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.uniConnect</string>
+	<key>PROJECT_ID</key>
+	<string>uni-connect-a104f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>uni-connect-a104f.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:949122919399:ios:da2d1daae6c5a4dfac6b42</string>
+</dict>
+</plist>
