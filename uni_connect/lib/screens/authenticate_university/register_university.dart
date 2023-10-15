@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/home/university/university_home.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class RegisterUniversity extends StatefulWidget {
@@ -327,10 +328,17 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                   if (_formKey.currentState!.validate()) {
                                     // if form is val12id
                                     // create University class object and Profile object and pass to the register function to register the uni after checking
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Signing up...')),
-                                    );
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //       content: Text('Signing up...')),
+                                    // );
+                                    // show progress screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProgressScreen(
+                                                    text: 'Signing up...')));
                                     // print(name);
                                     // print(location);
                                     // print(type);
@@ -351,8 +359,10 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                                     // error occured (either while creating account or profile)
                                     if (result == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -361,8 +371,10 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                     }
                                     // if account with username already exists
                                     else if (result == 'exists') {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -375,23 +387,30 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
-                                      pref.setString('userEmail', email); // set user email
-                                      pref.setString('userType', 'university'); // set user type
+                                      pref.setString(
+                                          'userEmail', email); // set user email
+                                      pref.setString('userType',
+                                          'university'); // set user type
 
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
 
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // show snackbar
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                             content: Text(
-                                                'Registered successfully!')),
+                                                'Signed up successfully!')),
                                       );
+
+                                      // pop splash screen
+                                      Navigator.pop(context);
 
                                       // clear route stack and show home screen
                                       // pop two screens below
                                       Navigator.pop(context);
                                       Navigator.pop(context);
+
                                       // push home screen for university
                                       Navigator.push(
                                           context,

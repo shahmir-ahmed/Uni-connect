@@ -14,9 +14,8 @@ class UniversityHome extends StatefulWidget {
 }
 
 class _UniversityHomeState extends State<UniversityHome> {
-
   // logout function
-    Future<void> _logoutUser() async{
+  Future<void> _logoutUser() async {
     // clear shared pref data for app
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.clear();
@@ -24,7 +23,6 @@ class _UniversityHomeState extends State<UniversityHome> {
 
   @override
   Widget build(BuildContext context) {
-
     // show welcome message (cannot call in build function so called in wrapper widget's methods)
     // ScaffoldMessenger.of(context)
     //     .showSnackBar(
@@ -47,9 +45,8 @@ class _UniversityHomeState extends State<UniversityHome> {
                 // logout user
                 await _logoutUser();
 
-                ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
                 Navigator.pop(context); // pop home screen
                 // push main screen
                 Navigator.push(context,
@@ -62,10 +59,8 @@ class _UniversityHomeState extends State<UniversityHome> {
                               showSignIn: true,
                             )));
                 // logout message
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(
-                    SnackBar(
-                        content: Text('Logged out successfully!')),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Logged out successfully!')),
                 );
               },
               child: Icon(Icons.logout))

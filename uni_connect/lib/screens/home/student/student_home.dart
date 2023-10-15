@@ -14,7 +14,6 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-
   // logout student function
   Future<void> _logoutUser() async {
     // clear shared pref data for app
@@ -43,14 +42,15 @@ class _StudentHomeState extends State<StudentHome> {
         actions: [
           ElevatedButton(
               onPressed: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Logging out...')));
+                // show snackbar
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Logging out...')));
 
                 // logout user
                 await _logoutUser();
 
-                ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                // hide logging out snackbar
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
                 Navigator.pop(context); // pop home screen
 

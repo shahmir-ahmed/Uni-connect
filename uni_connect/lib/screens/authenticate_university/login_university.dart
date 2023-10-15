@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/home/university/university_home.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class LoginUniversity extends StatefulWidget {
@@ -197,10 +198,16 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                   if (_formKey.currentState!.validate()) {
                                     // if form is valid
                                     // create Student class object and pass to the login function to login the student
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Signing in...')),
-                                    );
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //       content: Text('Signing in...')),
+                                    // );
+                                    // show progress screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProgressScreen(text: 'Signing in...')));
                                     // print(email);
                                     // print(password);
 
@@ -216,8 +223,12 @@ class _LoginUniversityState extends State<LoginUniversity> {
 
                                     // error occured
                                     if (result == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+
+                                      // show error snackbar
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -233,11 +244,12 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                           'userEmail', email); // set user email
                                       pref.setString('userType',
                                           'university'); // set user type
-                                          
-                                      // hide snack bar
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
 
+                                      // hide snack bar
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
                                       // pop the bottom two widgets from route stack
                                       Navigator.pop(context);
                                       Navigator.pop(context);
@@ -249,7 +261,6 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                               builder: (context) =>
                                                   UniversityHome()));
 
-
                                       // show welcome message
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -259,9 +270,11 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                     }
                                     // account not exists
                                     else {
+                                      // pop splash screen
+                                      Navigator.pop(context);
                                       // hide current snack bar
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
 
                                       // show snack bar
                                       ScaffoldMessenger.of(context)

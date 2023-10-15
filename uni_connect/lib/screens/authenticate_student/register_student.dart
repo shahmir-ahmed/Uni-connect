@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/home/student/student_home.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class RegisterStudent extends StatefulWidget {
@@ -288,10 +289,15 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                   if (_formKey.currentState!.validate()) {
                                     // if form is valid
                                     // create Student class object and profile object and pass to the register function to register the student after checking email does not exists
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Signing up...')),
-                                    );
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //       content: Text('Signing up...')),
+                                    // );
+                                    // show progress screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ProgressScreen(text: 'Signing up...')));
                                     // print(name);
                                     // print(college);
                                     // print(email);
@@ -309,8 +315,11 @@ class _RegisterStudentState extends State<RegisterStudent> {
 
                                     // error occured (either while creating account or profile)
                                     if (result == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // show error
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -319,8 +328,11 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                     }
                                     // if account with username already exists
                                     else if (result == 'exists') {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // show error
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -336,6 +348,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                       pref.setString('userEmail', email); // set user email
                                       pref.setString('userType', 'student'); // set user type
 
+                                      // pop splash screen
+                                      Navigator.pop(context);
 
                                       // clear route stack and show home screen
                                       // pop two screens below
@@ -349,15 +363,15 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                                   StudentHome()));
 
                                       // hide current snackbar
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
 
                                       // show snack bar
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                             content: Text(
-                                                'Registered successfully!')),
+                                                'Signed up successfully!')),
                                       );
                                     }
                                   }

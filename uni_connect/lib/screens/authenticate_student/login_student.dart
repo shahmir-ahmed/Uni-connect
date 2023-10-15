@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/screens/home/student/student_home.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 import 'package:uni_connect/classes/student.dart';
 
@@ -197,10 +198,15 @@ class _LoginStudentState extends State<LoginStudent> {
                                   if (_formKey.currentState!.validate()) {
                                     // if form is valid
                                     // create Student class object and pass to the login function to login the student
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Signing in...')),
-                                    );
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //       content: Text('Signing in...')),
+                                    // );
+                                    // show progress screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ProgressScreen(text: 'Signing in...')));
                                     // print(email);
                                     // print(password);
                                     // Student class object
@@ -216,8 +222,10 @@ class _LoginStudentState extends State<LoginStudent> {
                                     // error occured
                                     if (result == null) {
                                       // hide current snack bar
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
                                       // show snack bar
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -236,8 +244,11 @@ class _LoginStudentState extends State<LoginStudent> {
                                           'student'); // set user type
 
                                       // hide current snack bar
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+
+                                      // pop splash screen
+                                      Navigator.pop(context);
 
                                       // pop the bottom two widgets from route stack i.e. main and login screen
                                       Navigator.pop(context);
@@ -259,8 +270,11 @@ class _LoginStudentState extends State<LoginStudent> {
                                     }
                                     // account not exists
                                     else {
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // show snackbar
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
