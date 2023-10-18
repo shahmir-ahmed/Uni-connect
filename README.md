@@ -1,3 +1,3 @@
 # Uni-connect
- FYP Project Repository
+ FYP Repository
 
