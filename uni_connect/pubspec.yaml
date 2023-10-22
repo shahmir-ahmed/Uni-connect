@@ -41,7 +41,21 @@ dependencies:
   firebase_core: ^2.17.0
   # cloud_firestore
   cloud_firestore: ^4.9.3
+  # shared preferences package
   shared_preferences: ^2.2.1
+  # image provider package
+  image_picker: ^1.0.2
+  # file path provider package
+  path_provider: ^2.1.0
+  # firebae storage (for media) package
+  firebase_storage: ^11.2.6
+
+# for panorama package
+dependency_overrides:
+ motion_sensors:
+    git:
+      url: https://github.com/zesage/motion_sensors
+      ref: master
 
 dev_dependencies:
   flutter_test:
