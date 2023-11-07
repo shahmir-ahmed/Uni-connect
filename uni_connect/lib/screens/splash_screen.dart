@@ -3,6 +3,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uni_connect/screens/home/student/student_home.dart';
 import 'package:uni_connect/screens/home/university/university_home.dart';
 import 'package:uni_connect/screens/main_screen.dart';
+import 'package:uni_connect/screens/home/university/home_wrapper.dart';
+
 
 class SplashScreen extends StatelessWidget {
   // const SplashScreen({super.key});
@@ -33,7 +35,7 @@ class SplashScreen extends StatelessWidget {
           } else if (nextScreen == 'studentHome') {
             return StudentHome();
           } else{
-            return UniversityHome();
+            return HomeWrapper(); // show wrapper of uni home
           }
         }));
       });

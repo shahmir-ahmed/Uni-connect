@@ -4,6 +4,7 @@ import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/home/university/university_home.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
+import 'package:uni_connect/screens/home/university/home_wrapper.dart';
 
 class RegisterUniversity extends StatefulWidget {
   // toggle function
@@ -382,11 +383,14 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                                 'Account with email already exists!')),
                                       );
                                     }
-                                    // account and profile successfully created
-                                    else if (result == 'success') {
+                                    // account and profile successfully created (account doc id is returned)
+                                    // else if (result == 'success') {
+                                    else{
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
+                                      pref.setString(
+                                          'uid', result); // set the uid as uni account doc id
                                       pref.setString(
                                           'userEmail', email); // set user email
                                       pref.setString('userType',
@@ -416,7 +420,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  UniversityHome()));
+                                                  HomeWrapper()));
                                     }
                                   }
                                 },

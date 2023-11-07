@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/screens/authenticate_university/authenticate_university.dart';
 import 'package:uni_connect/screens/main_screen.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   // const SettingsScreen({super.key});
@@ -24,16 +25,25 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           ElevatedButton(
               onPressed: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Logging out...')));
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(content: Text('Logging out...')));
+
+                // show progress screen (in case slow logging out)
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProgressScreen(
+                                text: 'Logging out...')));
 
                 // logout user
                 await _logoutUser();
 
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                // ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
+                Navigator.pop(context); // pop progress screen
                 Navigator.pop(context); // pop settings screen screen
-                Navigator.pop(context); // pop home screen
+                Navigator.pop(context); // pop home wrapper
                 // push main screen
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MainScreen()));

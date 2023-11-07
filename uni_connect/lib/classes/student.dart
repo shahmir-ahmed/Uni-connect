@@ -99,6 +99,8 @@ class StudentProfile {
       required this.fieldsOfInterest,
       required this.uniLocationsPreferred});
 
+  StudentProfile.empty();
+
   // create student profile in database (when registering)
   Future<String?> createProfile(String studentDocId) async {
     try {

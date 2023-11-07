@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 // University class
 class University {
@@ -28,7 +29,9 @@ class University {
       }
       // if account with username and password exists
       else {
-        return 'Valid';
+        // return uni account doc id
+        // return 'Valid';
+        return snapshot.docs.first.id;
       }
     } catch (e) {
       print("EXCEPTION: ${e.toString()}");
@@ -55,16 +58,16 @@ class University {
         // get the newly created document id
         String docId = documentReference.id;
 
-        // create university profile document with university account document id
+        // create university profile document with university id field as university account document id
         String? result = await uniProfile.createProfile(docId);
 
-        // profile successfully created
-        if (result == 'success') {
-          return 'success';
-        }
         // error creating profile
-        else if(result==null){
+        if (result == null) {
           return null;
+        }
+        // profile successfully created
+        else {
+          return docId; // doc id
         }
       } else {
         // account with the username already exists
@@ -84,6 +87,9 @@ class UniveristyProfile {
   late String location;
   late String type;
   late String description;
+  late String profileDocId;
+  late String profileImage;
+  late List<dynamic> fieldsOffered;
 
   // university profile collection
   final profileCollection =
@@ -93,31 +99,100 @@ class UniveristyProfile {
   UniveristyProfile.forRegister(
       {required this.name, required this.location, required this.type});
 
+  // empty constructor
+  UniveristyProfile.empty();
+
   // for profile
   UniveristyProfile(
-      {this.name = '',
-      this.location = '',
-      this.type = '',
-      this.description = ''});
+      {required this.profileDocId,
+      required this.profileImage,
+      required this.name,
+      required this.location,
+      required this.type,
+      required this.description,
+      required this.fieldsOffered});
 
   // create profile in database (when registering)
   Future<String?> createProfile(String uniDocId) async {
     try {
       // create university profile document with id as university account document id
-      await profileCollection.doc(uniDocId).set({
+      DocumentReference documentReference = await profileCollection.add({
         'name': name,
         'description': "",
         'location': location,
         'type': type,
         'fields_offered': [],
+        'university_id': uniDocId
       });
 
-      return 'success'; // succes message
+      // return 'success'; // success message
+
+      return documentReference.id; // profile doc id
     } catch (e) {
       print("EXCEPTION: ${e.toString()}");
       return null;
     }
   }
 
+  // get university profile image path
+  Future _getProfileImagePath(String imageName) async {
+    try {
+      final ref = storage.FirebaseStorage.instance
+          .ref()
+          .child('uni_profile_images')
+          .child(imageName);
+
+      // print('ref: $ref'); // to check what gets print when there is no image of this name : ref: Reference(app: [DEFAULT], fullPath: uni_profile_images/c4JoUpPtAvIYGcWZx6or.jpg)
+      // print('here');
+      final imageUrl = await ref.getDownloadURL(); // get the image path // error is here of object not found so null is returned in catch block
+
+      // print('imageurl: $imageUrl');
+
+      return imageUrl;
+    } catch (e) {
+      print("Err in retrieving image: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // document snapshot to university profile object
+  UniveristyProfile _documentSnapshotToUniversityProfile(
+      DocumentSnapshot documentSnapshot, String imagePath) {
+    // return profile object with all the details set
+    return UniveristyProfile(
+        profileDocId: documentSnapshot.id,
+        profileImage: imagePath,
+        name: documentSnapshot.get('name'),
+        location: documentSnapshot.get('location'),
+        type: documentSnapshot.get('type'),
+        description: documentSnapshot.get('description'),
+        fieldsOffered: documentSnapshot.get('fields_offered') ?? []);
+  }
+
   // get profile stream
+  Future<Stream<UniveristyProfile?>?> getProfileStream(String uniId) async {
+    try {
+      // get the university profile object from db based on logged in uni account doc id
+      QuerySnapshot snapshot = await profileCollection
+          .where('university_id', isEqualTo: uniId)
+          .get();
+
+      QueryDocumentSnapshot queryDocumentSnapshot =
+          snapshot.docs.first; // get the only document from list
+
+      // get the profile doc id
+      String profileDocId = queryDocumentSnapshot.id;
+
+      // get the profile image of the university (if exists) (getting here because needs to show in home screen)
+      final imagePath = await _getProfileImagePath(profileDocId) ??
+          ''; // set empty path if there is no image found i.e. null is returned
+
+      // return stream of type university profile object
+      return profileCollection.doc(profileDocId).snapshots().map((snapshot) =>
+          _documentSnapshotToUniversityProfile(snapshot, imagePath!));
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
 }

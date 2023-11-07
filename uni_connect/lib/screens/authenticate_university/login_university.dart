@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/university.dart';
-import 'package:uni_connect/screens/home/university/university_home.dart';
+// import 'package:uni_connect/screens/home/university/university_home.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
+import 'package:uni_connect/screens/home/university/home_wrapper.dart';
 
 class LoginUniversity extends StatefulWidget {
   // toggle function
@@ -101,6 +102,8 @@ class _LoginUniversityState extends State<LoginUniversity> {
                               },
                               style: TextStyle(fontSize: 17.0),
                               decoration: formInputDecoration,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
                               validator: (value) {
                                 // if email is empty at the time of validation return helper text otherwise null
                                 if (value!.trim().isEmpty) {
@@ -207,7 +210,8 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ProgressScreen(text: 'Signing in...')));
+                                                ProgressScreen(
+                                                    text: 'Signing in...')));
                                     // print(email);
                                     // print(password);
 
@@ -225,7 +229,7 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                     if (result == null) {
                                       // ScaffoldMessenger.of(context)
                                       //     .hideCurrentSnackBar();
-                                      // pop splash screen
+                                      // pop progress screen
                                       Navigator.pop(context);
 
                                       // show error snackbar
@@ -235,41 +239,8 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                             content: Text('Error occured')),
                                       );
                                     }
-                                    // account exists
-                                    else if (result == 'Valid') {
-                                      // save user data in shared pref.
-                                      SharedPreferences pref =
-                                          await SharedPreferences.getInstance();
-                                      pref.setString(
-                                          'userEmail', email); // set user email
-                                      pref.setString('userType',
-                                          'university'); // set user type
-
-                                      // hide snack bar
-                                      // ScaffoldMessenger.of(context)
-                                      //     .hideCurrentSnackBar();
-                                      // pop splash screen
-                                      Navigator.pop(context);
-                                      // pop the bottom two widgets from route stack
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-
-                                      // push home screen of uni
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  UniversityHome()));
-
-                                      // show welcome message
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text('Welcome $email!')),
-                                      );
-                                    }
                                     // account not exists
-                                    else {
+                                    else if (result == "Invalid") {
                                       // pop splash screen
                                       Navigator.pop(context);
                                       // hide current snack bar
@@ -282,6 +253,41 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                         const SnackBar(
                                             content: Text(
                                                 'Invalid email or password!')),
+                                      );
+                                    }
+                                    // account exists (in result uni doc id is returned now)
+                                    else {
+                                      // save user data in shared pref.
+                                      SharedPreferences pref =
+                                          await SharedPreferences.getInstance();
+                                      pref.setString('uid',
+                                          result); // set the uid of uni account doc
+                                      pref.setString(
+                                          'userEmail', email); // set user email
+                                      pref.setString('userType',
+                                          'university'); // set user type
+
+                                      // hide snack bar
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop progress screen
+                                      Navigator.pop(context);
+                                      // pop the bottom two widgets from route stack
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+
+                                      // push home screen of uni
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomeWrapper()));
+
+                                      // show welcome message
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text('Welcome $email!')),
                                       );
                                     }
                                   }

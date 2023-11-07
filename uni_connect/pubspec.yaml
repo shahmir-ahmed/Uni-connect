@@ -49,6 +49,17 @@ dependencies:
   path_provider: ^2.1.0
   # firebae storage (for media) package
   firebase_storage: ^11.2.6
+  # video player package
+  video_player: ^2.7.2
+  # provider package (for state mgmt.)
+  provider: ^6.0.5
+  # for panorama image (360 view of image)
+  panorama: ^0.4.1
+  # appinio video player
+  appinio_video_player: ^1.2.2
+  # image viewer
+  easy_image_viewer: ^1.2.1
+
 
 # for panorama package
 dependency_overrides:
