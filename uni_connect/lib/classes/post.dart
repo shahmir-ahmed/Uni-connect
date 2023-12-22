@@ -228,6 +228,7 @@ class Post {
   Future deletePost() async {
     try {
       // delete post media
+      // get the ref. to the post (media)
       final ref = storage.FirebaseStorage.instance
           .ref()
           .child('post_media')

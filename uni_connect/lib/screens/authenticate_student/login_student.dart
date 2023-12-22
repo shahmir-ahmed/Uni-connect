@@ -94,6 +94,7 @@ class _LoginStudentState extends State<LoginStudent> {
 
                             // email field
                             TextFormField(
+                              keyboardType: TextInputType.emailAddress,
                               onChanged: (value) {
                                 setState(() {
                                   email = value.trim();
