@@ -112,6 +112,14 @@ class UniveristyProfile {
       required this.description,
       required this.fieldsOffered});
 
+  // for search result
+  UniveristyProfile.forSearch({
+    required this.profileDocId,
+    required this.profileImage,
+    required this.name,
+    required this.location,
+  });
+
   // create profile in database (when registering)
   Future<String?> createProfile(String uniDocId) async {
     try {
@@ -135,7 +143,7 @@ class UniveristyProfile {
   }
 
   // get university profile image path
-  Future _getProfileImagePath(String imageName) async {
+  Future getProfileImagePath(String imageName) async {
     try {
       final ref = storage.FirebaseStorage.instance
           .ref()
@@ -144,7 +152,8 @@ class UniveristyProfile {
 
       // print('ref: $ref'); // to check what gets print when there is no image of this name : ref: Reference(app: [DEFAULT], fullPath: uni_profile_images/c4JoUpPtAvIYGcWZx6or.jpg)
       // print('here');
-      final imageUrl = await ref.getDownloadURL(); // get the image path // error is here of object not found so null is returned in catch block
+      final imageUrl = await ref
+          .getDownloadURL(); // get the image path // error is here of object not found so null is returned in catch block
 
       // print('imageurl: $imageUrl');
 
@@ -184,7 +193,7 @@ class UniveristyProfile {
       String profileDocId = queryDocumentSnapshot.id;
 
       // get the profile image of the university (if exists) (getting here because needs to show in home screen)
-      final imagePath = await _getProfileImagePath(profileDocId) ??
+      final imagePath = await getProfileImagePath(profileDocId) ??
           ''; // set empty path if there is no image found i.e. null is returned
 
       // return stream of type university profile object
@@ -192,6 +201,37 @@ class UniveristyProfile {
           _documentSnapshotToUniversityProfile(snapshot, imagePath!));
     } catch (e) {
       print(e.toString());
+      return null;
+    }
+  }
+
+  // snapshot to list of university profile objects
+  List<dynamic>? _snaphshotToUniversityProfileList(snapshot) {
+    try {
+      // snapshot to university profile type objects and then all in a list return
+      return snapshot.docs
+          .map((doc) => UniveristyProfile.forSearch(
+              profileDocId: doc.id ?? '',
+              profileImage: '',
+              name: doc.get("name").toString(),
+              location: doc.get("location").toString()))
+          .toList();
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  // get all university profiles stream
+  Stream<List<dynamic>?>? getUnisStream() {
+    try {
+      // return stream of list of university profiles
+      return profileCollection
+          .snapshots()
+          .map((snapshot) => _snaphshotToUniversityProfileList(snapshot));
+    } catch (e) {
+      // print error
+      print("ERR in getUnisStream: ${e.toString()}");
       return null;
     }
   }
