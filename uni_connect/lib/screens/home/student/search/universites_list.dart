@@ -15,7 +15,6 @@ class UniversitiesList extends StatefulWidget {
 }
 
 class _UniversitiesListState extends State<UniversitiesList> {
-
   // fetch the uni profile photo
   Future<String> _getProfilePhoto(profileDocId) async {
     // get university profile image
@@ -67,31 +66,39 @@ class _UniversitiesListState extends State<UniversitiesList> {
               )
             :
             */
-            // if the query is not empty show those unis which have search query in their name
-            Column(
-                children: unis
-                    .where((uni) => uni!.name
-                        .toLowerCase()
-                        .contains(widget.searchQuery.toLowerCase()))
-                    .map((uni) => Container(
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 20.0),
-                        child: ListTile(
-                          tileColor: Color.fromARGB(255, 239, 239, 239),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0))),
-                          leading: CircleAvatar(
-                            backgroundImage: AssetImage("assets/uni.jpg"),
-                            // radius: 30.0,
-                          ),
-                          title: Text("${uni!.name}"),
-                          subtitle: Text("${uni.location}"),
-                        )))
-                    .toList()
-              );
+        // if the query is not empty show those unis which have search query in their name
+        Column(
+            children: unis
+                .where((uni) => uni!.name
+                    .toLowerCase()
+                    .contains(widget.searchQuery.toLowerCase()))
+                .map((uni) => Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                    child: ListTile(
+                      onTap: () {
+                        // show uni profile screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UniProfileScreen(
+                                    uniProfile: uni,
+                                  )),
+                        );
+                      },
+                      tileColor: Color.fromARGB(255, 239, 239, 239),
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(20.0))),
+                      leading: CircleAvatar(
+                        backgroundImage: AssetImage("assets/uni.jpg"),
+                        // radius: 30.0,
+                      ),
+                      title: Text("${uni!.name}"),
+                      subtitle: Text("${uni.location}"),
+                    )))
+                .toList());
   }
 }
