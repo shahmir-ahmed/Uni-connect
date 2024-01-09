@@ -206,7 +206,7 @@ class UniveristyProfile {
   }
 
   // snapshot to list of university profile objects
-  List<dynamic>? _snaphshotToUniversityProfileList(snapshot) {
+  List<dynamic>? _snaphshotToUniversityProfileList(QuerySnapshot<Map<String, dynamic>> snapshot) {
     try {
       // snapshot to university profile type objects and then all in a list return
       return snapshot.docs

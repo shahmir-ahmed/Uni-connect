@@ -1,7 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/screens/home/student/follow_unfollow_button.dart';
 
 class UniProfileScreen extends StatefulWidget {
   // const UniversityProfileScreen({super.key});
@@ -18,6 +22,9 @@ class UniProfileScreen extends StatefulWidget {
 class _UniProfileState extends State<UniProfileScreen> {
   // uni posts stream
   // Stream<List<Post>?>? postsStream;
+
+  // student profile doc id
+  String? stdProfileDocId;
 
   // tabs for top navigation bar
   TabBar tabBar = TabBar(
@@ -42,8 +49,18 @@ class _UniProfileState extends State<UniProfileScreen> {
         )),
       ]);
 
+  // get the student's profile doc id from shared pref. and save
+  _getStudentProfileDocId() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    stdProfileDocId = pref.getString("userProfileId");
+    // print(stdProfileDocId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // get and save the student profile doc id
+    _getStudentProfileDocId();
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -179,21 +196,23 @@ class _UniProfileState extends State<UniProfileScreen> {
                           ),
 
                           // location row
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 18.0),
-                            // color: Colors.pink,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                // follow/unfollow button
-                                MaterialButton(
-                                  onPressed: () {},
-                                  child: Text('Follow'),
-                                  color: Colors.blue,
-                                  textColor: Colors.white,
-                                )
-                              ],
+                          StreamProvider.value(
+                            initialData: null,
+                            value: StudentProfile.empty()
+                                .getFollowingUnisStream(stdProfileDocId),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 18.0),
+                              // color: Colors.pink,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  // follow/unfollow button widget
+                                  FollowUnFollowButton(
+                                      uniProfileId:
+                                          widget.uniProfile!.profileDocId, stdProfileDocId: stdProfileDocId)
+                                ],
+                              ),
                             ),
                           )
                         ],

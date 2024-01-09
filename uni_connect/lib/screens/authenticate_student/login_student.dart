@@ -234,8 +234,22 @@ class _LoginStudentState extends State<LoginStudent> {
                                             content: Text('Error occured')),
                                       );
                                     }
+                                    // account not exists
+                                    else if (result == 'Invalid') {
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
+                                      // pop splash screen
+                                      Navigator.pop(context);
+                                      // show snackbar
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Invalid email or password!')),
+                                      );
+                                    }
                                     // account exists
-                                    else if (result == 'Valid') {
+                                    else {
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
@@ -243,6 +257,8 @@ class _LoginStudentState extends State<LoginStudent> {
                                           'userEmail', email); // set user email
                                       pref.setString('userType',
                                           'student'); // set user type
+                                      pref.setString('userProfileId',
+                                          result); // set profile id
 
                                       // hide current snack bar
                                       // ScaffoldMessenger.of(context)
@@ -267,20 +283,6 @@ class _LoginStudentState extends State<LoginStudent> {
                                           .showSnackBar(
                                         SnackBar(
                                             content: Text('Welcome $email!')),
-                                      );
-                                    }
-                                    // account not exists
-                                    else {
-                                      // ScaffoldMessenger.of(context)
-                                      //     .hideCurrentSnackBar();
-                                      // pop splash screen
-                                      Navigator.pop(context);
-                                      // show snackbar
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Invalid email or password!')),
                                       );
                                     }
                                   }

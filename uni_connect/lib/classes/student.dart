@@ -27,7 +27,8 @@ class Student {
       }
       // if account with username and password exists
       else {
-        return 'Valid';
+        // return 'Valid';
+        return snapshot.docs.first.id; // return the student doc id
       }
     } catch (e) {
       print("EXCEPTION: ${e.toString()}");
@@ -83,6 +84,10 @@ class StudentProfile {
   late String college;
   late String fieldsOfInterest;
   late String uniLocationsPreferred;
+  late String profileDocId;
+
+  // following unis list
+  late List<dynamic> followingUnis;
 
   // student profile collection
   final profileCollection =
@@ -99,7 +104,14 @@ class StudentProfile {
       required this.fieldsOfInterest,
       required this.uniLocationsPreferred});
 
+  // empty const.
   StudentProfile.empty();
+
+  // const. for unis student is following
+  StudentProfile.followingUnis({required this.followingUnis});
+
+  // with id
+  StudentProfile.withId({required this.profileDocId});
 
   // create student profile in database (when registering)
   Future<String?> createProfile(String studentDocId) async {
@@ -111,6 +123,7 @@ class StudentProfile {
         'college': college,
         'fields_of_interest': [],
         'uni_locations_preferred': [],
+        'following_unis': [],
       });
 
       return 'success'; // success message
@@ -120,5 +133,43 @@ class StudentProfile {
     }
   }
 
-  // get profile stream
+  // profile snapshot to object
+  List<dynamic>? _snaphshotToFollowingUnisList(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    try {
+      // snapshot to university profile type objects and then all in a list return
+      // print(snapshot.data());
+      return snapshot.get("following_unis");
+    } catch (e) {
+      print("ERR in _snaphshotToFollowingUnisList: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // get following unis stream for a specific student (can be used as get profile stream)
+  Stream<List<dynamic>?>? getFollowingUnisStream(profileDocId) {
+    try {
+      // return stream of profile of a specific student
+      return profileCollection
+          .doc(profileDocId)
+          .snapshots()
+          .map((snapshot) => _snaphshotToFollowingUnisList(snapshot));
+    } catch (e) {
+      // print error
+      print("ERR in getProfileStream: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // add the university profile id in student's following list
+  String followUni(String uniProfileId, ) {
+    try {
+      // profileCollection.doc(profileDocId).
+      return "success";
+    } catch (e) {
+      // print error
+      print("ERR in followUni: ${e.toString()}");
+      return "error";
+    }
+  }
 }
