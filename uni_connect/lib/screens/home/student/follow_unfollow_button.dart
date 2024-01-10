@@ -3,10 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
 
 class FollowUnFollowButton extends StatefulWidget {
-  FollowUnFollowButton({required this.uniProfileId, required this.stdProfileDocId});
+  FollowUnFollowButton(
+      {required this.uniProfileId, required this.stdProfileDocId});
 
-  String uniProfileId;
-  String? stdProfileDocId;
+  String uniProfileId; // uni profile id
+  String? stdProfileDocId;// student profile id
 
   @override
   State<FollowUnFollowButton> createState() => _FollowUnFollowButtonState();
@@ -20,14 +21,14 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
       BuildContext context, String message, List<dynamic> followingList) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("No"),
+      child: const Text("No"),
       onPressed: () {
         // close the alert dialog
         Navigator.of(context).pop();
       },
     );
     Widget continueButton = TextButton(
-      child: Text(
+      child: const Text(
         "Yes",
       ),
       onPressed: () async {
@@ -40,12 +41,13 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
           followingList.add(widget.uniProfileId);
 
           // add this uni profile id in student's following_unis list
-          if(widget.stdProfileDocId!=null){
-            
-            String result = StudentProfile.withId(profileDocId: widget.stdProfileDocId!).followUni(widget.uniProfileId);
+          if (widget.stdProfileDocId != null) {
+            String result =
+                StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+                    .followUnFollowUni(followingList);
 
             // list updated successfullly
-            if(result=="success"){
+            if (result == "success") {
               // set following as yes means show unfollow button
               setState(() {
                 following = true;
@@ -56,33 +58,47 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
               // show new snackbar
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('${message}ed successfully!')));
+            } else {
+              // hide any current snackbar shown
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              // show new snackbar
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Error ${message.toLowerCase()}ing!')));
+            }
+          }
+        } else {
+          // remove this uni profile id from student's following_unis list
 
-            }else{
+          // update the existing list and sent the list to function
+          followingList.remove(widget.uniProfileId);
+
+          // add this uni profile id in student's following_unis list
+          if (widget.stdProfileDocId != null) {
+            String result =
+                StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+                    .followUnFollowUni(followingList);
+
+            // list updated successfullly
+            if (result == "success") {
+              // set following as no means show follow button
+              setState(() {
+                following = false;
+              });
+
               // hide any current snackbar shown
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               // show new snackbar
               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error ${message.toLowerCase()}ing!')));
+                  SnackBar(content: Text('${message}ed successfully!')));
+            } else {
+              // hide any current snackbar shown
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              // show new snackbar
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Error ${message.toLowerCase()}ing!')));
             }
           }
-
-
-        } else {
-          // remove this uni profile id from student's following_unis list
-
-          // set following as no means show follow button
-          setState(() {
-            following = false;
-          });
-
-          // hide any current snackbar shown
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        // show new snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${message}ed successfully!')));
         }
-
-        
       },
     );
 

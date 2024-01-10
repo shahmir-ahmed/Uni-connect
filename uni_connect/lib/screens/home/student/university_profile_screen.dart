@@ -23,7 +23,7 @@ class _UniProfileState extends State<UniProfileScreen> {
   // uni posts stream
   // Stream<List<Post>?>? postsStream;
 
-  // student profile doc id
+  // student profile doc id from shared pref.
   String? stdProfileDocId;
 
   // tabs for top navigation bar
@@ -52,15 +52,23 @@ class _UniProfileState extends State<UniProfileScreen> {
   // get the student's profile doc id from shared pref. and save
   _getStudentProfileDocId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    stdProfileDocId = pref.getString("userProfileId");
-    // print(stdProfileDocId);
+    // set state to let the widget tree know and refresh itself that something (data att.) has changed taht it needs to reflect in its tree/view
+    setState(() {
+      stdProfileDocId = pref.getString("userProfileId");
+    });
+    print("student profile id: $stdProfileDocId");
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // get and save the student profile doc id
+    _getStudentProfileDocId();
   }
 
   @override
   Widget build(BuildContext context) {
-    // get and save the student profile doc id
-    _getStudentProfileDocId();
-
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -195,26 +203,35 @@ class _UniProfileState extends State<UniProfileScreen> {
                             height: 20.0,
                           ),
 
-                          // location row
-                          StreamProvider.value(
-                            initialData: null,
-                            value: StudentProfile.empty()
-                                .getFollowingUnisStream(stdProfileDocId),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 18.0),
-                              // color: Colors.pink,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // follow/unfollow button widget
-                                  FollowUnFollowButton(
-                                      uniProfileId:
-                                          widget.uniProfile!.profileDocId, stdProfileDocId: stdProfileDocId)
-                                ],
-                              ),
-                            ),
-                          )
+                          // follow/unfollow button row
+                          // not call the get stream function if there is no student profile id valeu
+                          stdProfileDocId != null
+                              ? StreamProvider.value(
+                                  initialData: null,
+                                  value: StudentProfile.empty()
+                                      .getFollowingUnisStream(stdProfileDocId),
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 18.0),
+                                    // color: Colors.pink,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        // follow/unfollow button widget
+                                        FollowUnFollowButton(
+                                            uniProfileId:
+                                                widget.uniProfile!.profileDocId,
+                                            stdProfileDocId: stdProfileDocId)
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              :
+                              // show empty container if no student profile doc has been fetched from shared pref. yet
+                              Container()
                         ],
                       ),
                     ),

@@ -149,11 +149,15 @@ class StudentProfile {
   // get following unis stream for a specific student (can be used as get profile stream)
   Stream<List<dynamic>?>? getFollowingUnisStream(profileDocId) {
     try {
+      // print("profileDocId in getFollowingUnisStream: $profileDocId");
+      // return the stream if profile id is passed (this happens when id is fetched from shared pref when this function is called )
+      // if(profileDocId!=null){
       // return stream of profile of a specific student
       return profileCollection
           .doc(profileDocId)
           .snapshots()
           .map((snapshot) => _snaphshotToFollowingUnisList(snapshot));
+      // }
     } catch (e) {
       // print error
       print("ERR in getProfileStream: ${e.toString()}");
@@ -162,13 +166,18 @@ class StudentProfile {
   }
 
   // add the university profile id in student's following list
-  String followUni(String uniProfileId, ) {
+  // update the student's following list
+  String followUnFollowUni(dynamic followingList) {
     try {
-      // profileCollection.doc(profileDocId).
+      // set the new following list on the student's document following_unis field by update method to merge with any existing data in the document
+      profileCollection
+          .doc(profileDocId)
+          .update({'following_unis': followingList});
+
       return "success";
     } catch (e) {
       // print error
-      print("ERR in followUni: ${e.toString()}");
+      print("ERR in followUnFollowUni: ${e.toString()}");
       return "error";
     }
   }
