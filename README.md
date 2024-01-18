@@ -1,12 +1,9 @@
 
 # Uni-connect: Bridging Futures, Building Connections.
 
-A social platform where universities can create accounts and high school/college students can follow them.
-
-
-## Screenshots
-
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+
+A social platform where universities can create accounts and high school/college students can follow them.
 
 
 ## Features
