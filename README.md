@@ -7,7 +7,7 @@
 
 </br>
 
-![Student News Feed](h[ttps://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png))
+![alt text="Student News Feed"](h[ttps://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png))
 
 A social platform where universities can create accounts and high school/college students can follow them.
 
