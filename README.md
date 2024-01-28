@@ -3,8 +3,8 @@
 
 <!--![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)-->
 
-<p align="center">
-<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto; border: 2px solid blue;" width="250" height="550>
+<p align="center" style="border: 2px solid blue;">
+<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550>
   </p>
 
 </br>
