@@ -3,11 +3,26 @@
 
 <!--![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)-->
 
-![alt text="Main Screen"](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
+![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
 
 </br>
 
-![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png))
+![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+
+![Student Menu](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Student%20Drawer%20Menu.png)
+
+![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+
+</br>
+
+![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+
+![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+
+![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+
+
+#### Description
 
 A social platform where universities can create accounts and high school/college students can follow them.
 
