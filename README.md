@@ -6,10 +6,8 @@
     <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550/>
 </p>-->
 
-<p align="center">
 ![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
-</p>
-
+<!--
 </br>
 
 ![Student Menu](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Student%20Drawer%20Menu.png)
@@ -25,7 +23,7 @@
 ![University Profile - Live videos](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40University%20Profile%20(Live%20videos%20activated)%20(1).png)
 
 ![University Profile - Profile](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40University%20Profile%20(About%20activated).png)
-
+-->
 
 
 #### Description
