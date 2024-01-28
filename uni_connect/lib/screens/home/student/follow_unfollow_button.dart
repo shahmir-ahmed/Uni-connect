@@ -7,7 +7,7 @@ class FollowUnFollowButton extends StatefulWidget {
       {required this.uniProfileId, required this.stdProfileDocId});
 
   String uniProfileId; // uni profile id
-  String? stdProfileDocId;// student profile id
+  String? stdProfileDocId; // student profile id
 
   @override
   State<FollowUnFollowButton> createState() => _FollowUnFollowButtonState();
@@ -134,15 +134,17 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
       // check if students following list has this uni profile id
       if (followingList.contains(widget.uniProfileId)) {
         // set following as true
-        setState(() {
-          following = true;
-        });
+        // setState(() {
+        //   following = true;
+        // });
+        following = true;
       }
     }
 
     // based on following list stream have no value yet then show empty container
     return followingList == null
         ? Container()
+        // now there is list so based on flag check that student is following the unis or not
         : following
             ? MaterialButton(
                 onPressed: () {

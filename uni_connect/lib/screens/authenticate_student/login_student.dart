@@ -95,6 +95,7 @@ class _LoginStudentState extends State<LoginStudent> {
                             // email field
                             TextFormField(
                               keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   email = value.trim();
@@ -110,7 +111,7 @@ class _LoginStudentState extends State<LoginStudent> {
                                 // not contains @ & . in email
                                 else if (!value.contains('@') ||
                                     !value.contains('.')) {
-                                  return 'Email must contain @ and .';
+                                  return 'Please enter valid email';
                                 }
                                 // valid email
                                 else {
@@ -146,8 +147,12 @@ class _LoginStudentState extends State<LoginStudent> {
                               style: TextStyle(fontSize: 17.0),
                               decoration: formInputDecoration,
                               validator: (value) {
-                                // if password is less than 6 characters return helper text otherwise null
-                                if (value!.trim().length < 6) {
+                                // if password is empty
+                                if (value!.trim().length == 0) {
+                                  return 'Please enter password';
+                                }
+                                // if password is less than 6 characters return helper text
+                                else if (value!.trim().length < 6) {
                                   return 'Password must be 6 characters long';
                                 }
                                 // password does not contain special chars and numbers
@@ -172,7 +177,7 @@ class _LoginStudentState extends State<LoginStudent> {
                               children: [
                                 // register text
                                 Text(
-                                  "Don't have an account? ",
+                                  "Don't have an account?",
                                   style: TextStyle(fontSize: 17.0),
                                 ),
                                 ElevatedButton(
@@ -207,7 +212,9 @@ class _LoginStudentState extends State<LoginStudent> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => ProgressScreen(text: 'Signing in...')));
+                                            builder: (context) =>
+                                                ProgressScreen(
+                                                    text: 'Signing in...')));
                                     // print(email);
                                     // print(password);
                                     // Student class object
@@ -277,7 +284,7 @@ class _LoginStudentState extends State<LoginStudent> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   StudentHome()));
-                                                  
+
                                       // show welcome message to student
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -295,7 +302,7 @@ class _LoginStudentState extends State<LoginStudent> {
                                 textColor: Colors.white,
                                 height: 50.0,
                                 minWidth:
-                                    MediaQuery.of(context).size.width - 40)
+                                    MediaQuery.of(context).size.width - 30)
                           ],
                         ))
                   ])),

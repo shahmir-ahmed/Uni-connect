@@ -112,7 +112,7 @@ class _LoginUniversityState extends State<LoginUniversity> {
                                 // not contains @ & . in email
                                 else if (!value.contains('@') ||
                                     !value.contains('.')) {
-                                  return 'Email must contain @ and .';
+                                  return 'Please enter valid email';
                                 }
                                 // valid email
                                 else {
@@ -148,8 +148,12 @@ class _LoginUniversityState extends State<LoginUniversity> {
                               style: TextStyle(fontSize: 17.0),
                               decoration: formInputDecoration,
                               validator: (value) {
-                                // if password is less than 6 characters return helper text otherwise null
-                                if (value!.trim().length < 6) {
+                                // if password is empty
+                                if (value!.trim().length == 0) {
+                                  return 'Please enter password';
+                                }
+                                // if password is less than 6 characters return helper text
+                                else if (value!.trim().length < 6) {
                                   return 'Password must be 6 characters long';
                                 }
                                 // password does not contain special chars and numbers
@@ -174,7 +178,7 @@ class _LoginUniversityState extends State<LoginUniversity> {
                               children: [
                                 // register text
                                 Text(
-                                  "Don't have an account? ",
+                                  "Don't have an account?",
                                   style: TextStyle(fontSize: 17.0),
                                 ),
                                 ElevatedButton(

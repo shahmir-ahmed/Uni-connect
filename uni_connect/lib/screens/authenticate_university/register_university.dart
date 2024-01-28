@@ -27,6 +27,9 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
   late String email;
   late String password;
 
+  // reg exp variable for name field
+  static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,6 +101,8 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                             // name field
                             TextFormField(
+                              keyboardType: TextInputType.name,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   name = value.trim();
@@ -116,6 +121,10 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                 // else if (value.contains('')) {
                                 //   return 'Name must not numbers';
                                 // }
+                                // contains characters other than alphabets
+                                else if (!nameRegExp.hasMatch(value)) {
+                                  return 'Please enter valid university name';
+                                }
                                 // valid name
                                 else {
                                   return null;
@@ -141,6 +150,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                             // location field
                             TextFormField(
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   location = value.trim();
@@ -169,7 +179,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                             // Type field label
                             Text(
-                              'Type',
+                              'Type (Public/Private)',
                               style: fieldLabelStyle,
                             ),
 
@@ -180,6 +190,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                             // type field
                             TextFormField(
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   type = value.trim();
@@ -198,6 +209,10 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                 // else if (value.contains('')) {
                                 //   return 'College/high school name must not numbers';
                                 // }
+                                // contains characters other than alphabets
+                                else if (!nameRegExp.hasMatch(value)) {
+                                  return 'Please enter valid type';
+                                }
                                 // valid type
                                 else {
                                   return null;
@@ -223,6 +238,8 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                             // email field
                             TextFormField(
+                              keyboardType: TextInputType.name,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   email = value.trim();
@@ -240,7 +257,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                 // not contains @ & . in email
                                 else if (!value.contains('@') ||
                                     !value.contains('.')) {
-                                  return 'Email must contain @ and .';
+                                  return 'Please enter valid email';
                                 }
                                 // valid email
                                 else {
@@ -276,8 +293,12 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                               style: TextStyle(fontSize: 17.0),
                               decoration: formInputDecoration,
                               validator: (value) {
+                                // if password is empty
+                                if (value!.trim().length == 0) {
+                                  return 'Please enter password';
+                                }
                                 // if password is less than 6 characters return helper text
-                                if (value!.trim().length < 6) {
+                                else if (value!.trim().length < 6) {
                                   return 'Password must be 6 characters long';
                                 }
                                 // password does not contain special chars and numbers
@@ -385,12 +406,12 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                     }
                                     // account and profile successfully created (account doc id is returned)
                                     // else if (result == 'success') {
-                                    else{
+                                    else {
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
-                                      pref.setString(
-                                          'uid', result); // set the uid as uni account doc id
+                                      pref.setString('uid',
+                                          result); // set the uid as uni account doc id
                                       pref.setString(
                                           'userEmail', email); // set user email
                                       pref.setString('userType',

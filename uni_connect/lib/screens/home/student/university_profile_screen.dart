@@ -24,7 +24,7 @@ class _UniProfileState extends State<UniProfileScreen> {
   // Stream<List<Post>?>? postsStream;
 
   // student profile doc id from shared pref.
-  String? stdProfileDocId;
+  String? stdProfileDocId=null;
 
   // tabs for top navigation bar
   TabBar tabBar = TabBar(
@@ -56,7 +56,7 @@ class _UniProfileState extends State<UniProfileScreen> {
     setState(() {
       stdProfileDocId = pref.getString("userProfileId");
     });
-    print("student profile id: $stdProfileDocId");
+    // print("student profile id: $stdProfileDocId");
   }
 
   @override
@@ -204,10 +204,11 @@ class _UniProfileState extends State<UniProfileScreen> {
                           ),
 
                           // follow/unfollow button row
-                          // not call the get stream function if there is no student profile id valeu
+                          // not call the get stream function if there is no student profile id value fetched till now from shared pref.
                           stdProfileDocId != null
                               ? StreamProvider.value(
                                   initialData: null,
+                                  // stream setup to get the unis student is following to check that the student is following this uni or not then show follow/unfollow button in follow/unfollow widget
                                   value: StudentProfile.empty()
                                       .getFollowingUnisStream(stdProfileDocId),
                                   child: Container(

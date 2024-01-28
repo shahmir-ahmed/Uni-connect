@@ -101,7 +101,7 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
     return commentsWidgetsList;
   }
 
-  // get and craete and set new field i.e. comment by name in comments list using the profile id with the comment
+  // get, create and set new field i.e. comment by' name in comments list using the profile id with the comment
   _setCommentByOnComment() async {
     // for loop to iterate through every comment
     for (int i = 0; i < postComments!.length; i++) {
@@ -146,10 +146,10 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
 
     // check comments are present or not
     if (commentObj != null && postComments == null) {
-      setState(() {
-        // print(comment.comments);
-        postComments = commentObj.comments;
-      });
+      // setState(() {
+      // print(comment.comments);
+      postComments = commentObj.comments;
+      // });
       // call to get the commnet by name if uni or student
       // _setCommentBy in list instead of profile id
       _setCommentByOnComment();
@@ -255,6 +255,8 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                                 .updateComments();
 
                             if (result == 'success') {
+                              // clear comment text field
+
                               // show comment posted message
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Comment posted!')),

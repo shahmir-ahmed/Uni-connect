@@ -206,7 +206,8 @@ class UniveristyProfile {
   }
 
   // snapshot to list of university profile objects
-  List<dynamic>? _snaphshotToUniversityProfileList(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  List<dynamic>? _snaphshotToUniversityProfileList(
+      QuerySnapshot<Map<String, dynamic>> snapshot) {
     try {
       // snapshot to university profile type objects and then all in a list return
       return snapshot.docs
@@ -232,6 +233,18 @@ class UniveristyProfile {
     } catch (e) {
       // print error
       print("ERR in getUnisStream: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // update university followers list
+  String? updateFollowers() {
+    try {
+      // update the university followers list
+      return 'success';
+    } catch (e) {
+      // print error
+      print("ERR in updateFollowers: ${e.toString()}");
       return null;
     }
   }

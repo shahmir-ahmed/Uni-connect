@@ -8,7 +8,7 @@ const formInputDecoration = InputDecoration(
 // button decoration sign in and register form
 const formButtonDecoration = ButtonStyle(
     backgroundColor: MaterialStatePropertyAll(Colors.white),
-    fixedSize: MaterialStatePropertyAll(Size(89.0, 10.0)),
+    fixedSize: MaterialStatePropertyAll(Size(94.0, 10.0)),
     elevation: MaterialStatePropertyAll(0.0));
 
 // form field label style

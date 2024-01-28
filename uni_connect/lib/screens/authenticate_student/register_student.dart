@@ -25,6 +25,9 @@ class _RegisterStudentState extends State<RegisterStudent> {
   late String email;
   late String password;
 
+  // reg exp variable for name field
+  static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,6 +99,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
 
                             // name field
                             TextFormField(
+                              keyboardType: TextInputType.name,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   name = value.trim();
@@ -114,6 +119,10 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                 // else if (value.contains('')) {
                                 //   return 'Name must not numbers';
                                 // }
+                                // contains characters other than alphabets
+                                else if (!nameRegExp.hasMatch(value)) {
+                                  return 'Please enter valid name';
+                                }
                                 // valid name
                                 else {
                                   return null;
@@ -138,8 +147,9 @@ class _RegisterStudentState extends State<RegisterStudent> {
                               height: 5.0,
                             ),
 
-                            // email field
+                            // college/high school field
                             TextFormField(
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   college = value.trim();
@@ -154,7 +164,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                 if (value!.trim().isEmpty) {
                                   return 'Please enter college/high school name';
                                 }
-                                // contains numbers
+                                // contains numbers (can contain numbers and commas if school name has street, sector etc.)
                                 // else if (value.contains('')) {
                                 //   return 'College/high school name must not numbers';
                                 // }
@@ -183,6 +193,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
 
                             // email field
                             TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 setState(() {
                                   email = value.trim();
@@ -200,7 +212,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                 // not contains @ & . in email
                                 else if (!value.contains('@') ||
                                     !value.contains('.')) {
-                                  return 'Email must contain @ and .';
+                                  // return 'Email must contain @ and .';
+                                  return 'Please enter valid email';
                                 }
                                 // valid email
                                 else {
@@ -236,8 +249,12 @@ class _RegisterStudentState extends State<RegisterStudent> {
                               style: TextStyle(fontSize: 17.0),
                               decoration: formInputDecoration,
                               validator: (value) {
+                                // if password is empty
+                                if (value!.trim().length == 0) {
+                                  return 'Please enter password';
+                                }
                                 // if password is less than 6 characters return helper text
-                                if (value!.trim().length < 6) {
+                                else if (value!.trim().length < 6) {
                                   return 'Password must be 6 characters long';
                                 }
                                 // password does not contain special chars and numbers
@@ -262,13 +279,12 @@ class _RegisterStudentState extends State<RegisterStudent> {
                               children: [
                                 // register text
                                 Text(
-                                  "Already have an account? ",
+                                  "Already have an account?",
                                   style: TextStyle(fontSize: 17.0),
                                 ),
                                 ElevatedButton(
                                   // change auth student widget's state
                                   onPressed: widget.toggleFunc,
-
                                   child: Text('Sign in',
                                       style: TextStyle(
                                           color: Colors.blue, fontSize: 17.0)),
@@ -286,6 +302,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
                             MaterialButton(
                                 onPressed: () async {
                                   // validate form
+                                  // if form is valid
                                   if (_formKey.currentState!.validate()) {
                                     // if form is valid
                                     // create Student class object and profile object and pass to the register function to register the student after checking email does not exists
@@ -293,11 +310,14 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                     //   const SnackBar(
                                     //       content: Text('Signing up...')),
                                     // );
+                                    // /*
                                     // show progress screen
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => ProgressScreen(text: 'Signing up...')));
+                                            builder: (context) =>
+                                                ProgressScreen(
+                                                    text: 'Signing up...')));
                                     // print(name);
                                     // print(college);
                                     // print(email);
@@ -345,8 +365,10 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
-                                      pref.setString('userEmail', email); // set user email
-                                      pref.setString('userType', 'student'); // set user type
+                                      pref.setString(
+                                          'userEmail', email); // set user email
+                                      pref.setString('userType',
+                                          'student'); // set user type
 
                                       // pop splash screen
                                       Navigator.pop(context);
@@ -374,8 +396,10 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                                 'Signed up successfully!')),
                                       );
                                     }
+                                    // */
                                   }
                                 },
+                                // sign up button text
                                 child: Text(
                                   'Sign up',
                                   style: TextStyle(fontSize: 18.0),
