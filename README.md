@@ -6,17 +6,7 @@
     <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550/>
 </p>
 
-<p>
-    <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png" alt="Student Home Screen" style="display: inline-block; margin: 10" width="250" height="550/>
-</p>
 
-<p>
-    <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Student%20Drawer%20Menu.png" alt="Student Menu" style="display: inline-block; margin: 10" width="250" height="550/>
-</p>
-
-<p>
-    <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Suggestions%20Screen.png" alt="Student University Suggestions" style="display: inline-block; margin: 10" width="250" height="550/>
-</p>
 
 
 </br>
