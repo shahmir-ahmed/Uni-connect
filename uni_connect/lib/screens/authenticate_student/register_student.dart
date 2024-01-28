@@ -324,14 +324,14 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                     // print(password);
 
                                     // student profile object
-                                    StudentProfile uniProfile =
+                                    StudentProfile stdProfile =
                                         StudentProfile.forRegister(
                                             name: name, college: college);
 
                                     // register student
                                     String? result = await Student(
                                             username: email, password: password)
-                                        .register(uniProfile);
+                                        .register(stdProfile);
 
                                     // error occured (either while creating account or profile)
                                     if (result == null) {
@@ -361,7 +361,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                       );
                                     }
                                     // account and profile successfully created
-                                    else if (result == 'success') {
+                                    // else if (result == 'success') {
+                                    else{
                                       // save user data in shared pref.
                                       SharedPreferences pref =
                                           await SharedPreferences.getInstance();
@@ -369,6 +370,8 @@ class _RegisterStudentState extends State<RegisterStudent> {
                                           'userEmail', email); // set user email
                                       pref.setString('userType',
                                           'student'); // set user type
+                                      pref.setString('userProfileId',
+                                      result); // set profile id
 
                                       // pop splash screen
                                       Navigator.pop(context);

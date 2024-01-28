@@ -59,7 +59,8 @@ class Student {
 
         // profile successfully created
         if (result == 'success') {
-          return 'success'; // success
+          // return 'success'; // success
+          return docId; // doc id
         }
         // error creating profile
         else if (result == null) {
