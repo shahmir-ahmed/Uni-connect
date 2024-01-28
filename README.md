@@ -3,7 +3,7 @@
 
 <!--![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)-->
 
-<p style="text-align=center">![alt text="Main Screen"](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)</p>
+<center>![alt text="Main Screen"](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)</center>
 
 A social platform where universities can create accounts and high school/college students can follow them.
 
