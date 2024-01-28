@@ -3,13 +3,18 @@
 
 <!--![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)-->
 
-<p align="center" style="border: 2px solid blue;">
-<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550>
-  </p>
+<p align="center">
+    <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550>
+</p>
 
-</br>
 
-![Student Home Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png)
+<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40News%20Feed.png" alt="Student Home Screen" style="display: inline-block; margin: 10px" width="250" height="550>
+
+<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Student%20Drawer%20Menu.png" alt="Student Menu" style="display: inline-block; margin: 10px" width="250" height="550>
+
+<img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Suggestions%20Screen.png" alt="Student University Suggestions" style="display: inline-block; margin: 10px" width="250" height="550>
+
+
 
 ![Student Menu](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Student%20Drawer%20Menu.png)
 
