@@ -1,7 +1,9 @@
 
 # Uni-connect: Bridging Futures, Building Connections.
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+<!--![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)-->
+
+![alt text](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
 
 A social platform where universities can create accounts and high school/college students can follow them.
 
