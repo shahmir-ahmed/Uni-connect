@@ -1,28 +1,39 @@
 
-# Uni-connect
+# Uni-connect: Bridging Futures, Building Connections.
+
+![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
 A social platform where universities can create accounts and high school/college students can follow them.
 
 
+## Features
+
+- Student Registration, Login
+- University Registration, Login
+- University profile
+- University posts
+- University virtual events
+- Student profile
+- Student news feed
+- Student university reccomendations
+- Student university search
+- Student follow/unfollow university
+- Student interact with university profile, posts, virtual events
+- Student and university account settings
+
+
 ## Installation
 
-Install my-project with npm
-
-```bash
-  npm install my-project
-  cd my-project
-```
-    
-## Deployment
-
-To deploy this project run
-
-```bash
-  npm run deploy
-```
-
+Install Uni-connect by downloading the repo and make sure you have flutter installed on your system then run the project on VS Code or Android Studio.
 
 ## Demo
 
-Insert gif or link to demo
+Link to demo: 
+
+
+## Tech Stack
+
+**Client:** Dart (Flutter)
+
+**Server:** Firebase
 
