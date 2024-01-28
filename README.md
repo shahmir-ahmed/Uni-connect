@@ -49,7 +49,7 @@ A social platform where universities can create accounts and high school/college
 
 ## Installation
 
-Install Uni-connect by downloading the repo and make sure you have flutter installed on your system then run the project on VS Code or Android Studio.
+Install Uni-connect by downloading this repo and make sure you have flutter installed on your system then open and run the project on VS Code or Android Studio on your mobile device, Now the app is ready to use.
 
 ## Demo
 
