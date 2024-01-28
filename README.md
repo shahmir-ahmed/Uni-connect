@@ -55,7 +55,7 @@ Install Uni-connect by downloading this repo and make sure you have flutter inst
 
 ## Demo
 
-Link to demo: <a href="https://drive.google.com/file/d/1cIE_-3hWPr10qDAaq4w2Uu6en7BclS3d/view?usp=drive_link" target="_blank">Click here</a>
+Link to demo: <a href="https://drive.google.com/file/d/1cIE_-3hWPr10qDAaq4w2Uu6en7BclS3d/view?usp=drive_link" target="_blank">Right click or on phone long press here and select open in new tab</a>
 
 
 ## Tech Stack
