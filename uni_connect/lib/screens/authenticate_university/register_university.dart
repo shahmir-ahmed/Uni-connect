@@ -26,9 +26,26 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
   late String type;
   late String email;
   late String password;
+  late String confirmPassword;
 
   // reg exp variable for name field
   static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
+
+  // password visible or not flag
+  late bool _passwordVisible;
+
+  // confirm password visible or not flag
+  late bool _confirmPasswordVisible;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Initiating _passwordVisible to false
+    _passwordVisible = false;
+    // Initiating _confirmPasswordVisible to false
+    _confirmPasswordVisible = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -289,9 +306,32 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                   password = value.trim();
                                 });
                               },
-                              obscureText: true,
+                              obscureText:
+                                  !_passwordVisible, // This will obscure text dynamically
                               style: TextStyle(fontSize: 17.0),
-                              decoration: formInputDecoration,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 10.0, color: Colors.black)),
+                                // hide show icon
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    // Based on passwordVisible state choose the icon
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: const Color.fromARGB(
+                                        255, 123, 123, 123),
+                                  ),
+                                  onPressed: () {
+                                    // Update the state i.e. toogle the state of passwordVisible variable
+                                    setState(() {
+                                      _passwordVisible =
+                                          !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
                               validator: (value) {
                                 // if password is empty
                                 if (value!.trim().length == 0) {
@@ -300,6 +340,79 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
                                 // if password is less than 6 characters return helper text
                                 else if (value!.trim().length < 6) {
                                   return 'Password must be 6 characters long';
+                                }
+                                // password does not contain special chars and numbers
+                                // elseif(!value.contains('1-10')) {
+
+                                // }
+                                // valid password
+                                else {
+                                  return null;
+                                }
+                              },
+                            ),
+
+                            // space
+                            SizedBox(
+                              height: 27.0,
+                            ),
+
+                            // Confirm Password field label
+                            Text(
+                              'Confirm password',
+                              style: fieldLabelStyle,
+                            ),
+
+                            // space
+                            SizedBox(
+                              height: 5.0,
+                            ),
+
+                            // confirm password field
+                            TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  confirmPassword = value.trim();
+                                });
+                              },
+                              obscureText:
+                                  !_confirmPasswordVisible, // This will obscure text dynamically
+                              style: TextStyle(fontSize: 17.0),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 10.0, color: Colors.black)),
+                                // hide show icon
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    // Based on passwordVisible state choose the icon
+                                    _confirmPasswordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: const Color.fromARGB(
+                                        255, 123, 123, 123),
+                                  ),
+                                  onPressed: () {
+                                    // Update the state i.e. toogle the state of passwordVisible variable
+                                    setState(() {
+                                      _confirmPasswordVisible =
+                                          !_confirmPasswordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
+                              validator: (value) {
+                                // if password is empty
+                                if (value!.trim().length == 0) {
+                                  return 'Please enter password again';
+                                }
+                                // if password is less than 6 characters return helper text
+                                else if (value.trim().length < 6) {
+                                  return 'Password must be 6 characters long';
+                                }
+                                // both passwords are not same
+                                else if (value != password) {
+                                  return 'Both passwords must be same';
                                 }
                                 // password does not contain special chars and numbers
                                 // elseif(!value.contains('1-10')) {

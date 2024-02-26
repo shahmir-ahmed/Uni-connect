@@ -23,6 +23,17 @@ class _LoginStudentState extends State<LoginStudent> {
   late String email;
   late String password;
 
+  // password visible or not flag
+  late bool _passwordVisible;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Initiating _passwordVisible to false
+    _passwordVisible = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,16 +154,38 @@ class _LoginStudentState extends State<LoginStudent> {
                                   password = value.trim();
                                 });
                               },
-                              obscureText: true,
+                              obscureText:
+                                  !_passwordVisible, // This will obscure text dynamically
                               style: TextStyle(fontSize: 17.0),
-                              decoration: formInputDecoration,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 10.0, color: Colors.black)),
+                                // hide show icon
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    // Based on passwordVisible state choose the icon
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: const Color.fromARGB(
+                                        255, 123, 123, 123),
+                                  ),
+                                  onPressed: () {
+                                    // Update the state i.e. toogle the state of passwordVisible variable
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
                               validator: (value) {
                                 // if password is empty
-                                if (value!.trim().length == 0) {
+                                if (value!.trim().isEmpty) {
                                   return 'Please enter password';
                                 }
                                 // if password is less than 6 characters return helper text
-                                else if (value!.trim().length < 6) {
+                                else if (value.trim().length < 6) {
                                   return 'Password must be 6 characters long';
                                 }
                                 // password does not contain special chars and numbers

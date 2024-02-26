@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/authenticate_university/authenticate_university.dart';
+import 'package:uni_connect/shared/constants.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -48,18 +49,20 @@ class MainScreen extends StatelessWidget {
 
                       // sign in button
                       ElevatedButton(
-                          onPressed: () {
-                            // push authenticate studnet widget with sign in true i.e. to show sign in widget
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AuthenticateStudent(showSignIn: true)));
-                          },
-                          child: Text(
-                            'Sign in',
-                            style: TextStyle(fontSize: 14.5),
-                          )),
+                        onPressed: () {
+                          // push authenticate studnet widget with sign in true i.e. to show sign in widget
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AuthenticateStudent(showSignIn: true)));
+                        },
+                        style: mainScreenButtonStyle,
+                        child: Text(
+                          'Sign in',
+                          style: TextStyle(fontSize: 14.5),
+                        ),
+                      ),
 
                       // space
                       SizedBox(
@@ -87,6 +90,7 @@ class MainScreen extends StatelessWidget {
                                     builder: (context) => AuthenticateStudent(
                                         showSignIn: false)));
                           },
+                          style: mainScreenButtonStyle,
                           child: Text(
                             'Register',
                             style: TextStyle(fontSize: 14.5),
@@ -147,6 +151,7 @@ class MainScreen extends StatelessWidget {
                                         AuthenticateUniversity(
                                             showSignIn: true)));
                           },
+                          style: mainScreenButtonStyle,
                           child: Text(
                             'Sign in',
                             style: TextStyle(fontSize: 14.5),
@@ -179,6 +184,7 @@ class MainScreen extends StatelessWidget {
                                         AuthenticateUniversity(
                                             showSignIn: false)));
                           },
+                          style: mainScreenButtonStyle,
                           child: Text(
                             'Register',
                             style: TextStyle(fontSize: 14.5),

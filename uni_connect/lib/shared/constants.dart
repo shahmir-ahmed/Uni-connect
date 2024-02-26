@@ -8,8 +8,13 @@ const formInputDecoration = InputDecoration(
 // button decoration sign in and register form
 const formButtonDecoration = ButtonStyle(
     backgroundColor: MaterialStatePropertyAll(Colors.white),
-    fixedSize: MaterialStatePropertyAll(Size(94.0, 10.0)),
+    fixedSize: MaterialStatePropertyAll(Size(110.0, 10.0)),
     elevation: MaterialStatePropertyAll(0.0));
+
+// main screen buttons style
+const mainScreenButtonStyle = ButtonStyle(
+    backgroundColor: MaterialStatePropertyAll(Colors.blue),
+    foregroundColor: MaterialStatePropertyAll(Colors.white));
 
 // form field label style
 const fieldLabelStyle = TextStyle(fontSize: 17.0, fontWeight: FontWeight.w500);
