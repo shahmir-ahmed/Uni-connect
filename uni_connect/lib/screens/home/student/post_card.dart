@@ -4,46 +4,28 @@ import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/comment.dart';
 import 'package:uni_connect/classes/like.dart';
 import 'package:uni_connect/classes/post.dart';
+import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/home/university/post/post_comments.dart';
-import 'package:uni_connect/screens/home/university/post/update_post.dart';
-import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/image_view.dart';
 import 'package:uni_connect/shared/video_player.dart';
 
-// single university post widget
-class UniPostCard extends StatefulWidget {
-  late Post post; // post
+class PostCard extends StatefulWidget {
+  PostCard({required this.post, required this.stdProfileId});
 
-  // uni profile image
-  late String? profileImage;
+  // post object
+  Post post;
 
-  // uni name
-  late String? uniName;
-
-  // uni profile doc id
-  late String? uniProfileDocId;
-
-  UniPostCard(
-      {required this.post,
-      required this.profileImage,
-      required this.uniName,
-      required this.uniProfileDocId}); // constructor
+  // student profile id needed by post body
+  String stdProfileId;
 
   @override
-  State<UniPostCard> createState() => _UniPostCardState();
+  State<PostCard> createState() => _PostCardState();
 }
 
-class _UniPostCardState extends State<UniPostCard> {
-  // build method (check: when new post is created and comes back here then posts images are shuffled i.e. agay peche)
+class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
-    // print('inside build');
-    // if (mediaPath == null) {
-    //   // Load the mediaPath when the widget is displayed.
-    //   _loadMediaPath();
-    // }
-
     // container of card widget
     // double stream setup
     // likes stream setup
@@ -69,11 +51,9 @@ class _UniPostCardState extends State<UniPostCard> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
               // container inside card
-              child: PostContent(
+              child: PostBody(
                 post: widget.post,
-                profileImage: widget.profileImage,
-                uniName: widget.uniName,
-                uniProfileDocId: widget.uniProfileDocId,
+                stdProfileId: widget.stdProfileId
               )),
         ),
       ),
@@ -81,33 +61,109 @@ class _UniPostCardState extends State<UniPostCard> {
   }
 }
 
-// Post content class
-class PostContent extends StatefulWidget {
-  // const PostContent({super.key});
-  late Post post; // post
+// Post header widget
+class PostHeader extends StatefulWidget {
+  // constructor
+  PostHeader({required this.uniProfileId});
 
-  // uni profile image
-  late String? profileImage;
-
-  // uni name
-  late String? uniName;
-
-  // uni name
-  late String? uniProfileDocId;
-
-  PostContent(
-      {required this.post,
-      required this.profileImage,
-      required this.uniName,
-      required this.uniProfileDocId}); // constructor
+  // uni profile id
+  String uniProfileId;
 
   @override
-  State<PostContent> createState() => _PostContentState();
+  State<PostHeader> createState() => _PostHeaderState();
 }
 
-class _PostContentState extends State<PostContent> {
+class _PostHeaderState extends State<PostHeader> {
+  // uni profile image
+  String profileImage = '';
+
+  // uni name
+  String uniName = '';
+
+  // get the uni profile image and name
+  _getUniImageAndName() {
+    // get image from firebase storage
+
+    // get name from firestore and set the value
+    UniveristyProfile.empty()
+        .profileCollection
+        .doc(widget.uniProfileId)
+        .get()
+        .then((doc) => setState(() {
+              uniName = doc.get("name");
+            }));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // get uni image, name
+    _getUniImageAndName();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // post header row
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // uni name & logo row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // if there is no profile picture path
+            profileImage == ''
+                ? CircleAvatar(
+                    backgroundImage: AssetImage('assets/uni.jpg'),
+                    radius: 20,
+                  )
+                :
+                // if there is profile picture path
+                CircleAvatar(
+                    foregroundImage: FileImage(
+                      File(profileImage),
+                      // width: 100,
+                      // height: 100,
+                    ),
+                    radius: 20,
+                  ),
+            // gap
+            SizedBox(
+              width: 10.0,
+            ),
+            // uni name text
+            uniName.length > 33
+                ? Text('${uniName.substring(0, 33)}...')
+                : Text(uniName),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// Post content class
+class PostBody extends StatefulWidget {
+
+  PostBody({required this.post, required this.stdProfileId}); // constructor
+
+  // post type object for post data
+  late Post post; // post
+
+  // student profile id for showing liked or not liked button
+  String stdProfileId;
+
+  @override
+  State<PostBody> createState() => _PostContentState();
+}
+
+class _PostContentState extends State<PostBody> {
   // Declare a variable to hold the mediaPath.
   String? mediaPath;
+
+  // student profile id
+  String stdProfileId = '';
 
   @override
   void initState() {
@@ -124,95 +180,6 @@ class _PostContentState extends State<PostContent> {
     setState(() {
       this.mediaPath = mediaPath;
     });
-  }
-
-  // handle click on three-dot menu of post
-  void handleClick(String value) {
-    switch (value) {
-      case '📝 Edit post':
-        // show update post widget populated with this post data
-        // show update post screen
-
-        widget.post.mediaPath =
-            mediaPath; // set the media path then pass the object
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UpdatePost(post: widget.post)
-                // UpdatePost(
-                //   postId: widget.post.postId as String,
-                //   postDescription: widget.post.description as String,
-                //   postMediaType: widget.post.mediaType as String,
-                //   postMedia: File(mediaPath!),
-                //   uniProfileId: widget.post.uniProfileId as String,
-                // )
-                ));
-
-        break;
-      case '🗑 Delete post':
-        showAlertDialog(context); // show alert dialog
-        break;
-    }
-  }
-
-  // show alert dialog for delete post
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text("Cancel"),
-      onPressed: () {
-        // close the alert dialog
-        Navigator.of(context).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text(
-        "Yes",
-      ),
-      onPressed: () async {
-        // close the alert dialog
-        Navigator.of(context).pop();
-
-        // show progress screen
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ProgressScreen(text: 'Deleting post')));
-
-        // call delete post method on this post object
-        Post post = widget
-            .post; // get the post object into another object here then call
-
-        // call delete post method
-        await post.deletePost();
-
-        // pop progress screen
-        Navigator.pop(context);
-
-        // show snackbar of success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Post deleted!')),
-        );
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Confirm?"),
-      content: Text("Are you sure you want to delete the post?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
   }
 
   // likes count
@@ -248,7 +215,7 @@ class _PostContentState extends State<PostContent> {
           likesCount = like.likedBy!.length;
           // if the post is liked by the uni then set the flag as true
           like.likedBy!.forEach((userId) {
-            if (userId == widget.post.uniProfileId) {
+            if (userId == widget.stdProfileId) {
               // && the liked variable is still false
               liked = true;
             }
@@ -279,58 +246,13 @@ class _PostContentState extends State<PostContent> {
             Radius.circular(20),
           )),
       padding: EdgeInsets.all(15.0),
-      // column
+      // column of whole post card
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // post header row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // uni name & logo row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // if there is no profiel picture path
-                  widget.profileImage == ''
-                      ? CircleAvatar(
-                          backgroundImage: AssetImage('assets/uni.jpg'),
-                          radius: 20,
-                        )
-                      :
-                      // if there is profile picture path
-                      CircleAvatar(
-                          foregroundImage: FileImage(
-                            File(widget.profileImage!),
-                            // width: 100,
-                            // height: 100,
-                          ),
-                          radius: 20,
-                        ),
-                  // gap
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  // uni name text
-                  Text('${widget.uniName!.substring(0, 28)}...'),
-                ],
-              ),
-              // row inside three dot menu for managing post
-              // three dot menu
-              PopupMenuButton<String>(
-                onSelected: handleClick,
-                itemBuilder: (BuildContext context) {
-                  return {'📝 Edit post', '🗑 Delete post'}
-                      .map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
-          ),
+          // post header widget (seperated b/c it will fetch the uni dp and name and show that)
+          PostHeader(uniProfileId: widget.post.uniProfileId as String),
+
           // media container
           Container(
             width: MediaQuery.of(context).size.width - 60,
@@ -375,7 +297,7 @@ class _PostContentState extends State<PostContent> {
                       ? ElevatedButton(
                           onPressed: () async {
                             // add the uni profile id in the liked by list of the like object
-                            like!.likedBy!.add(widget.post.uniProfileId);
+                            like!.likedBy!.add(widget.stdProfileId);
                             // call the like method
                             await like.likePost();
                             // set liked as true
@@ -409,7 +331,7 @@ class _PostContentState extends State<PostContent> {
                           onPressed: () async {
                             // call the unlike method
                             // remove the uni profile id from the liked by list of the like object of this post
-                            like!.likedBy!.remove(widget.post.uniProfileId);
+                            like!.likedBy!.remove(widget.stdProfileId);
                             // call the ulike method
                             await like.unLikePost();
                             // set liked as false
@@ -449,7 +371,7 @@ class _PostContentState extends State<PostContent> {
                     MaterialPageRoute(
                         builder: (context) => CommentsScreen(
                               commentDocId: widget.post.postId,
-                              uniProfileDocId: widget.uniProfileDocId,
+                              uniProfileDocId: widget.post.uniProfileId,
                             )),
                   );
                 },

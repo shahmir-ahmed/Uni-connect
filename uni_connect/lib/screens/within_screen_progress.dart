@@ -25,7 +25,7 @@ class WithinScreenProgress extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(top: paddingTop==null ? 150.0 : paddingTop as double),
       width: MediaQuery.of(context).size.width,
-      height: height == null ? MediaQuery.of(context).size.height: height,
+      height: height == null ? MediaQuery.of(context).size.height : height,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

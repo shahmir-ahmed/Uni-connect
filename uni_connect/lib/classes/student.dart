@@ -148,7 +148,7 @@ class StudentProfile {
   }
 
   // get following unis stream for a specific student (can be used as get profile stream)
-  Stream<List<dynamic>?>? getFollowingUnisStream(profileDocId) {
+  Stream<List<dynamic>?>? getFollowingUnisStream() {
     try {
       // print("profileDocId in getFollowingUnisStream: $profileDocId");
       // return the stream if profile id is passed (this happens when id is fetched from shared pref when this function is called )
@@ -166,7 +166,6 @@ class StudentProfile {
     }
   }
 
-  // add the university profile id in student's following list
   // update the student's following list
   String followUnFollowUni(dynamic followingList) {
     try {

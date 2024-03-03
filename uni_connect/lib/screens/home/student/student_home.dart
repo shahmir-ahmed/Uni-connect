@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uni_connect/classes/post.dart';
+import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
+import 'package:uni_connect/screens/home/student/news_feed.dart';
 import 'package:uni_connect/screens/home/student/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/screens/within_screen_progress.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class StudentHome extends StatefulWidget {
   // String email; // student email
@@ -15,6 +22,9 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
+  // student profile doc id from shared pref.
+  String? stdProfileDocId;
+
   // logout student function
   Future<void> _logoutUser() async {
     // clear shared pref data for app
@@ -84,8 +94,8 @@ class _StudentHomeState extends State<StudentHome> {
       title: Text("Confirm?"),
       content: Text("Are you sure you want to logout?"),
       actions: [
-        cancelButton,
         continueButton,
+        cancelButton,
       ],
     );
 
@@ -98,6 +108,30 @@ class _StudentHomeState extends State<StudentHome> {
     );
   }
 
+  // get the student's profile doc id from shared pref. and save
+  _getStudentProfileDocId() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    // set state to let the widget tree know and refresh itself that something (data att.) has changed that it needs to reflect in its tree/view
+    setState(() {
+      stdProfileDocId = pref.getString("userProfileId");
+    });
+    // print("student profile id: $stdProfileDocId");
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // get and save the student profile doc id
+    _getStudentProfileDocId();
+
+    // when user comes back to the news feed it should refresh
+    // WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+    //     resumeCallBack: () async => setState(() {
+    //           print("here");
+    //         })));
+  }
+
   @override
   Widget build(BuildContext context) {
     // _showSnackBar(context);
@@ -107,9 +141,10 @@ class _StudentHomeState extends State<StudentHome> {
         centerTitle: true,
         backgroundColor: Colors.blue[400],
         actions: [
-          /*
-          ElevatedButton(
-              onPressed: () async {
+          // student profile button
+          MaterialButton(
+            onPressed: () async {
+              /*
                 // show snackbar
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Logging out...')));
@@ -136,14 +171,35 @@ class _StudentHomeState extends State<StudentHome> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Logged out successfully!')),
                 );
-              },
-              child: Icon(Icons.logout))
               */
+            },
+            child: CircleAvatar(
+              backgroundImage: AssetImage("assets/student.jpg"),
+            ),
+            color: Colors.blue[400],
+            elevation: 0.0,
+            minWidth: 18.0,
+          )
         ],
       ),
+      // News Feed
+      // student following unis list stream setup
       body: Center(
-        child: Text('News Feed - Student Home'),
-      ),
+          // based on student profile id show news feed or loading screen
+          child: stdProfileDocId != null
+              ? StreamProvider.value(
+                  initialData: null,
+                  value: StudentProfile.withId(
+                          profileDocId: stdProfileDocId as String)
+                      .getFollowingUnisStream(),
+                  // all posts stream setup
+                  child: StreamProvider.value(
+                      value: Post.empty().getPostsStream(),
+                      initialData: null,
+                      child: NewsFeed(stdProfileId: stdProfileDocId as String,)))
+              // if no student profile id then show loading screen
+              : WithinScreenProgress.withHeight(text: "", height: 400.0)),
+      // Drawer Menu
       drawer: Drawer(
         width: 280.0,
         child: SingleChildScrollView(
@@ -160,6 +216,7 @@ class _StudentHomeState extends State<StudentHome> {
     );
   }
 
+  // Drawer List for drawer menu
   Widget MyDrawerList() {
     return Container(
       padding: EdgeInsets.only(
@@ -260,7 +317,8 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
           ),
           Text(
             "Student Name",
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontStyle: FontStyle.italic),
           ),
           // Text(
           //   "info@rapidtech.dev",
@@ -274,3 +332,36 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
     );
   }
 }
+
+/*
+// for lifecycle call back check
+class LifecycleEventHandler extends WidgetsBindingObserver {
+  final AsyncCallback? resumeCallBack;
+  final AsyncCallback? suspendingCallBack;
+
+  LifecycleEventHandler({
+    this.resumeCallBack,
+    this.suspendingCallBack,
+  });
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    print("state changed ${state.name}");
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (resumeCallBack != null) {
+          await resumeCallBack!();
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        if (suspendingCallBack != null) {
+          await suspendingCallBack!();
+        }
+        break;
+    }
+  }
+}
+*/

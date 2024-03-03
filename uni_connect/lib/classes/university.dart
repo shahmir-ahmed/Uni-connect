@@ -90,6 +90,7 @@ class UniveristyProfile {
   late String profileDocId;
   late String profileImage;
   late List<dynamic> fieldsOffered;
+  late List<dynamic> followers;
 
   // university profile collection
   final profileCollection =
@@ -120,6 +121,11 @@ class UniveristyProfile {
     required this.location,
   });
 
+  // for with id object
+  UniveristyProfile.withId({
+    required this.profileDocId,
+  });
+
   // create profile in database (when registering)
   Future<String?> createProfile(String uniDocId) async {
     try {
@@ -130,6 +136,7 @@ class UniveristyProfile {
         'location': location,
         'type': type,
         'fields_offered': [],
+        'followers': [],
         'university_id': uniDocId
       });
 
@@ -178,7 +185,7 @@ class UniveristyProfile {
         fieldsOffered: documentSnapshot.get('fields_offered') ?? []);
   }
 
-  // get profile stream
+  // get profile stream (based on university account id)
   Future<Stream<UniveristyProfile?>?> getProfileStream(String uniId) async {
     try {
       // get the university profile object from db based on logged in uni account doc id
@@ -241,6 +248,10 @@ class UniveristyProfile {
   String? updateFollowers() {
     try {
       // update the university followers list
+      profileCollection
+          .doc(profileDocId)
+          .update({'followers': followers});
+
       return 'success';
     } catch (e) {
       // print error

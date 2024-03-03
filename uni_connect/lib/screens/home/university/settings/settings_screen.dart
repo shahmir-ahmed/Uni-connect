@@ -16,14 +16,17 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Uni-connect'),
-        centerTitle: true,
-        backgroundColor: Colors.blue[600],
-        actions: [
+        appBar: AppBar(
+            title: Text('Uni-connect'),
+            centerTitle: true,
+            backgroundColor: Colors.blue[600],
+            actions: [
           ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                foregroundColor: MaterialStatePropertyAll(Colors.white),
+              ),
               onPressed: () async {
                 // ScaffoldMessenger.of(context).showSnackBar(
                 //     const SnackBar(content: Text('Logging out...')));
@@ -33,8 +36,7 @@ class SettingsScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            ProgressScreen(
-                                text: 'Logging out...')));
+                            ProgressScreen(text: 'Logging out...')));
 
                 // logout user
                 await _logoutUser();
@@ -60,8 +62,6 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
               child: Icon(Icons.logout))
-        ]
-      )
-    );
+        ]));
   }
 }

@@ -302,6 +302,10 @@ class _CreatePostState extends State<CreatePost> {
                                     onPressed: () {
                                       mediaPickerOptions(context);
                                     },
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                                      foregroundColor: MaterialStatePropertyAll(Colors.white),
+                                    ),
                                     icon: const Icon(Icons.add_a_photo_sharp),
                                     label: const Text('Upload Photo/Video')),
                               )
@@ -365,6 +369,10 @@ class _CreatePostState extends State<CreatePost> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton.icon(
+                                style: ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                                      foregroundColor: MaterialStatePropertyAll(Colors.white),
+                                    ),
                                   onPressed: () async {
                                     // if image and video is not picked
                                     if (pickedImage == null &&

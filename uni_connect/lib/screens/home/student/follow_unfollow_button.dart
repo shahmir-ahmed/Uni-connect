@@ -37,17 +37,26 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
 
         // if follow button is clicked
         if (message == "Follow") {
-          // update the existing list and sent the list to function
+          // update the existing list and send the list to function
           followingList.add(widget.uniProfileId);
 
+          // update the existing list and send the list to function
+          // follwers.add(widget.stdProfileDocId);
+
           // add this uni profile id in student's following_unis list
-          if (widget.stdProfileDocId != null) {
+          // if (widget.stdProfileDocId != null) {
             String result =
                 StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
                     .followUnFollowUni(followingList);
 
+          // add this student profile id in uni's followers list
+            // String result2 =
+            //     StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+            //         .followUnFollowUni(followingList);
+
             // list updated successfullly
             if (result == "success") {
+            // if (result == "success" && result2 == "success") {
               // set following as yes means show unfollow button
               setState(() {
                 following = true;
@@ -65,7 +74,7 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text('Error ${message.toLowerCase()}ing!')));
             }
-          }
+          // }
         } else {
           // remove this uni profile id from student's following_unis list
 
@@ -123,8 +132,11 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    // get the value in the stream
+    // get the value in the following unis list type stream
     final followingList = Provider.of<List<dynamic>?>(context);
+
+    // get the value from the uni followers list type stream
+    // final followersList = Provider.of<List<dynamic>?>(context);
 
     // print("followingList value: $followingList"); // empty list if empty and null if stream has no value passed yet
     // print("uniProfileId value: ${widget.uniProfileId}"); (correct)
