@@ -9,13 +9,22 @@ import 'package:uni_connect/screens/within_screen_progress.dart';
 class CommentsScreen extends StatefulWidget {
   // const CommentsScreen({super.key});
 
-  CommentsScreen({required this.commentDocId, required this.uniProfileDocId});
+  CommentsScreen(
+      {required this.commentDocId,
+      required this.commenterProfileId,
+      required this.commentByType});
 
   // comment doc id for setting up the stream for the doc, which is the post id passed from the post card widget
   String? commentDocId;
 
   // uni profile doc id for uni commenting
-  String? uniProfileDocId;
+  // String? uniProfileDocId;
+
+  // profile id for the commenter commenting to save with the comment in database
+  String? commenterProfileId;
+
+  // comment by type means comment by uni or student
+  String commentByType;
 
   @override
   State<CommentsScreen> createState() => _CommentsScreenState();
@@ -37,7 +46,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
           initialData: null,
           child: SingleChildScrollView(
               child: InnerCommentsScreen(
-            uniProfileDocId: widget.uniProfileDocId,
+            commenterProfileId: widget.commenterProfileId,
+            commentByType: widget.commentByType,
           ))),
     );
   }
@@ -45,10 +55,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
 class InnerCommentsScreen extends StatefulWidget {
   // const InnerCommentsScreen({super.key});
-  InnerCommentsScreen({required this.uniProfileDocId});
+  InnerCommentsScreen(
+      {required this.commenterProfileId, required this.commentByType});
 
-  // uni profile doc id passed from outer widget
-  String? uniProfileDocId;
+  // profile id passed from outer widget of the commenter
+  String? commenterProfileId;
+
+  // comment by type means comment by uni or student
+  String commentByType;
 
   @override
   State<InnerCommentsScreen> createState() => _InnerCommentsScreenState();
@@ -203,7 +217,9 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0))),
-                          hintText: 'Comment as University'),
+                          hintText: widget.commentByType == 'student'
+                              ? 'Comment as Student'
+                              : 'Comment as University'),
                       onChanged: (value) {
                         setState(() {
                           commentText = value.trim();
@@ -239,8 +255,12 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                             // add the new comment in the list
                             postComments!.add({
                               'comment': commentText,
-                              'comment_by_profile_id': widget.uniProfileDocId,
-                              'comment_by_type': 'university'
+                              'comment_by_profile_id':
+                                  widget.commenterProfileId,
+                              'comment_by_type':
+                                  widget.commentByType == 'student'
+                                      ? 'student'
+                                      : 'university'
                             });
 
                             // set name on new comment
@@ -262,6 +282,8 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                                 SnackBar(content: Text('Comment posted!')),
                               );
                             } else if (result == null) {
+                              // set latest commments color as red
+                              
                               // show error message
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

@@ -11,7 +11,8 @@ import 'package:uni_connect/shared/image_view.dart';
 import 'package:uni_connect/shared/video_player.dart';
 
 class PostCard extends StatefulWidget {
-  PostCard({required this.post, required this.stdProfileId});
+  // constructor
+  PostCard({super.key, required this.post, required this.stdProfileId});
 
   // post object
   Post post;
@@ -51,7 +52,7 @@ class _PostCardState extends State<PostCard> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
               // container inside card
-              child: PostBody(
+              child: PostContent(
                 post: widget.post,
                 stdProfileId: widget.stdProfileId
               )),
@@ -61,104 +62,24 @@ class _PostCardState extends State<PostCard> {
   }
 }
 
-// Post header widget
-class PostHeader extends StatefulWidget {
-  // constructor
-  PostHeader({required this.uniProfileId});
 
-  // uni profile id
-  String uniProfileId;
-
-  @override
-  State<PostHeader> createState() => _PostHeaderState();
-}
-
-class _PostHeaderState extends State<PostHeader> {
-  // uni profile image
-  String profileImage = '';
-
-  // uni name
-  String uniName = '';
-
-  // get the uni profile image and name
-  _getUniImageAndName() {
-    // get image from firebase storage
-
-    // get name from firestore and set the value
-    UniveristyProfile.empty()
-        .profileCollection
-        .doc(widget.uniProfileId)
-        .get()
-        .then((doc) => setState(() {
-              uniName = doc.get("name");
-            }));
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // get uni image, name
-    _getUniImageAndName();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // post header row
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // uni name & logo row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // if there is no profile picture path
-            profileImage == ''
-                ? CircleAvatar(
-                    backgroundImage: AssetImage('assets/uni.jpg'),
-                    radius: 20,
-                  )
-                :
-                // if there is profile picture path
-                CircleAvatar(
-                    foregroundImage: FileImage(
-                      File(profileImage),
-                      // width: 100,
-                      // height: 100,
-                    ),
-                    radius: 20,
-                  ),
-            // gap
-            SizedBox(
-              width: 10.0,
-            ),
-            // uni name text
-            uniName.length > 33
-                ? Text('${uniName.substring(0, 33)}...')
-                : Text(uniName),
-          ],
-        ),
-      ],
-    );
-  }
-}
 
 // Post content class
-class PostBody extends StatefulWidget {
+class PostContent extends StatefulWidget {
 
-  PostBody({required this.post, required this.stdProfileId}); // constructor
+  PostContent({required this.post, required this.stdProfileId}); // constructor
 
   // post type object for post data
-  late Post post; // post
+  Post post; // post
 
-  // student profile id for showing liked or not liked button
+  // student profile id for showing liked or not liked button and other things below see
   String stdProfileId;
 
   @override
-  State<PostBody> createState() => _PostContentState();
+  State<PostContent> createState() => _PostContentState();
 }
 
-class _PostContentState extends State<PostBody> {
+class _PostContentState extends State<PostContent> {
   // Declare a variable to hold the mediaPath.
   String? mediaPath;
 
@@ -260,13 +181,16 @@ class _PostContentState extends State<PostBody> {
             // decoration: BoxDecoration(border: Border.all(width: 1.0)),
             child: buildMediaButton(),
           ),
+
           // space
           SizedBox(
             height: 25.0,
           ),
+
           // post description
           Text(widget.post.description as String),
           // Text(widget.post.uniProfileId as String),
+
           // space
           SizedBox(
             height: 20.0,
@@ -371,7 +295,8 @@ class _PostContentState extends State<PostBody> {
                     MaterialPageRoute(
                         builder: (context) => CommentsScreen(
                               commentDocId: widget.post.postId,
-                              uniProfileDocId: widget.post.uniProfileId,
+                              commenterProfileId: widget.stdProfileId,
+                              commentByType: 'student',
                             )),
                   );
                 },
@@ -511,5 +436,88 @@ class _PostContentState extends State<PostBody> {
             elevation: MaterialStatePropertyAll(0.0)),
       );
     }
+  }
+}
+
+
+// Post header widget
+class PostHeader extends StatefulWidget {
+  // constructor
+  PostHeader({required this.uniProfileId});
+
+  // uni profile id
+  String uniProfileId;
+
+  @override
+  State<PostHeader> createState() => _PostHeaderState();
+}
+
+class _PostHeaderState extends State<PostHeader> {
+  // uni profile image
+  String profileImage = '';
+
+  // uni name
+  String uniName = '';
+
+  // get the uni profile image and name
+  _getUniImageAndName() {
+    // get image from firebase storage
+
+    // get name from firestore and set the value
+    UniveristyProfile.empty()
+        .profileCollection
+        .doc(widget.uniProfileId)
+        .get()
+        .then((doc) => setState(() {
+              uniName = doc.get("name");
+            }));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // get uni image, name
+    _getUniImageAndName();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // post header row
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // uni name & logo row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // if there is no profile picture path
+            profileImage == ''
+                ? CircleAvatar(
+                    backgroundImage: AssetImage('assets/uni.jpg'),
+                    radius: 20,
+                  )
+                :
+                // if there is profile picture path
+                CircleAvatar(
+                    foregroundImage: FileImage(
+                      File(profileImage),
+                      // width: 100,
+                      // height: 100,
+                    ),
+                    radius: 20,
+                  ),
+            // gap
+            SizedBox(
+              width: 10.0,
+            ),
+            // uni name text
+            uniName.length > 33
+                ? Text('${uniName.substring(0, 33)}...')
+                : Text(uniName),
+          ],
+        ),
+      ],
+    );
   }
 }

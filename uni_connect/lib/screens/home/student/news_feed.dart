@@ -40,16 +40,21 @@ class _NewsFeedState extends State<NewsFeed> {
           feedPosts.add(post);
         }
       });
-      // print(feedPosts); correct
-      // check for each post
-      return SingleChildScrollView(
-        child: Column(
-          children: feedPosts.map((feedPost) {
-            // post card
-            return PostCard(post: feedPost, stdProfileId: widget.stdProfileId);
-          }).toList(),
-        ),
-      );
+      // print(feedPosts); // correct
+      // show each feed post in post card
+      return feedPosts.isNotEmpty
+          ? SingleChildScrollView(
+              child: Column(
+                children: feedPosts.map((feedPost) {
+                  // post card (key with every card so that flutter can identify each card when rebuilding the UI)
+                  return PostCard(
+                      key: ValueKey<String>(feedPost.postId as String),
+                      post: feedPost,
+                      stdProfileId: widget.stdProfileId);
+                }).toList(),
+              ),
+            )
+          : Text("Follow universities to see posts in your news feed...");
     } else {
       return WithinScreenProgress(text: "");
     }

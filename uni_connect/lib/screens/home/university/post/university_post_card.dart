@@ -449,7 +449,8 @@ class _PostContentState extends State<PostContent> {
                     MaterialPageRoute(
                         builder: (context) => CommentsScreen(
                               commentDocId: widget.post.postId,
-                              uniProfileDocId: widget.uniProfileDocId,
+                              commenterProfileId: widget.uniProfileDocId,
+                              commentByType: 'university',
                             )),
                   );
                 },

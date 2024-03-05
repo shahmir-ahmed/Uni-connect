@@ -21,7 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         title: Text('Search'),
       ),
-
+    
       // main container in screen in center
       body: SingleChildScrollView(
         child: StreamProvider.value(

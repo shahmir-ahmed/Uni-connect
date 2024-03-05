@@ -8,8 +8,6 @@ import 'package:uni_connect/screens/home/student/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class StudentHome extends StatefulWidget {
   // String email; // student email
@@ -24,6 +22,8 @@ class StudentHome extends StatefulWidget {
 class _StudentHomeState extends State<StudentHome> {
   // student profile doc id from shared pref.
   String? stdProfileDocId;
+
+  // Color color = Colors.white;
 
   // logout student function
   Future<void> _logoutUser() async {
@@ -186,7 +186,9 @@ class _StudentHomeState extends State<StudentHome> {
       // student following unis list stream setup
       body: Center(
           // based on student profile id show news feed or loading screen
+          // double stream setup
           child: stdProfileDocId != null
+              // following list stream
               ? StreamProvider.value(
                   initialData: null,
                   value: StudentProfile.withId(
@@ -196,9 +198,9 @@ class _StudentHomeState extends State<StudentHome> {
                   child: StreamProvider.value(
                       value: Post.empty().getPostsStream(),
                       initialData: null,
-                      child: NewsFeed(stdProfileId: stdProfileDocId as String,)))
-              // if no student profile id then show loading screen
-              : WithinScreenProgress.withHeight(text: "", height: 400.0)),
+                      child: NewsFeed(stdProfileId: stdProfileDocId as String)))
+              // if no student profile id fetched yet then show loading screen
+              : WithinScreenProgress.withHeight(text: "", height: 500.0)),
       // Drawer Menu
       drawer: Drawer(
         width: 280.0,
@@ -248,11 +250,25 @@ class _StudentHomeState extends State<StudentHome> {
 
           // if search option is clicked
           if (title == "Search") {
-            // show search screen
+            // show search screen and wait for a result
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SearchScreen()),
             );
+
+            // print("result: $result");
+
+            // Check if a result is returned from the search screen
+            // if (result == true) {
+            // If a result is returned, rebuild the previous screen
+            // setState(() {});
+            // }
+            // pop home screen
+            // Navigator.pop(context);
+            // rerunning the build method when coming back from the other screen to rerun the descendant widgets i.e. news feed to not glitch and show correct news feed if following list updated or not by following a uni if updated
+            // setState(() {
+            //   color = Colors.grey;
+            // });
           }
           // if logout option is clicked
           else if (title == "Logout") {
@@ -266,7 +282,7 @@ class _StudentHomeState extends State<StudentHome> {
               Expanded(
                 child: Icon(
                   icon,
-                  size: 20,
+                  size: 24,
                   color: Colors.black,
                 ),
               ),
