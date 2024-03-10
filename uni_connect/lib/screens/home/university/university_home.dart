@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/post.dart';
@@ -9,7 +8,10 @@ import 'package:uni_connect/screens/home/university/post/create_post.dart';
 import 'package:uni_connect/screens/home/university/post/university_posts.dart';
 import 'package:uni_connect/screens/home/university/settings/settings_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_connect/screens/home/university/virtual_event/create_virtual_event.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
+import 'package:uni_connect/shared/constants.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class UniversityHome extends StatefulWidget {
   // String email; // university email
@@ -82,13 +84,30 @@ class _UniversityHomeState extends State<UniversityHome> {
                                   uniProfileDocId: uniProfile!.profileDocId,
                                 )));
                   },
+                  style: buttonStyle,
                   icon: const Icon(Icons.post_add),
                   label: const Text("Create post"),
                 ),
+                // space b/w
+                SizedBox(height: 5.0),
                 // create virtual event button
                 ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.event),
+                  onPressed: () async {
+                    // pop this create options bottom sheet
+                    Navigator.pop(context);
+
+                    // show create virtual event screen
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => CreateVirtualEvent(
+                    //             )));
+
+                    // check for camera permission
+                    await _checkPermissions();
+                  },
+                  style: buttonStyle,
+                  icon: const Icon(Icons.live_tv_outlined),
                   label: const Text("Create virtual event"),
                 ),
               ],
@@ -97,6 +116,192 @@ class _UniversityHomeState extends State<UniversityHome> {
         ),
       ),
     );
+  }
+
+  // check camera and microphone permission status
+  Future<void> _checkPermissions() async {
+    // get current status
+    PermissionStatus status = await Permission.camera.status;
+
+    // print(status);
+
+    // if status is permanately denied it needs to be enable by user manaually from settings
+    if (status.isPermanentlyDenied) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text('Permission Required'),
+          content: Text(
+              'Please allow access to the camera to create virtual event.'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                // Open app settings to allow user to grant the permission manually
+                await openAppSettings();
+                Navigator.pop(context);
+              },
+              child: Text('Open Settings'),
+            ),
+          ],
+        ),
+      );
+    }
+    // camera status is denied
+    else if (status.isDenied) {
+      // Permission hasn't been granted
+      // Grant permission
+      PermissionStatus status2 = await Permission.camera.request();
+
+      // print(status2);
+
+      // if still denied
+      if (!status2.isGranted) {
+        // Permission still not granted, show an alert or take appropriate action
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text('Permission Required'),
+            content: Text('Please allow access to the camera.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+      // Permission granted after request, proceed with camera usage
+      else if (status2.isGranted) {
+        // check microphone permission status
+        PermissionStatus status = await Permission.microphone.status;
+
+        // if status is permanately denied it needs to be enable by user manaually from settings
+        if (status.isPermanentlyDenied) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text('Permission Required'),
+              content: Text(
+                  'Please allow access to the microphone to create virtual event.'),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    // Open app settings to allow user to grant the permission manually
+                    await openAppSettings();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Open Settings'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // status is denied
+        else if (status.isDenied) {
+          // Permission hasn't been granted
+          // Grant permission
+          PermissionStatus status = await Permission.microphone.request();
+
+          // if still denied
+          if (!status.isGranted) {
+            // Permission still not granted, show an alert or take appropriate action
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: Text('Permission Required'),
+                content: Text('Please allow access to the microphone.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+          // Permission to microphone granted after request
+          else if (status.isGranted) {
+            // Now show create virtual event widget
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+          }
+        }
+        // Permission already granted, proceed with microphone usage
+        else if (status.isGranted) {
+          // Code to use the camera
+          // show create virtual event screen
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+        }
+      }
+    }
+    // Permission already granted, proceed with camera usage
+    else if (status.isGranted) {
+      // check microphone permission status
+      PermissionStatus status = await Permission.microphone.status;
+
+      // if status is permanately denied it needs to be enable by user manaually from settings
+      if (status.isPermanentlyDenied) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text('Permission Required'),
+            content: Text(
+                'Please allow access to the microphone to create virtual event.'),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  // Open app settings to allow user to grant the permission manually
+                  await openAppSettings();
+                  Navigator.pop(context);
+                },
+                child: Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+      }
+
+      // status is denied
+      if (status.isDenied) {
+        // Permission hasn't been granted
+        // Grant permission
+        PermissionStatus status = await Permission.microphone.request();
+
+        // if still denied
+        if (!status.isGranted) {
+          // Permission still not granted, show an alert or take appropriate action
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text('Permission Required'),
+              content: Text('Please allow access to the microphone.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+        // Permission to microphone granted after request
+        else if (status.isGranted) {
+          // Now show create virtual event widget
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+        }
+      }
+      // Permission already granted, proceed with microphone usage
+      else if (status.isGranted) {
+        // Code to use the camera
+        // show create virtual event screen
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+      }
+    }
   }
 
   // build method

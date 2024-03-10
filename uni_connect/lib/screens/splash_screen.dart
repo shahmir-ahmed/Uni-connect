@@ -25,7 +25,7 @@ class SplashScreen extends StatelessWidget {
 
     // after 4 seconds pop the current widget and push screen according to next screen to show, if empty then not pop
     if (nextScreen != 'none') {
-      Future.delayed(Duration(seconds: 4), () {
+      Future.delayed(Duration(seconds: 2), () {
         // pop splash screen
         Navigator.pop(context);
         // push next screen

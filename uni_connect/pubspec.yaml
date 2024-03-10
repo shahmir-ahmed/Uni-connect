@@ -59,6 +59,12 @@ dependencies:
   appinio_video_player: ^1.2.2
   # image viewer
   easy_image_viewer: ^1.2.1
+  # camera package
+  camera: ^0.8.1+4
+  # permission handler
+  permission_handler: ^11.3.0
+  # agora rtc engine
+  agora_rtc_engine: ^6.3.0
 
 
 # for panorama package

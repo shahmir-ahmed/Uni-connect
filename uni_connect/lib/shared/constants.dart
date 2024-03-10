@@ -19,6 +19,10 @@ const mainScreenButtonStyle = ButtonStyle(
 // form field label style
 const fieldLabelStyle = TextStyle(fontSize: 17.0, fontWeight: FontWeight.w500);
 
+const buttonStyle = ButtonStyle(
+    backgroundColor: MaterialStatePropertyAll(Colors.blue),
+    foregroundColor: MaterialStatePropertyAll(Colors.white));
+
 // progress loading
 // const progress = Container(
 //       padding: EdgeInsets.only(top: 150.0),
