@@ -225,7 +225,7 @@ class _UniversityHomeState extends State<UniversityHome> {
           else if (status.isGranted) {
             // Now show create virtual event widget
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+                MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
           }
         }
         // Permission already granted, proceed with microphone usage
@@ -233,7 +233,7 @@ class _UniversityHomeState extends State<UniversityHome> {
           // Code to use the camera
           // show create virtual event screen
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
         }
       }
     }
@@ -291,7 +291,7 @@ class _UniversityHomeState extends State<UniversityHome> {
         else if (status.isGranted) {
           // Now show create virtual event widget
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
         }
       }
       // Permission already granted, proceed with microphone usage
@@ -299,7 +299,7 @@ class _UniversityHomeState extends State<UniversityHome> {
         // Code to use the camera
         // show create virtual event screen
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CreateVirtualEvent()));
+            MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
       }
     }
   }
