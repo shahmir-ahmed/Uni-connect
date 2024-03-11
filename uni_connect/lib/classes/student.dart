@@ -71,7 +71,7 @@ class Student {
         return 'exists';
       }
     } catch (e) {
-      print("EXCEPTION: ${e.toString()}");
+      print("EXCEPTION in student register() method: ${e.toString()}");
       return null;
     }
   }

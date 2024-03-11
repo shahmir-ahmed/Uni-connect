@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/university.dart';
-import 'package:uni_connect/screens/home/student/follow_unfollow_button.dart';
+import 'package:uni_connect/classes/virtual_event.dart';
+import 'package:uni_connect/screens/home/student/uni_profile/follow_unfollow_button.dart';
+import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/virtual_event_cards.dart';
 
 class UniProfileScreen extends StatefulWidget {
   // const UniversityProfileScreen({super.key});
@@ -209,7 +212,9 @@ class _UniProfileState extends State<UniProfileScreen> {
                               ? StreamProvider.value(
                                   initialData: null,
                                   // stream setup to get the unis student is following to check that the student is following this uni or not then show follow/unfollow button in follow/unfollow widget
-                                  value: StudentProfile.withId(profileDocId: stdProfileDocId as String)
+                                  value: StudentProfile.withId(
+                                          profileDocId:
+                                              stdProfileDocId as String)
                                       .getFollowingUnisStream(),
                                   child: Container(
                                     padding:
@@ -315,16 +320,19 @@ class _UniProfileState extends State<UniProfileScreen> {
                     ),
                   ),
 
-                  // second tab bar viiew widget
+                  // second tab bar view widget
                   Container(
-                    height: 100.0,
-                    // color: Colors.pink,
-                    child: Center(
-                      child: Text(
-                        'Live videos',
-                      ),
-                    ),
-                  ),
+                      height: 100.0,
+                      // color: Colors.pink,
+                      // all virtual events stream provider setup
+                      child: StreamProvider.value(
+                          value:
+                              VirtualEvent.empty().getVirtualEventsStream(),
+                          initialData: null,
+                          child: VirtualEventCards(
+                            uniName: widget.uniProfile!.name,
+                            uniProfileId: widget.uniProfile!.profileDocId,
+                          ))),
 
                   // third tab bar view widget
                   Container(

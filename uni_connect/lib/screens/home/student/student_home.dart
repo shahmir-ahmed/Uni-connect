@@ -4,7 +4,7 @@ import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/home/student/news_feed.dart';
-import 'package:uni_connect/screens/home/student/search_screen.dart';
+import 'package:uni_connect/screens/home/student/search/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';

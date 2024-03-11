@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 import 'package:camera/camera.dart';
-import 'package:uni_connect/screens/home/university/virtual_event/virtual_event.dart';
+import 'package:uni_connect/screens/home/university/virtual_event/uni_virtual_event_screen.dart';
 
 class CreateVirtualEvent extends StatefulWidget {
   CreateVirtualEvent({required this.uniProfileId});
@@ -88,8 +88,9 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
             children: [
               // user video
               Container(
+                  // decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.all(Radius.circular(30.0))),
                   width: 350.0,
-                  color: const Color.fromARGB(255, 236, 235, 235),
                   height: 350.0,
                   // child: Image.asset('assets/uni.jpg'),
                   child: _initializeControllerFuture != null
@@ -102,15 +103,23 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                               return CameraPreview(_controller);
                             } else {
                               // Otherwise, display a loading indicator.
-                              return Center(
-                                  child: WithinScreenProgress.withHeight(
-                                text: '',
-                                height: 350.0,
-                              ));
+                              return Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(20.0))),
+                                child: Center(
+                                    child: WithinScreenProgress.withHeight(
+                                  text: '',
+                                  height: 350.0,
+                                )),
+                              );
                             }
                           },
                         )
                       : Container(
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
                           child: WithinScreenProgress.withHeight(
                               text: '', height: 350.0),
                         )),
@@ -162,8 +171,9 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => VirtualEvent(
-                                        uniProfileId: widget.uniProfileId, title: streamTitle)));
+                                    builder: (context) => VirtualEventScreen(
+                                        uniProfileId: widget.uniProfileId,
+                                        title: streamTitle)));
                           }
                         },
                         label: Text(

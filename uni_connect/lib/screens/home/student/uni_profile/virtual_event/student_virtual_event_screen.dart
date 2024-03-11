@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uni_connect/classes/virtual_event.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
-class VirtualEvent extends StatefulWidget {
-  VirtualEvent({required this.uniProfileId, required this.title});
+class StudentVirtualEventScreen extends StatefulWidget {
+  StudentVirtualEventScreen({required this.channelName, required this.eventTitle});
 
-  // uni profile id for channel name
-  String uniProfileId;
+  // channel name
+  String channelName;
 
-  // stream title
-  String title;
+  // event title
+  String eventTitle;
 
   @override
-  State<VirtualEvent> createState() => _VirtualEventState();
+  State<StudentVirtualEventScreen> createState() => _StudentVirtualEventState();
 }
 
-class _VirtualEventState extends State<VirtualEvent> {
+class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   // Add your Agora App ID here
   // static const String agoraAppId = '4be7200f4d154bc0bed8a60f35b010e9';
 
@@ -31,10 +32,8 @@ class _VirtualEventState extends State<VirtualEvent> {
   String agoraAppId = "4be7200f4d154bc0bed8a60f35b010e9", channelName = '';
   List<int> remoteUids = []; // Uids of remote users in the channel
   bool isJoined = false; // Indicates if the local user has joined the channel
-  bool isBroadcaster = true; // Client role
+  bool isBroadcaster = false; // Client role
   RtcEngine? agoraEngine; // Agora engine instance
-
-  bool muted = false;
 
   @override
   void initState() {
@@ -43,7 +42,7 @@ class _VirtualEventState extends State<VirtualEvent> {
     initializeAgora();
 
     // set channel name
-    channelName = widget.uniProfileId;
+    channelName = widget.channelName;
 
     // print('channelName: $channelName');
   }
@@ -70,8 +69,7 @@ class _VirtualEventState extends State<VirtualEvent> {
       await agoraEngine!
           .setChannelProfile(ChannelProfileType.channelProfileLiveBroadcasting);
       // if (isBroadcaster) {
-      await agoraEngine!
-          .setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await agoraEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
       // } else {
       //   await _engine.setClientRole(ClientRole.Audience);
       // }
@@ -148,7 +146,6 @@ class _VirtualEventState extends State<VirtualEvent> {
     );
   }
 
-/*
 // Render view from a remote user in the channel
   AgoraVideoView remoteVideoView(int remoteUid) {
     return AgoraVideoView(
@@ -159,8 +156,8 @@ class _VirtualEventState extends State<VirtualEvent> {
       ),
     );
   }
-  */
 
+/*
   // show alert dialog for logout button in drawer menu
   showAlertDialog(BuildContext context) {
     // set up the buttons
@@ -179,20 +176,28 @@ class _VirtualEventState extends State<VirtualEvent> {
         // close the alert dialog
         Navigator.of(context).pop();
 
+        // update stream status to ended
+        final result =
+            VirtualEvent.onlyId(eventId: eventId).updateVirtualEventStatus();
+
+        if (result == 'error') {
+          print('Error updating stream status');
+        }
+
         // close live stream screen
         Navigator.of(context).pop();
 
-        // logout message
+        // message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Live stream ended!')),
+          SnackBar(content: Text('Virtual event ended!')),
         );
       },
     );
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("End virtual event?"),
-      content: Text("Are you sure you want to end virtual event?"),
+      title: Text("Leave virtual event?"),
+      content: Text("Are you sure you want to leave virtual event?"),
       actions: [
         continueButton,
         cancelButton,
@@ -207,16 +212,7 @@ class _VirtualEventState extends State<VirtualEvent> {
       },
     );
   }
-
-  // Render video from the local user in the channel
-  AgoraVideoView localVideoView() {
-    return AgoraVideoView(
-      controller: VideoViewController(
-        rtcEngine: agoraEngine!,
-        canvas: const VideoCanvas(uid: 0), // Use uid = 0 for local view
-      ),
-    );
-  }
+  */
 
   // build method
   @override
@@ -233,9 +229,9 @@ class _VirtualEventState extends State<VirtualEvent> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            localVideoView(),
+            remoteVideoView(1),
             _header(),
-            _footer(),
+            // _footer(),
           ],
         ),
       ),
@@ -252,7 +248,7 @@ class _VirtualEventState extends State<VirtualEvent> {
           Container(
             padding: EdgeInsets.only(left: 25.0),
             child: Text(
-              widget.title,
+              widget.eventTitle,
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
           ),
@@ -273,6 +269,8 @@ class _VirtualEventState extends State<VirtualEvent> {
     );
   }
 
+/*
+// input field with comment list footer
   Widget _footer() {
     return Container(
       alignment: Alignment.bottomCenter,
@@ -308,24 +306,12 @@ class _VirtualEventState extends State<VirtualEvent> {
       ),
     );
   }
+  */
 
 // on call end button click
   void _onCallEnd(BuildContext context) {
-    showAlertDialog(context);
-  }
-
-  // on mute button click
-  void _onToggleMute() {
-    setState(() {
-      muted = !muted;
-    });
-    // agoraEngine!.muteLocalAudioStream(muted);
-    agoraEngine!.enableLocalAudio(!muted);
-  }
-
-  // on switch camera button click
-  void _onSwitchCamera() {
-    agoraEngine!.switchCamera();
+    // showAlertDialog(context);
+    Navigator.pop(context);
   }
 
 // on screen dispose

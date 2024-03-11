@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/university.dart';
-import 'package:uni_connect/screens/home/student/university_profile_screen.dart';
+import 'package:uni_connect/screens/home/student/uni_profile/university_profile_screen.dart';
 
 class UniversitiesList extends StatefulWidget {
   // const UniversitiesList({super.key});
