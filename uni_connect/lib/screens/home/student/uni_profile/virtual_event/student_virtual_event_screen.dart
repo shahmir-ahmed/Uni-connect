@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/virtual_event.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class StudentVirtualEventScreen extends StatefulWidget {
-  StudentVirtualEventScreen({required this.channelName, required this.eventTitle});
+  StudentVirtualEventScreen(
+      {required this.channelName, required this.virtualEvent});
 
   // channel name
   String channelName;
 
   // event title
-  String eventTitle;
+  // String eventTitle;
+
+  // virtual event object
+  VirtualEvent virtualEvent;
 
   @override
   State<StudentVirtualEventScreen> createState() => _StudentVirtualEventState();
@@ -34,6 +39,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   bool isJoined = false; // Indicates if the local user has joined the channel
   bool isBroadcaster = false; // Client role
   RtcEngine? agoraEngine; // Agora engine instance
+  String commentText = '';
 
   @override
   void initState() {
@@ -81,7 +87,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       agoraEngine!.joinChannel(
           token: "",
           channelId: channelName,
-          uid: 0,
+          uid: 0, // generate random uid
           options: ChannelMediaOptions());
     } catch (e) {
       print('Error initializing Agora: $e');
@@ -105,7 +111,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["state"] = state;
         eventArgs["reason"] = reason;
         // eventCallBack("onConnectionStateChanged", eventArgs);
-        setState(() {});
+        // setState(() {});
       },
       // Occurs when a local user joins a channel
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
@@ -116,7 +122,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["connection"] = connection;
         eventArgs["elapsed"] = elapsed;
         // eventCallback("onJoinChannelSuccess", eventArgs);
-        setState(() {});
+        // setState(() {});
       },
       // Occurs when a remote user joins the channel
       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
@@ -128,7 +134,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["elapsed"] = elapsed;
         // eventCallback("onUserJoined", eventArgs);
-        setState(() {});
+        // setState(() {});
       },
       // Occurs when a remote user leaves the channel
       onUserOffline: (RtcConnection connection, int remoteUid,
@@ -140,12 +146,21 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["connection"] = connection;
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["reason"] = reason;
-        setState(() {});
+        // setState(() {});
         // eventCallback("onUserOffline", eventArgs);
+        // if host left the channel end the stream for students also
+        if (remoteUid == 1) {
+          Navigator.pop(
+              context); // screen will be disposed so will the agora engine ddestroy and other things
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Virtual event ended by the host!')),
+          );
+        }
       },
     );
   }
 
+/*
 // Render view from a remote user in the channel
   AgoraVideoView remoteVideoView(int remoteUid) {
     return AgoraVideoView(
@@ -156,8 +171,19 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       ),
     );
   }
+  */
 
-/*
+  // Render video from the local user in the channel
+  AgoraVideoView localVideoView() {
+    return AgoraVideoView(
+      controller: VideoViewController(
+        rtcEngine: agoraEngine!,
+        canvas: const VideoCanvas(uid: 1), // uid = 1 for host video
+      ),
+    );
+  }
+
+  /*
   // show alert dialog for logout button in drawer menu
   showAlertDialog(BuildContext context) {
     // set up the buttons
@@ -229,15 +255,17 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            remoteVideoView(1),
+            // remoteVideoView(1),
+            localVideoView(),
             _header(),
-            // _footer(),
+            _footer(),
           ],
         ),
       ),
     );
   }
 
+  // event screen header
   Widget _header() {
     return Container(
       alignment: Alignment.topRight,
@@ -248,7 +276,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
           Container(
             padding: EdgeInsets.only(left: 25.0),
             child: Text(
-              widget.eventTitle,
+              widget.virtualEvent.title as String,
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
           ),
@@ -269,44 +297,111 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
     );
   }
 
-/*
-// input field with comment list footer
+  // input field with comment list footer
   Widget _footer() {
     return Container(
+      height: 250.0,
+      color: Colors.pink,
       alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          RawMaterialButton(
-            onPressed: _onToggleMute,
-            child: Icon(
-              muted ? Icons.mic_off : Icons.mic,
-              color: muted ? Colors.white : Colors.blueAccent,
-              size: 20.0,
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      child: Column(children: [
+        // comments list
+        Container(
+          height: 150.0,
+          child: SingleChildScrollView(
+            child: Column(
+              children: widget.virtualEvent.comments!
+                  .map((commentMap) => Text(commentMap['comment']))
+                  .toList(),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
           ),
-          RawMaterialButton(
-            onPressed: _onSwitchCamera,
-            child: Icon(
-              Icons.switch_camera,
-              color: Colors.blueAccent,
-              size: 20.0,
+        ),
+        // input field row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // comment field
+            Container(
+              width: MediaQuery.of(context).size.width - 66,
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    commentText = value.trim();
+                  });
+                },
+              ),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          ),
-        ],
-      ),
+            // comment send button
+            // based on comment var show button
+            commentText == ''
+                ?
+                // cannot send button
+                MaterialButton(
+                    // color: Colors.pink,
+                    minWidth: 5,
+                    onPressed: () {
+                      // do nothing
+                    },
+                    child: Icon(Icons.send),
+                  )
+                // can send button
+                : MaterialButton(
+                    minWidth: 5,
+                    onPressed: () async {
+                      // get uni profile doc id
+                      // setState(() {
+                      // remove the comment_by_name key from map
+                      // postComments = postComments!
+                      //     .forEach((comment) =>
+                      //         comment.remove('comment_by_name'))
+                      //     .toList();
+
+                      // add the new comment in the list
+                      widget.virtualEvent.comments!.add({
+                        'comment': commentText,
+                        // 'comment_by_profile_id': widget.commenterProfileId,
+                      });
+
+                      // set name on new comment
+                      // _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
+                      // });
+
+                      // print(postComments);
+                      // call comment method
+                      String? result = await widget.virtualEvent.comment();
+
+                      if (result == 'success') {
+                        // clear comment text field
+
+                        // show comment posted message
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   SnackBar(content: Text('Comment posted!')),
+                        // );
+                      } else {
+                        // set latest commments color as red
+
+                        // show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error commenting')),
+                        );
+                      }
+
+                      // clear comment text field
+                      // setState(() {
+                      //   this.comment = '';
+                      // });
+                    },
+                    child: Icon(Icons.send),
+                  )
+          ],
+        ),
+      ]),
     );
   }
-  */
 
 // on call end button click
   void _onCallEnd(BuildContext context) {
@@ -319,6 +414,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    // print('in dispose func.');
     leave();
   }
 
@@ -344,5 +440,24 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       agoraEngine!.release();
       agoraEngine = null;
     }
+  }
+}
+
+// comments widget
+class EventComments extends StatefulWidget {
+  const EventComments({super.key});
+
+  @override
+  State<EventComments> createState() => _EventCommentsState();
+}
+
+class _EventCommentsState extends State<EventComments> {
+  // comments list
+  List<dynamic>? comments;
+
+  @override
+  Widget build(BuildContext context) {
+    // consume stream
+    return const Placeholder();
   }
 }

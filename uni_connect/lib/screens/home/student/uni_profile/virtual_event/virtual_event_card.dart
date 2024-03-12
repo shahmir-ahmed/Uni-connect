@@ -31,13 +31,19 @@ class VirtualEventCard extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
+                  // uni profile image
+                  Container(
+                    padding: EdgeInsets.only(right: 15.0),
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage('assets/uni.jpg'),
+                    ),
+                  ),
                   virtualEvent.status == 'live'
-                      ? Text('${uniName.substring(0, 20)} is live')
-                      : Text('${uniName.substring(0, 20)} was live')
+                      ? Text('${uniName.substring(0, 22)} is live')
+                      : Text('${uniName.substring(0, 22)} was live')
                 ],
               ),
 
@@ -47,13 +53,19 @@ class VirtualEventCard extends StatelessWidget {
                       height: 100.0,
                       width: 100.0,
                       child: MaterialButton(
-                        onPressed: () {
-                           Navigator.push(
+                          onPressed: () {
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => StudentVirtualEventScreen(channelName: virtualEvent.uniProfileId as String, eventTitle: virtualEvent.title as String)));
-                        },
-                        child: Image(image: AssetImage('assets/live-image.png'))))
+                                    builder: (context) =>
+                                        StudentVirtualEventScreen(
+                                            channelName: virtualEvent
+                                                .uniProfileId as String,
+                                            virtualEvent:
+                                                virtualEvent)));
+                          },
+                          child: Image(
+                              image: AssetImage('assets/live-image.png'))))
                   :
                   // if event has ended
                   Container(

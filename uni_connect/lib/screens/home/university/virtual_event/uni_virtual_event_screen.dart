@@ -87,7 +87,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
       agoraEngine!.joinChannel(
           token: "",
           channelId: channelName,
-          uid: 1,
+          uid: 1, // host uid
           options: ChannelMediaOptions());
 
       // create a document in virtual_event collections with stream title, uni id and status
@@ -308,6 +308,27 @@ class _VirtualEventState extends State<VirtualEventScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          // stream setup of event's comments
+          Container(
+            height: 150.0,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text('comment 1'),
+                  Text('comment 2'),
+                  Text('comment 3'),
+                  Text('comment 4'),
+                  Text('comment 5'),
+                  Text('comment 6'),
+                  Text('comment 7'),
+                  Text('comment 8'),
+                  Text('comment 9'),
+                  ],
+              ),
+            ),
+          ),
+
+          // mic button
           RawMaterialButton(
             onPressed: _onToggleMute,
             child: Icon(
@@ -320,6 +341,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
             fillColor: muted ? Colors.blueAccent : Colors.white,
             padding: const EdgeInsets.all(12.0),
           ),
+          // camera button
           RawMaterialButton(
             onPressed: _onSwitchCamera,
             child: Icon(

@@ -25,6 +25,19 @@ class _VirtualEventCardsState extends State<VirtualEventCards> {
 
     // print('virtualEvents: $virtualEvents');
 
+  // sort to show live events on top
+    if (virtualEvents != null) {
+      virtualEvents.sort((a, b) {
+        if (a.status == 'live') {
+          return -1; // 'live' status comes before 'not live'
+        } else if (b.status == 'live') {
+          return 1; // 'live' status comes before 'not live'
+        } else {
+          return 0;
+        }
+      });
+    }
+
     // check for this uni virtual events, filter out those and show only those
     return virtualEvents != null
         ? SingleChildScrollView(

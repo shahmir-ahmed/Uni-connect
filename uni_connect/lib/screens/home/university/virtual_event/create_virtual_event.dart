@@ -100,7 +100,7 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               // If the Future is complete, display the preview.
-                              return CameraPreview(_controller);
+                              return Center(child: CameraPreview(_controller));
                             } else {
                               // Otherwise, display a loading indicator.
                               return Container(

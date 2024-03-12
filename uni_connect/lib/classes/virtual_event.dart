@@ -6,6 +6,7 @@ class VirtualEvent {
   String? title;
   String? uniProfileId;
   String? status;
+  List<dynamic>? comments;
 
   final virtualEventsCollection =
       FirebaseFirestore.instance.collection('virtual_events'); // collection
@@ -19,7 +20,8 @@ class VirtualEvent {
       {required this.eventId,
       required this.title,
       required this.status,
-      required this.uniProfileId});
+      required this.uniProfileId,
+      required this.comments});
 
   VirtualEvent.onlyId({required this.eventId}); // only event id constructor
 
@@ -29,11 +31,15 @@ class VirtualEvent {
   // create virtual event document
   Future<String> createVirtualEvent() async {
     try {
-      final docRef = await virtualEventsCollection.add(
-          {'title': title, 'status': 'live', 'uni_profile_id': uniProfileId});
+      final docRef = await virtualEventsCollection.add({
+        'title': title,
+        'status': 'live',
+        'uni_profile_id': uniProfileId,
+        'comments': []
+      });
 
       return docRef
-          .id; // return doc id so that it can be used to update the status of stream when streamm ends
+          .id; // return doc id so that it can be used to update the status of stream when stream ends
     } catch (e) {
       print('Error in createVirtualEvent: $e');
       return 'error';
@@ -56,13 +62,18 @@ class VirtualEvent {
 
   // virtual events documents collection snapshot to list of type virtual event objects
   _snapshotToVirtualEventsList(QuerySnapshot<Map<String, dynamic>> snapshot) {
-    return snapshot.docs
-        .map((doc) => VirtualEvent(
-            eventId: doc.id,
-            title: doc.get('title') ?? '',
-            status: doc.get('status') ?? '',
-            uniProfileId: doc.get('uni_profile_id') ?? ''))
-        .toList();
+    try {
+      return snapshot.docs
+          .map((doc) => VirtualEvent(
+              eventId: doc.id,
+              title: doc.get('title') ?? '',
+              status: doc.get('status') ?? '',
+              uniProfileId: doc.get('uni_profile_id') ?? '',
+              comments: doc.get('comments') ?? []))
+          .toList();
+    } catch (e) {
+      print('Error in _snapshotToVirtualEventsList $e');
+    }
   }
 
   // return stream of list type virtual event objects
@@ -74,6 +85,18 @@ class VirtualEvent {
     } catch (e) {
       print('Error in getVirtualEventsStream: $e');
       return null;
+    }
+  }
+
+  // add new comment
+  Future<String> comment() async {
+    try {
+      // update the comments field on this document
+      await virtualEventsCollection.doc(eventId).update({'comments': comments});
+      return 'success';
+    } catch (e) {
+      print('Error in comment(): $e');
+      return 'error';
     }
   }
 }
