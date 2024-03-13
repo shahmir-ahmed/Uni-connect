@@ -25,6 +25,9 @@ class VirtualEvent {
 
   VirtualEvent.onlyId({required this.eventId}); // only event id constructor
 
+  VirtualEvent.onlyComments(
+      {required this.comments}); // only comments constructor
+
   // empty constructor
   VirtualEvent.empty();
 
@@ -84,6 +87,29 @@ class VirtualEvent {
           .map((snapshot) => _snapshotToVirtualEventsList(snapshot));
     } catch (e) {
       print('Error in getVirtualEventsStream: $e');
+      return null;
+    }
+  }
+
+  // virtual event document snapshot to virtual event object having comments only
+  _snapshotToVirtualEvent(snapshot) {
+    try {
+      return VirtualEvent.onlyComments(
+          comments: snapshot.get('comments') ?? []);
+    } catch (e) {
+      print('Error in _snapshotToVirtualEvent $e');
+    }
+  }
+
+  // return stream of type virtual event object having comments only
+  Stream<VirtualEvent>? getVirtualEventCommentsStream() {
+    try {
+      return virtualEventsCollection
+          .doc(eventId)
+          .snapshots()
+          .map((snapshot) => _snapshotToVirtualEvent(snapshot));
+    } catch (e) {
+      print('Error in getVirtualEventCommentsStream: $e');
       return null;
     }
   }

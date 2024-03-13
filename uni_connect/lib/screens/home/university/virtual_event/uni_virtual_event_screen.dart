@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/virtual_event.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
@@ -103,7 +104,9 @@ class _VirtualEventState extends State<VirtualEventScreen> {
           SnackBar(content: Text('Error going live!')),
         );
       } else {
-        eventId = result; // set the id
+        setState(() {
+          eventId = result; // set the id
+        });
       }
     } catch (e) {
       print('Error initializing Agora: $e');
@@ -303,57 +306,54 @@ class _VirtualEventState extends State<VirtualEventScreen> {
 
   Widget _footer() {
     return Container(
-      alignment: Alignment.bottomCenter,
+      // color: Colors.brown,
+      alignment: Alignment.bottomLeft,
       padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end, // this done
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // stream setup of event's comments
           Container(
             height: 150.0,
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text('comment 1'),
-                  Text('comment 2'),
-                  Text('comment 3'),
-                  Text('comment 4'),
-                  Text('comment 5'),
-                  Text('comment 6'),
-                  Text('comment 7'),
-                  Text('comment 8'),
-                  Text('comment 9'),
-                  ],
-              ),
-            ),
+                child: eventId.isEmpty
+                    ? Container()
+                    : StreamProvider.value(
+                        value: VirtualEvent.onlyId(eventId: eventId)
+                            .getVirtualEventCommentsStream(),
+                        initialData: null,
+                        child: EventComments())),
           ),
 
           // mic button
-          RawMaterialButton(
-            onPressed: _onToggleMute,
-            child: Icon(
-              muted ? Icons.mic_off : Icons.mic,
-              color: muted ? Colors.white : Colors.blueAccent,
-              size: 20.0,
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            RawMaterialButton(
+              onPressed: _onToggleMute,
+              child: Icon(
+                muted ? Icons.mic_off : Icons.mic,
+                color: muted ? Colors.white : Colors.blueAccent,
+                size: 20.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: muted ? Colors.blueAccent : Colors.white,
+              padding: const EdgeInsets.all(12.0),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          ),
-          // camera button
-          RawMaterialButton(
-            onPressed: _onSwitchCamera,
-            child: Icon(
-              Icons.switch_camera,
-              color: Colors.blueAccent,
-              size: 20.0,
+            // camera button
+            RawMaterialButton(
+              onPressed: _onSwitchCamera,
+              child: Icon(
+                Icons.switch_camera,
+                color: Colors.blueAccent,
+                size: 20.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.white,
+              padding: const EdgeInsets.all(12.0),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          ),
+          ]),
         ],
       ),
     );
@@ -408,5 +408,49 @@ class _VirtualEventState extends State<VirtualEventScreen> {
       agoraEngine!.release();
       agoraEngine = null;
     }
+  }
+}
+
+// comments widget
+class EventComments extends StatefulWidget {
+  const EventComments({super.key});
+
+  @override
+  State<EventComments> createState() => _EventCommentsState();
+}
+
+class _EventCommentsState extends State<EventComments> {
+  // comments list
+  // List<dynamic>? comments;
+
+  @override
+  Widget build(BuildContext context) {
+    // consume stream
+    final eventObj = Provider.of<VirtualEvent?>(context);
+
+    print(eventObj);
+
+    return eventObj != null
+        ? eventObj.comments!.isEmpty
+            ? Container()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: eventObj.comments!
+                    .map((commentMap) =>
+                        // Text(commentMap['comment'])
+                        ListTile(
+                          leading: CircleAvatar(
+                            radius: 15.0,
+                            backgroundImage: AssetImage('assets/student.jpg'),
+                          ),
+                          title: Text(
+                            'Name',
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                          subtitle: Text(commentMap['comment']),
+                        ))
+                    .toList(),
+              )
+        : Container();
   }
 }

@@ -23,7 +23,7 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
 
   // for front camera view
   late CameraController _controller;
-  late Future<void>? _initializeControllerFuture;
+  Future<void>? _initializeControllerFuture;
 
   late List<CameraDescription> cameras;
 

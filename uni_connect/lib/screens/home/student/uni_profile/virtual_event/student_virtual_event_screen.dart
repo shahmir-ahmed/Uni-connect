@@ -39,6 +39,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   bool isJoined = false; // Indicates if the local user has joined the channel
   bool isBroadcaster = false; // Client role
   RtcEngine? agoraEngine; // Agora engine instance
+
   String commentText = '';
 
   @override
@@ -178,7 +179,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: agoraEngine!,
-        canvas: const VideoCanvas(uid: 1), // uid = 1 for host video
+        canvas: const VideoCanvas(
+            uid:
+                1), // uid = 1 for host video (b/c I have set this uid for host)
       ),
     );
   }
@@ -244,6 +247,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   @override
   Widget build(BuildContext context) {
     // return agoraEngine != null ? localVideoView() : Container();
+
     if (agoraEngine == null) {
       return Scaffold(
           body: Center(
@@ -251,12 +255,16 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         text: '',
       )));
     }
+
     return Scaffold(
       body: Center(
         child: Stack(
           children: <Widget>[
             // remoteVideoView(1),
             localVideoView(),
+            // Container(
+            //     alignment: Alignment.bottomCenter,
+            //     child: Image(image: AssetImage('assets/live_video_image.jpg'))),
             _header(),
             _footer(),
           ],
@@ -300,106 +308,145 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   // input field with comment list footer
   Widget _footer() {
     return Container(
-      height: 250.0,
-      color: Colors.pink,
+      // height: 250.0,
+      // color: Colors.pink,
       alignment: Alignment.bottomCenter,
       padding: const EdgeInsets.symmetric(vertical: 18),
-      child: Column(children: [
-        // comments list
-        Container(
-          height: 150.0,
-          child: SingleChildScrollView(
-            child: Column(
-              children: widget.virtualEvent.comments!
-                  .map((commentMap) => Text(commentMap['comment']))
-                  .toList(),
-            ),
-          ),
-        ),
-        // input field row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            // comment field
+            // comments list
             Container(
-              width: MediaQuery.of(context).size.width - 66,
-              child: TextFormField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 7.0),
+              decoration: BoxDecoration(
+                  // color: Color.fromARGB(255, 237, 237, 237),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              height: 200.0,
+              width: 250.0,
+              child: SingleChildScrollView(
+                // controller: ScrollController(onAttach: (position) => ,),
+                child: Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: widget.virtualEvent.comments!
+                        .map((commentMap) =>
+                            // Text(commentMap['comment'])
+                            ListTile(
+                              leading: CircleAvatar(
+                                radius: 15.0,
+                                backgroundImage:
+                                    AssetImage('assets/student.jpg'),
+                              ),
+                              title: Text(
+                                'Name',
+                                style: TextStyle(fontSize: 12.0),
+                              ),
+                              subtitle: Text(commentMap['comment']),
+                            ))
+                        .toList(),
+                  ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    commentText = value.trim();
-                  });
-                },
               ),
             ),
-            // comment send button
-            // based on comment var show button
-            commentText == ''
-                ?
-                // cannot send button
-                MaterialButton(
-                    // color: Colors.pink,
-                    minWidth: 5,
-                    onPressed: () {
-                      // do nothing
-                    },
-                    child: Icon(Icons.send),
-                  )
-                // can send button
-                : MaterialButton(
-                    minWidth: 5,
-                    onPressed: () async {
-                      // get uni profile doc id
-                      // setState(() {
-                      // remove the comment_by_name key from map
-                      // postComments = postComments!
-                      //     .forEach((comment) =>
-                      //         comment.remove('comment_by_name'))
-                      //     .toList();
-
-                      // add the new comment in the list
-                      widget.virtualEvent.comments!.add({
-                        'comment': commentText,
-                        // 'comment_by_profile_id': widget.commenterProfileId,
+            // input field, button row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // student profile pic
+                // CircleAvatar(
+                //   backgroundImage: AssetImage('assets/student.jpg'),
+                // ),
+                // comment field
+                Container(
+                  padding: EdgeInsets.only(left: 7.0),
+                  width: MediaQuery.of(context).size.width - 100,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      constraints: BoxConstraints(maxHeight: 47.0),
+                      contentPadding: EdgeInsets.all(10.0),
+                      border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(10.0))),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        commentText = value.trim();
                       });
-
-                      // set name on new comment
-                      // _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
-                      // });
-
-                      // print(postComments);
-                      // call comment method
-                      String? result = await widget.virtualEvent.comment();
-
-                      if (result == 'success') {
-                        // clear comment text field
-
-                        // show comment posted message
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   SnackBar(content: Text('Comment posted!')),
-                        // );
-                      } else {
-                        // set latest commments color as red
-
-                        // show error message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error commenting')),
-                        );
-                      }
-
-                      // clear comment text field
-                      // setState(() {
-                      //   this.comment = '';
-                      // });
                     },
-                    child: Icon(Icons.send),
-                  )
-          ],
-        ),
-      ]),
+                  ),
+                ),
+                // comment send button
+                // based on comment var show button
+                commentText == ''
+                    ?
+                    // cannot send button
+                    MaterialButton(
+                        // color: Colors.pink,
+                        minWidth: 5,
+                        onPressed: () {
+                          // do nothing
+                        },
+                        child: Icon(Icons.send),
+                      )
+                    // can send button
+                    : MaterialButton(
+                        minWidth: 5,
+                        onPressed: () async {
+                          // get uni profile doc id
+                          // setState(() {
+                          // remove the comment_by_name key from map
+                          // postComments = postComments!
+                          //     .forEach((comment) =>
+                          //         comment.remove('comment_by_name'))
+                          //     .toList();
+
+                          // add the new comment in the list
+                          widget.virtualEvent.comments!.add({
+                            'comment': commentText,
+                            // 'comment_by_profile_id': widget.commenterProfileId,
+                          });
+
+                          // set name on new comment
+                          // _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
+                          // });
+
+                          // print(postComments);
+                          // call comment method
+                          String? result = await widget.virtualEvent.comment();
+
+                          if (result == 'success') {
+                            // clear comment text field
+
+                            // clear comment text
+                            setState(() {
+                              commentText = '';
+                            });
+
+                            // show comment posted message
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(content: Text('Comment posted!')),
+                            // );
+                          } else {
+                            // set latest commments color as red
+
+                            // show error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error commenting')),
+                            );
+                          }
+
+                          // clear comment text field
+                          // setState(() {
+                          //   this.comment = '';
+                          // });
+                        },
+                        child: Icon(Icons.send, color: Colors.blue),
+                      )
+              ],
+            ),
+          ]),
     );
   }
 
@@ -440,24 +487,5 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       agoraEngine!.release();
       agoraEngine = null;
     }
-  }
-}
-
-// comments widget
-class EventComments extends StatefulWidget {
-  const EventComments({super.key});
-
-  @override
-  State<EventComments> createState() => _EventCommentsState();
-}
-
-class _EventCommentsState extends State<EventComments> {
-  // comments list
-  List<dynamic>? comments;
-
-  @override
-  Widget build(BuildContext context) {
-    // consume stream
-    return const Placeholder();
   }
 }
