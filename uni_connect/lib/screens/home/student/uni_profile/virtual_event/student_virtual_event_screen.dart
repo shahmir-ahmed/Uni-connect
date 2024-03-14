@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
+import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/virtual_event.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class StudentVirtualEventScreen extends StatefulWidget {
   StudentVirtualEventScreen(
-      {required this.channelName, required this.virtualEvent});
+      {required this.channelName,
+      required this.virtualEvent,
+      required this.stdProfileId});
 
   // channel name
   String channelName;
 
-  // event title
-  // String eventTitle;
-
   // virtual event object
   VirtualEvent virtualEvent;
+
+  // student profile id
+  String stdProfileId;
 
   @override
   State<StudentVirtualEventScreen> createState() => _StudentVirtualEventState();
@@ -40,18 +42,103 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   bool isBroadcaster = false; // Client role
   RtcEngine? agoraEngine; // Agora engine instance
 
-  String commentText = '';
+  // List<dynamic>? eventComments; // event comments list
+
+  // comment by set check
+  // bool commentBySet = false;
+
+  String commentText = ''; // comment field text
+
+  // controller for comment field to clear it
+  final TextEditingController _textEditingController = TextEditingController();
+
+  late ScrollController _scrollController;
+
+  double _previousMaxScrollExtent = 0.0;
+
+  // function to clear comment field using controller
+  void clearTextField() {
+    _textEditingController.clear();
+  }
+
+/*
+  // get, create and set new field i.e. comment by' name in comments list using the profile id with the comment
+  _setCommentByOnComment() async {
+    // for loop to iterate through every comment
+    for (int i = 0; i < eventComments!.length; i++) {
+      // this creates a new pair in map, now set the name at the new key's value
+      eventComments![i]['comment_by_name'] = await StudentProfile.empty()
+          .profileCollection
+          // using profile id with the comment get the student profile doc
+          .doc(eventComments![i]['comment_by_profile_id'])
+          .get()
+          // when the doc is fetched return the value at the name field in the doc ie. the name of student
+          .then((documentRef) => documentRef.get('name'));
+    }
+
+    // now set the flag as true
+    setState(() {
+      commentBySet = true;
+    });
+  }
+  */
+
+  bool scrolled = false;
 
   @override
   void initState() {
     super.initState();
+
+    _scrollController = ScrollController();
+/*
+    // when widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('here');
+      // Scroll to the last item when the widget is built
+
+      _scrollController.addListener(() {
+        print('in listener');
+        if (_scrollController.hasClients && !scrolled) {
+          _scrollToBottom();
+          scrolled = true;
+        }
+        // _scrollListener();
+        if (_scrollController.hasClients &&
+            _scrollController.position.maxScrollExtent >
+                _previousMaxScrollExtent) {
+          _scrollToBottom();
+          print('greater');
+        }
+        if (_scrollController.hasClients) {
+          _previousMaxScrollExtent = _scrollController.position.maxScrollExtent;
+        }
+      });
+    });
+    */
     // Initialize Agora SDK
     initializeAgora();
+    // print('here');
+  }
 
-    // set channel name
-    channelName = widget.channelName;
+/*
+  void _scrollListener() {
+    // WidgetsBinding.instance!.addPostFrameCallback((_) {
+    if (_scrollController.position.maxScrollExtent > _previousMaxScrollExtent) {
+      _scrollToBottom();
+    }
+    _previousMaxScrollExtent = _scrollController.position.maxScrollExtent;
+    print('here');
+    // });
+  }
+  */
 
-    // print('channelName: $channelName');
+  void _scrollToBottom() {
+    print('scroll to bottom');
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> initializeAgora() async {
@@ -69,9 +156,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
 
       await agoraEngine!.initialize(RtcEngineContext(appId: agoraAppId));
 
-      // if (currentProduct != ProductName.voiceCalling) {
       await agoraEngine!.enableVideo();
-      // }
 
       await agoraEngine!
           .setChannelProfile(ChannelProfileType.channelProfileLiveBroadcasting);
@@ -84,12 +169,21 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       // Register the event handler
       agoraEngine!.registerEventHandler(getEventHandler());
 
+      // set channel name
+      channelName = widget.channelName;
+
       // join the channel
-      agoraEngine!.joinChannel(
+      await agoraEngine!.joinChannel(
           token: "",
           channelId: channelName,
           uid: 0, // generate random uid
           options: ChannelMediaOptions());
+
+      // set event comments
+      // eventComments = widget.virtualEvent.comments;
+
+      // set comment by on comments
+      // _setCommentByOnComment();
     } catch (e) {
       print('Error initializing Agora: $e');
     }
@@ -186,63 +280,6 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
     );
   }
 
-  /*
-  // show alert dialog for logout button in drawer menu
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text("No"),
-      onPressed: () {
-        // close the alert dialog
-        Navigator.of(context).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text(
-        "Yes",
-      ),
-      onPressed: () async {
-        // close the alert dialog
-        Navigator.of(context).pop();
-
-        // update stream status to ended
-        final result =
-            VirtualEvent.onlyId(eventId: eventId).updateVirtualEventStatus();
-
-        if (result == 'error') {
-          print('Error updating stream status');
-        }
-
-        // close live stream screen
-        Navigator.of(context).pop();
-
-        // message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Virtual event ended!')),
-        );
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Leave virtual event?"),
-      content: Text("Are you sure you want to leave virtual event?"),
-      actions: [
-        continueButton,
-        cancelButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-  */
-
   // build method
   @override
   Widget build(BuildContext context) {
@@ -255,7 +292,10 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         text: '',
       )));
     }
+    // print('max: ${_scrollController.position.maxScrollExtent}');
+    // print('current: $_previousMaxScrollExtent');
 
+    // if not null then return view
     return Scaffold(
       body: Center(
         child: Stack(
@@ -281,6 +321,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          // event title
           Container(
             padding: EdgeInsets.only(left: 25.0),
             child: Text(
@@ -288,6 +329,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
           ),
+          // leave stream button
           RawMaterialButton(
             onPressed: () => _onCallEnd(context),
             child: Icon(
@@ -325,22 +367,21 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
               height: 200.0,
               width: 250.0,
               child: SingleChildScrollView(
-                // controller: ScrollController(onAttach: (position) => ,),
+                controller: _scrollController,
                 child: Container(
                   padding: EdgeInsets.all(5.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    // using the event comments in which coment by name is set to display comments
                     children: widget.virtualEvent.comments!
-                        .map((commentMap) =>
-                            // Text(commentMap['comment'])
-                            ListTile(
+                        .map((commentMap) => ListTile(
                               leading: CircleAvatar(
                                 radius: 15.0,
                                 backgroundImage:
                                     AssetImage('assets/student.jpg'),
                               ),
                               title: Text(
-                                'Name',
+                                commentMap['comment_by_name'],
                                 style: TextStyle(fontSize: 12.0),
                               ),
                               subtitle: Text(commentMap['comment']),
@@ -363,6 +404,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
                   padding: EdgeInsets.only(left: 7.0),
                   width: MediaQuery.of(context).size.width - 100,
                   child: TextFormField(
+                    controller: _textEditingController,
                     decoration: InputDecoration(
                       constraints: BoxConstraints(maxHeight: 47.0),
                       contentPadding: EdgeInsets.all(10.0),
@@ -394,23 +436,32 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
                     : MaterialButton(
                         minWidth: 5,
                         onPressed: () async {
-                          // get uni profile doc id
-                          // setState(() {
-                          // remove the comment_by_name key from map
-                          // postComments = postComments!
-                          //     .forEach((comment) =>
-                          //         comment.remove('comment_by_name'))
-                          //     .toList();
+                          // get student name using id and set
+                          String commentByName = await StudentProfile.empty()
+                              .profileCollection
+                              // using profile id with the comment get the student profile doc
+                              .doc(widget.stdProfileId)
+                              .get()
+                              // when the doc is fetched return the value at the name field in the doc ie. the name of student
+                              .then((documentRef) => documentRef.get('name'));
 
-                          // add the new comment in the list
+                          // add the new comment map in the list
                           widget.virtualEvent.comments!.add({
                             'comment': commentText,
-                            // 'comment_by_profile_id': widget.commenterProfileId,
+                            'comment_by_name': commentByName,
+                            'comment_by_profile_id': widget.stdProfileId,
+                          }); // simple add comment_by_name by getting from db
+
+                          /*
+
+                          setState(() {
+                            // set comment by set as false (so that again show loading when new comment comes and )
+                            commentBySet = false;
                           });
 
                           // set name on new comment
-                          // _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
-                          // });
+                          _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
+                          */
 
                           // print(postComments);
                           // call comment method
@@ -418,16 +469,12 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
 
                           if (result == 'success') {
                             // clear comment text field
+                            clearTextField();
 
                             // clear comment text
                             setState(() {
                               commentText = '';
                             });
-
-                            // show comment posted message
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //   SnackBar(content: Text('Comment posted!')),
-                            // );
                           } else {
                             // set latest commments color as red
 
@@ -436,11 +483,6 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
                               SnackBar(content: Text('Error commenting')),
                             );
                           }
-
-                          // clear comment text field
-                          // setState(() {
-                          //   this.comment = '';
-                          // });
                         },
                         child: Icon(Icons.send, color: Colors.blue),
                       )

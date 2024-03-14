@@ -315,7 +315,9 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         children: <Widget>[
           // stream setup of event's comments
           Container(
-            height: 150.0,
+            height: 200.0,
+            width: 250.0,
+            margin: EdgeInsets.symmetric(horizontal: 12.0),
             child: SingleChildScrollView(
                 child: eventId.isEmpty
                     ? Container()
@@ -428,7 +430,7 @@ class _EventCommentsState extends State<EventComments> {
     // consume stream
     final eventObj = Provider.of<VirtualEvent?>(context);
 
-    print(eventObj);
+    // print(eventObj);
 
     return eventObj != null
         ? eventObj.comments!.isEmpty
@@ -444,7 +446,7 @@ class _EventCommentsState extends State<EventComments> {
                             backgroundImage: AssetImage('assets/student.jpg'),
                           ),
                           title: Text(
-                            'Name',
+                            commentMap['comment_by_name'],
                             style: TextStyle(fontSize: 12.0),
                           ),
                           subtitle: Text(commentMap['comment']),

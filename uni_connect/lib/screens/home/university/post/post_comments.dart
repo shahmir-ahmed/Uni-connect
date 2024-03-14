@@ -53,6 +53,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 }
 
+// inner comment screen
 class InnerCommentsScreen extends StatefulWidget {
   // const InnerCommentsScreen({super.key});
   InnerCommentsScreen(

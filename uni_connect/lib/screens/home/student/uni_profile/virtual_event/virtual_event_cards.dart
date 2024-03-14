@@ -5,13 +5,16 @@ import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/virtu
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class VirtualEventCards extends StatefulWidget {
-  VirtualEventCards({required this.uniName, required this.uniProfileId});
+  VirtualEventCards({required this.uniName, required this.uniProfileId, required this.stdProfileId});
 
   // uni profile id
   String uniProfileId;
 
   // uni name
   String uniName;
+
+  // student profile id
+  String stdProfileId;
 
   @override
   State<VirtualEventCards> createState() => _VirtualEventCardsState();
@@ -25,7 +28,7 @@ class _VirtualEventCardsState extends State<VirtualEventCards> {
 
     // print('virtualEvents: $virtualEvents');
 
-  // sort to show live events on top
+    // sort to show live events on top
     if (virtualEvents != null) {
       virtualEvents.sort((a, b) {
         if (a.status == 'live') {
@@ -47,6 +50,7 @@ class _VirtualEventCardsState extends State<VirtualEventCards> {
                   .map((event) => VirtualEventCard(
                         uniName: widget.uniName,
                         virtualEvent: event,
+                        stdProfileId: widget.stdProfileId
                       ))
                   .toList(),
             ),

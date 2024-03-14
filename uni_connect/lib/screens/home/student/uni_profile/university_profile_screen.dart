@@ -325,14 +325,16 @@ class _UniProfileState extends State<UniProfileScreen> {
                       height: 100.0,
                       // color: Colors.pink,
                       // all virtual events stream provider setup
-                      child: StreamProvider.value(
+                      child: stdProfileDocId !=null ? StreamProvider.value(
                           value:
                               VirtualEvent.empty().getVirtualEventsStream(),
                           initialData: null,
                           child: VirtualEventCards(
                             uniName: widget.uniProfile!.name,
                             uniProfileId: widget.uniProfile!.profileDocId,
-                          ))),
+                            stdProfileId: stdProfileDocId as String
+                          )) : Container()
+                          ),
 
                   // third tab bar view widget
                   Container(
