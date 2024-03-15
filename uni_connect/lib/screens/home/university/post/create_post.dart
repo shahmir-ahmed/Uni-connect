@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
@@ -19,6 +20,9 @@ class CreatePost extends StatefulWidget {
 }
 
 class _CreatePostState extends State<CreatePost> {
+  // firebase messaging object
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   // form key
   final _formKey = GlobalKey<FormState>();
 
@@ -211,6 +215,27 @@ class _CreatePostState extends State<CreatePost> {
       Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
+    }
+  }
+
+  // send notification to followers
+  void _sendNotification() async {
+    try {
+      // Sending message payload
+      Map<String, dynamic> message = {
+        "notification": {
+          "title": "New Post Uploaded",
+          "body": "Check out the latest post!"
+        },
+        "topic": "followers" // Topic to which the notification will be sent
+      };
+
+      // Send the notification
+      // await _firebaseMessaging.
+
+      print("Notification sent successfully!");
+    } catch (e) {
+      print("Error sending notification: $e");
     }
   }
 
@@ -456,6 +481,9 @@ class _CreatePostState extends State<CreatePost> {
                                       }
                                       // post doc and image/video saved in db
                                       else {
+                                        // send notifications to all the users who are subscribed to profileId_followers topic
+
+
                                         Navigator.pop(
                                             context); // close progress screen
                                         // close the current create post screen

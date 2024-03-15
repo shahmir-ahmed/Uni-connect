@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FollowUnFollowButton extends StatefulWidget {
   FollowUnFollowButton(
@@ -16,6 +17,9 @@ class FollowUnFollowButton extends StatefulWidget {
 class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
   // student is following this uni flag
   bool following = false;
+
+  // firebase messaging instance
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   showAlertDialog(
       BuildContext context, String message, List<dynamic> followingList) {
@@ -45,35 +49,39 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
 
           // add this uni profile id in student's following_unis list
           // if (widget.stdProfileDocId != null) {
-            String result =
-                StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
-                    .followUnFollowUni(followingList);
+          String result =
+              StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+                  .followUnFollowUni(followingList);
 
           // add this student profile id in uni's followers list
-            // String result2 =
-            //     StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
-            //         .followUnFollowUni(followingList);
+          // String result2 =
+          //     StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+          //         .followUnFollowUni(followingList);
 
-            // list updated successfullly
-            if (result == "success") {
+          // list updated successfullly
+          if (result == "success") {
             // if (result == "success" && result2 == "success") {
-              // set following as yes means show unfollow button
-              setState(() {
-                following = true;
-              });
+            // set following as yes means show unfollow button
+            setState(() {
+              following = true;
+            });
 
-              // hide any current snackbar shown
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              // show new snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${message}ed successfully!')));
-            } else {
-              // hide any current snackbar shown
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              // show new snackbar
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Error ${message.toLowerCase()}ing!')));
-            }
+            // subscribe user to uniProfileId_followers topic
+            await _firebaseMessaging
+                .subscribeToTopic('${widget.uniProfileId}_followers');
+
+            // hide any current snackbar shown
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            // show new snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${message}ed successfully!')));
+          } else {
+            // hide any current snackbar shown
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            // show new snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error ${message.toLowerCase()}ing!')));
+          }
           // }
         } else {
           // remove this uni profile id from student's following_unis list
@@ -93,6 +101,10 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
               setState(() {
                 following = false;
               });
+
+              // unsubscribe user to uniProfileId_followers topic
+              await _firebaseMessaging
+                ..unsubscribeFromTopic('${widget.uniProfileId}_followers');
 
               // hide any current snackbar shown
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
