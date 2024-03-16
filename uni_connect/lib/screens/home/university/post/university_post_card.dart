@@ -312,7 +312,9 @@ class _PostContentState extends State<PostContent> {
                     width: 10.0,
                   ),
                   // uni name text
-                  Text('${widget.uniName!.substring(0, 28)}...'),
+                  widget.uniName!.length > 28
+                      ? Text('${widget.uniName!.substring(0, 28)}...')
+                      : Text('${widget.uniName!}'),
                 ],
               ),
               // row inside three dot menu for managing post

@@ -67,6 +67,10 @@ dependencies:
   agora_rtc_engine: ^6.3.0
   # firebase messaging package for puch notifications
   firebase_messaging: ^14.7.20
+  # local notifciations package
+  flutter_local_notifications: ^17.0.0
+  # http package
+  http: ^1.2.1
 
 
 # for panorama package

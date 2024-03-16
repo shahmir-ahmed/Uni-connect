@@ -71,7 +71,7 @@ class _WrapperState extends State<Wrapper> {
         userType = type!;
       });
       // show welcome message to student/uni (after 4 seconds i.e. after splash screen ends)
-      Future.delayed(Duration(seconds: 4), () {
+      Future.delayed(Duration(seconds: 2), () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Welcome back $userEmail!')),
         );

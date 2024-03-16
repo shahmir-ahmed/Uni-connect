@@ -82,6 +82,7 @@ class _UniversityHomeState extends State<UniversityHome> {
                         MaterialPageRoute(
                             builder: (context) => CreatePost(
                                   uniProfileDocId: uniProfile!.profileDocId,
+                                  uniName: uniProfile!.name,
                                 )));
                   },
                   style: buttonStyle,
@@ -225,7 +226,7 @@ class _UniversityHomeState extends State<UniversityHome> {
           else if (status.isGranted) {
             // Now show create virtual event widget
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
+                MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
           }
         }
         // Permission already granted, proceed with microphone usage
@@ -233,7 +234,7 @@ class _UniversityHomeState extends State<UniversityHome> {
           // Code to use the camera
           // show create virtual event screen
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
         }
       }
     }
@@ -291,7 +292,7 @@ class _UniversityHomeState extends State<UniversityHome> {
         else if (status.isGranted) {
           // Now show create virtual event widget
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
+              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
         }
       }
       // Permission already granted, proceed with microphone usage
@@ -299,7 +300,7 @@ class _UniversityHomeState extends State<UniversityHome> {
         // Code to use the camera
         // show create virtual event screen
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId,)));
+            MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
       }
     }
   }

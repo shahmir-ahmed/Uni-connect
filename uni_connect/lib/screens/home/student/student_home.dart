@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/post.dart';
@@ -130,6 +131,8 @@ class _StudentHomeState extends State<StudentHome> {
     //     resumeCallBack: () async => setState(() {
     //           print("here");
     //         })));
+
+    // IT DOESNT MATTER WHERE YOU PUT THESE LISTENERS (beacuse notification was also sent when I was at main screen)
   }
 
   @override
@@ -204,8 +207,10 @@ class _StudentHomeState extends State<StudentHome> {
       // Drawer Menu
       drawer: Drawer(
         width: 280.0,
+        backgroundColor: Colors.white,
         child: SingleChildScrollView(
           child: Container(
+            // color: Colors.white,
             child: Column(
               children: [
                 MyHeaderDrawer(),
@@ -221,6 +226,7 @@ class _StudentHomeState extends State<StudentHome> {
   // Drawer List for drawer menu
   Widget MyDrawerList() {
     return Container(
+      // color: Colors.white,
       padding: EdgeInsets.only(
         top: 15,
       ),
@@ -231,7 +237,7 @@ class _StudentHomeState extends State<StudentHome> {
           menuItem("Search", Icons.search_outlined),
           menuItem("My List", Icons.list_alt_outlined),
           Divider(),
-          menuItem("Notifications", Icons.notifications_outlined),
+          // menuItem("Notifications", Icons.notifications_outlined),
           menuItem("Settings", Icons.settings_outlined),
           menuItem("Logout", Icons.logout_outlined),
         ],
@@ -282,7 +288,7 @@ class _StudentHomeState extends State<StudentHome> {
               Expanded(
                 child: Icon(
                   icon,
-                  size: 24,
+                  size: 27,
                   color: Colors.black,
                 ),
               ),

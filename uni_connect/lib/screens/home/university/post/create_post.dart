@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
+import 'package:uni_connect/shared/constants.dart';
 import 'package:video_player/video_player.dart';
 import 'package:uni_connect/classes/post.dart';
+import 'package:http/http.dart' as http;
 
 class CreatePost extends StatefulWidget {
   // const CreatePost({super.key});
@@ -12,8 +15,11 @@ class CreatePost extends StatefulWidget {
   // uni profile doc id var for creating profile
   String uniProfileDocId;
 
+  // uni name
+  String uniName;
+
   // constructor
-  CreatePost({required this.uniProfileDocId});
+  CreatePost({required this.uniProfileDocId, required this.uniName});
 
   @override
   State<CreatePost> createState() => _CreatePostState();
@@ -61,6 +67,7 @@ class _CreatePostState extends State<CreatePost> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
@@ -73,6 +80,7 @@ class _CreatePostState extends State<CreatePost> {
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Upload Image"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -83,8 +91,9 @@ class _CreatePostState extends State<CreatePost> {
                       // show second bottom sheet
                       pickerOptions(context, "360° Image");
                     },
-                    icon: const Icon(Icons.image_outlined),
+                    icon: const Icon(Icons.view_array_rounded),
                     label: const Text("Upload 360° Image"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -97,6 +106,7 @@ class _CreatePostState extends State<CreatePost> {
                     },
                     icon: const Icon(Icons.video_file),
                     label: const Text("Upload Video"),
+                    style: mainScreenButtonStyle,
                   ),
                 ],
               ),
@@ -124,6 +134,7 @@ class _CreatePostState extends State<CreatePost> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
                     "Pic $type From",
@@ -142,6 +153,7 @@ class _CreatePostState extends State<CreatePost> {
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -152,6 +164,7 @@ class _CreatePostState extends State<CreatePost> {
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Gallery"),
+                    style: mainScreenButtonStyle,
                   ),
                   const SizedBox(
                     height: 10,
@@ -218,20 +231,28 @@ class _CreatePostState extends State<CreatePost> {
     }
   }
 
-  // send notification to followers
+  // send notification to followers of new post
   void _sendNotification() async {
     try {
       // Sending message payload
-      Map<String, dynamic> message = {
+      var message = {
+        "to":
+            "/topics/${widget.uniProfileDocId}_followers", // Topic to which the notification will be sent i.e users subscribed to this uni's followers topic
+        "priority": "high",
         "notification": {
-          "title": "New Post Uploaded",
-          "body": "Check out the latest post!"
+          "title": "${widget.uniName}",
+          "body": "${postDescription}!",
         },
-        "topic": "followers" // Topic to which the notification will be sent
       };
 
-      // Send the notification
-      // await _firebaseMessaging.
+      // Send the notification by API post request to the fcm url
+      await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          body: jsonEncode(message),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization':
+                'key=AAAA3Pwia-c:APA91bFOvIXySqYs72V6HeB0ksF1UJfnI4y_hpRCLdtQM9A-HcATpMyHdGQSzmkyAh7gGJdJm2B9z3IHuCMZ2ybYO4YViKmru2AAREOhk-t2gcYGCXdouQUGHPprQyi0_ceOy3lEyvjA'
+          });
 
       print("Notification sent successfully!");
     } catch (e) {
@@ -482,8 +503,7 @@ class _CreatePostState extends State<CreatePost> {
                                       // post doc and image/video saved in db
                                       else {
                                         // send notifications to all the users who are subscribed to profileId_followers topic
-
-
+                                        _sendNotification();
                                         Navigator.pop(
                                             context); // close progress screen
                                         // close the current create post screen

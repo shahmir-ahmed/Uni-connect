@@ -1,14 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 import 'package:camera/camera.dart';
 import 'package:uni_connect/screens/home/university/virtual_event/uni_virtual_event_screen.dart';
+import 'package:http/http.dart' as http;
 
 class CreateVirtualEvent extends StatefulWidget {
-  CreateVirtualEvent({required this.uniProfileId});
+  CreateVirtualEvent({required this.uniProfileId, required this.uniName});
 
   // uni profile id
   String uniProfileId;
+
+  // uni name
+  String uniName;
 
   @override
   State<CreateVirtualEvent> createState() => _CreateVirtualEventState();
@@ -26,6 +32,36 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
   Future<void>? _initializeControllerFuture;
 
   late List<CameraDescription> cameras;
+
+  // send notification to followers of live
+  void _sendNotification() async {
+    try {
+      // Sending message payload
+      var message = {
+        "to":
+            "/topics/${widget.uniProfileId}_followers", // Topic to which the notification will be sent i.e users subscribed to this uni's followers topic
+        "priority": "high",
+        "notification": {
+          "title": "🔴 ${widget.uniName.substring(0, 19)}. is live!",
+          "body": "${streamTitle}",
+        },
+        // 'data': {'type': 'live'} for clicking notification and redirecting to live screen
+      };
+
+      // Send the notification by API post request to the fcm url
+      await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          body: jsonEncode(message),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization':
+                'key=AAAA3Pwia-c:APA91bFOvIXySqYs72V6HeB0ksF1UJfnI4y_hpRCLdtQM9A-HcATpMyHdGQSzmkyAh7gGJdJm2B9z3IHuCMZ2ybYO4YViKmru2AAREOhk-t2gcYGCXdouQUGHPprQyi0_ceOy3lEyvjA'
+          });
+
+      print("Notification sent successfully!");
+    } catch (e) {
+      print("Error sending notification: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -165,6 +201,9 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             // if form is valid
+                            // notify all followers
+                            // send notifications to all the users who are subscribed to profileId_followers topic
+                            _sendNotification();
                             // pop the create event screen
                             Navigator.pop(context);
                             // show live stream screen

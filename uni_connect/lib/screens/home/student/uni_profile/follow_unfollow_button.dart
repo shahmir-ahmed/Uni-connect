@@ -66,7 +66,7 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
               following = true;
             });
 
-            // subscribe user to uniProfileId_followers topic
+            // subscribe user to uniProfileId_followers topic (subscribes this device to the topic and send notification to the device which was used to follow the uni)
             await _firebaseMessaging
                 .subscribeToTopic('${widget.uniProfileId}_followers');
 
