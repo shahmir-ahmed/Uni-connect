@@ -30,7 +30,9 @@ class _StudentHomeState extends State<StudentHome> {
   Future<void> _logoutUser() async {
     // clear shared pref data for app
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.clear();
+    await pref.clear();
+
+    // print('cleared: $cleared'); // true
   }
 
   // show snack bar
@@ -133,6 +135,7 @@ class _StudentHomeState extends State<StudentHome> {
     //         })));
 
     // IT DOESNT MATTER WHERE YOU PUT THESE LISTENERS (beacuse notification was also sent when I was at main screen)
+    // Moved from here to main because notification was being recived when user logs in and also after that checked where to put the code and main.dart was the correct place
   }
 
   @override

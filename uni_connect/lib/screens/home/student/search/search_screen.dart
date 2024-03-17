@@ -21,8 +21,9 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Search'),
+        backgroundColor: Colors.blue[400],
       ),
-    
+
       // main container in screen in center
       body: SingleChildScrollView(
         child: StreamProvider.value(
