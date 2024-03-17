@@ -198,11 +198,12 @@ class _PostContentState extends State<PostContent> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
       title: Text("Confirm?"),
       content: Text("Are you sure you want to delete the post?"),
       actions: [
-        cancelButton,
         continueButton,
+        cancelButton,
       ],
     );
 
@@ -283,58 +284,65 @@ class _PostContentState extends State<PostContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 6.0),
+            // color: Colors.pink,
           // post header row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // uni name & logo row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // if there is no profiel picture path
-                  widget.profileImage == ''
-                      ? CircleAvatar(
-                          backgroundImage: AssetImage('assets/uni.jpg'),
-                          radius: 20,
-                        )
-                      :
-                      // if there is profile picture path
-                      CircleAvatar(
-                          foregroundImage: FileImage(
-                            File(widget.profileImage!),
-                            // width: 100,
-                            // height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // uni name & logo row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // if there is no profiel picture path
+                    widget.profileImage == ''
+                        ? CircleAvatar(
+                            backgroundImage: AssetImage('assets/uni.jpg'),
+                            radius: 20,
+                          )
+                        :
+                        // if there is profile picture path
+                        CircleAvatar(
+                            foregroundImage: FileImage(
+                              File(widget.profileImage!),
+                              // width: 100,
+                              // height: 100,
+                            ),
+                            radius: 20,
                           ),
-                          radius: 20,
-                        ),
-                  // gap
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  // uni name text
-                  widget.uniName!.length > 28
-                      ? Text('${widget.uniName!.substring(0, 28)}...')
-                      : Text('${widget.uniName!}'),
-                ],
-              ),
-              // row inside three dot menu for managing post
-              // three dot menu
-              PopupMenuButton<String>(
-                onSelected: handleClick,
-                itemBuilder: (BuildContext context) {
-                  return {'📝 Edit post', '🗑 Delete post'}
-                      .map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
+                    // gap
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    // uni name text
+                    widget.uniName!.length > 28
+                        ? Text('${widget.uniName!.substring(0, 28)}...')
+                        : Text('${widget.uniName!}'),
+                  ],
+                ),
+                // row inside three dot menu for managing post
+                // three dot menu
+                PopupMenuButton<String>(
+                  color: Colors.white,
+                  onSelected: handleClick,
+                  itemBuilder: (BuildContext context) {
+                    return {'📝 Edit post', '🗑 Delete post'}
+                        .map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                ),
+              ],
+            ),
           ),
           // media container
           Container(
+            // color: Colors.orange,
+            // padding: EdgeInsets.symmetric(vertical: 10.0),
             width: MediaQuery.of(context).size.width - 60,
             height: 200.0,
             // decoration: BoxDecoration(border: Border.all(width: 1.0)),
@@ -562,7 +570,8 @@ class _PostContentState extends State<PostContent> {
             ),
           );
         },
-        child: Image(image: NetworkImage(mediaPath!)),
+        child: Container(
+            color: Colors.black, child: Image(image: NetworkImage(mediaPath!))),
         style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll(Colors.white),
             elevation: MaterialStatePropertyAll(0.0)),

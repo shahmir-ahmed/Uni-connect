@@ -175,6 +175,7 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                   key: _formKey,
                   child: TextFormField(
                     decoration: formInputDecoration,
+                    textCapitalization: TextCapitalization.sentences,
                     onChanged: (value) {
                       setState(() {
                         streamTitle = value.trim();

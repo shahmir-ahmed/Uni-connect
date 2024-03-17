@@ -384,6 +384,7 @@ class _CreatePostState extends State<CreatePost> {
                               maxLines: null,
                               expands: true,
                               keyboardType: TextInputType.multiline,
+                              textCapitalization: TextCapitalization.sentences,
                               decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(

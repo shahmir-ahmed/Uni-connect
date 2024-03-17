@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:uni_connect/classes/university.dart';
 
 class FollowUnFollowButton extends StatefulWidget {
   FollowUnFollowButton(
-      {required this.uniProfileId, required this.stdProfileDocId});
+      {required this.uniProfileId,
+      required this.stdProfileDocId,
+      required this.followersList});
 
   String uniProfileId; // uni profile id
   String? stdProfileDocId; // student profile id
+  List<dynamic> followersList; // uni followers list
 
   @override
   State<FollowUnFollowButton> createState() => _FollowUnFollowButtonState();
@@ -38,29 +42,30 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
       onPressed: () async {
         // close the alert dialog
         Navigator.of(context).pop();
-
+        
         // if follow button is clicked
         if (message == "Follow") {
-          // update the existing list and send the list to function
+          // update the existing following list of student by adding this uni in it
           followingList.add(widget.uniProfileId);
 
-          // update the existing list and send the list to function
-          // follwers.add(widget.stdProfileDocId);
+          // update the existing followers list of uni by adding this student in it
+          widget.followersList.add(widget.stdProfileDocId);
 
           // add this uni profile id in student's following_unis list
           // if (widget.stdProfileDocId != null) {
           String result =
-              StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+              await StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
                   .followUnFollowUni(followingList);
 
           // add this student profile id in uni's followers list
-          // String result2 =
-          //     StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
-          //         .followUnFollowUni(followingList);
+          String result2 = await UniveristyProfile.withIdAndFollowers(
+                  profileDocId: widget.uniProfileId,
+                  followers: widget.followersList)
+              .updateFollowers();
 
           // list updated successfullly
-          if (result == "success") {
-            // if (result == "success" && result2 == "success") {
+          // if (result == "success") {
+          if (result == "success" && result2 == "success") {
             // set following as yes means show unfollow button
             setState(() {
               following = true;
@@ -85,40 +90,50 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
           // }
         } else {
           // remove this uni profile id from student's following_unis list
-
           // update the existing list and sent the list to function
           followingList.remove(widget.uniProfileId);
 
-          // add this uni profile id in student's following_unis list
-          if (widget.stdProfileDocId != null) {
-            String result =
-                StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
-                    .followUnFollowUni(followingList);
+          // remove this uni profile id from student's following_unis list
+          // update the existing list and sent the list to function
+          widget.followersList.remove(widget.stdProfileDocId);
 
-            // list updated successfullly
-            if (result == "success") {
-              // set following as no means show follow button
-              setState(() {
-                following = false;
-              });
+          // remove this uni profile id from student's following_unis list
+          // if (widget.stdProfileDocId != null) {
+          String result =
+              await StudentProfile.withId(profileDocId: widget.stdProfileDocId!)
+                  .followUnFollowUni(followingList);
 
-              // unsubscribe user to uniProfileId_followers topic
-              await _firebaseMessaging
-                ..unsubscribeFromTopic('${widget.uniProfileId}_followers');
+          // remove this student profile id in uni's followers list
+          String result2 = await UniveristyProfile.withIdAndFollowers(
+                  profileDocId: widget.uniProfileId,
+                  followers: widget.followersList)
+              .updateFollowers();
 
-              // hide any current snackbar shown
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              // show new snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${message}ed successfully!')));
-            } else {
-              // hide any current snackbar shown
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              // show new snackbar
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Error ${message.toLowerCase()}ing!')));
-            }
+          // if (result == "success") {
+          // both lists updated successfullly
+          if (result == "success" && result2 == "success") {
+            // set following as no means show follow button
+            setState(() {
+              following = false;
+            });
+
+            // unsubscribe user to uniProfileId_followers topic
+            await _firebaseMessaging
+                .unsubscribeFromTopic('${widget.uniProfileId}_followers');
+
+            // hide any current snackbar shown
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            // show new snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${message}ed successfully!')));
+          } else {
+            // hide any current snackbar shown
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            // show new snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error ${message.toLowerCase()}ing!')));
           }
+          // }
         }
       },
     );

@@ -44,11 +44,11 @@ class _UniversityHomeState extends State<UniversityHome> {
           'Posts',
           style: TextStyle(fontSize: 16.0),
         )),
-        Tab(
-            icon: Text(
-          'Live Videos',
-          style: TextStyle(fontSize: 16.0),
-        )),
+        // Tab(
+        //     icon: Text(
+        //   'Live Videos',
+        //   style: TextStyle(fontSize: 16.0),
+        // )),
         Tab(
             icon: Text(
           'About',
@@ -225,16 +225,26 @@ class _UniversityHomeState extends State<UniversityHome> {
           // Permission to microphone granted after request
           else if (status.isGranted) {
             // Now show create virtual event widget
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CreateVirtualEvent(
+                          uniProfileId: uniProfile!.profileDocId,
+                          uniName: uniProfile!.name,
+                        )));
           }
         }
         // Permission already granted, proceed with microphone usage
         else if (status.isGranted) {
           // Code to use the camera
           // show create virtual event screen
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreateVirtualEvent(
+                        uniProfileId: uniProfile!.profileDocId,
+                        uniName: uniProfile!.name,
+                      )));
         }
       }
     }
@@ -291,16 +301,26 @@ class _UniversityHomeState extends State<UniversityHome> {
         // Permission to microphone granted after request
         else if (status.isGranted) {
           // Now show create virtual event widget
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreateVirtualEvent(
+                        uniProfileId: uniProfile!.profileDocId,
+                        uniName: uniProfile!.name,
+                      )));
         }
       }
       // Permission already granted, proceed with microphone usage
       else if (status.isGranted) {
         // Code to use the camera
         // show create virtual event screen
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CreateVirtualEvent(uniProfileId: uniProfile!.profileDocId, uniName: uniProfile!.name,)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CreateVirtualEvent(
+                      uniProfileId: uniProfile!.profileDocId,
+                      uniName: uniProfile!.name,
+                    )));
       }
     }
   }
@@ -334,344 +354,414 @@ class _UniversityHomeState extends State<UniversityHome> {
         : StreamProvider.value(
             value: Post.empty().getPostsStream(),
             initialData: null,
-            child: DefaultTabController(
-              length: 3,
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                appBar: AppBar(
-                  title: Text('Uni-connect'),
-                  centerTitle: true,
-                  backgroundColor: Colors.blue[500],
-                  actions: [
-                    // settings button
-                    MaterialButton(
-                        onPressed: () {
-                          // show settings screen
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SettingsScreen()));
-                        },
-                        child: Icon(Icons.settings))
-                  ],
-                ),
-                body: Container(
-                  // main body column
-                  child: Column(children: [
-                    // top uni details header
-                    // container for row
-                    Container(
-                      padding: EdgeInsets.all(10.0),
-                      margin: EdgeInsets.symmetric(vertical: 10.0),
-                      // width: MediaQuery.of(context).size.width,
-                      // height: MediaQuery.of(context).size.height /4, // not set this b/c auto height based on the childs content
-                      // color: Colors.amber,
-                      // row 1
-                      // header row
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          // column 1 inside row 1
-                          // dp and name expanded widget to take the avalaible width i.e. 50% b/c column 2 is also inside expanded width so it also takes up the avalible which is 50%
-                          Expanded(
-                            // dp and name column
-                            child: Container(
-                              // color: Colors.blue,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  // uni profile picture
-                                  // if there is no profiel picture path
-                                  uniProfile!.profileImage == ''
-                                      ? CircleAvatar(
-                                          backgroundImage:
-                                              AssetImage('assets/uni.jpg'),
-                                          radius: 45,
-                                        )
-                                      :
-                                      // if there is profile picture path
-                                      Image.file(
-                                          File(uniProfile!.profileImage),
-                                          width: 100,
-                                          height: 100,
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                title: Text('Uni-connect'),
+                centerTitle: true,
+                backgroundColor: Colors.blue[400],
+                actions: [
+                  // settings button
+                  MaterialButton(
+                      onPressed: () {
+                        // show settings screen
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SettingsScreen()));
+                      },
+                      child: Icon(Icons.settings))
+                ],
+              ),
+              body: DefaultTabController(
+                length: 2,
+                child: NestedScrollView(
+                  scrollDirection: Axis.vertical,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverToBoxAdapter(
+                      child: Container(
+                        // main body column
+                        child: Column(children: [
+                          // top uni details header
+                          // container for row
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.symmetric(vertical: 10.0),
+                            // width: MediaQuery.of(context).size.width,
+                            // height: MediaQuery.of(context).size.height /4, // not set this b/c auto height based on the childs content
+                            // color: Colors.amber,
+                            // row 1
+                            // header row
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                // column 1 inside row 1
+                                // dp and name expanded widget to take the avalaible width i.e. 50% b/c column 2 is also inside expanded width so it also takes up the avalible which is 50%
+                                Expanded(
+                                  // dp and name column
+                                  child: Container(
+                                    // color: Colors.blue,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        // uni profile picture
+                                        // if there is no profiel picture path
+                                        uniProfile!.profileImage == ''
+                                            ? CircleAvatar(
+                                                backgroundImage: AssetImage(
+                                                    'assets/uni.jpg'),
+                                                radius: 45,
+                                              )
+                                            :
+                                            // if there is profile picture path
+                                            Image.file(
+                                                File(uniProfile!.profileImage),
+                                                width: 100,
+                                                height: 100,
+                                              ),
+
+                                        // space
+                                        SizedBox(
+                                          height: 8.0,
                                         ),
 
-                                  // space
-                                  SizedBox(
-                                    height: 8.0,
+                                        // uni name
+                                        Text(
+                                          '${uniProfile!.name}',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: 16.0),
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                ),
 
-                                  // uni name
-                                  Text(
-                                    '${uniProfile!.name}',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // column 2 inside row 1
-                          // column 2 for followers and location
-                          Expanded(
-                            // container to give height to expanded widget
-                            child: Container(
-                              // color: Colors.pink,
-                              // height: 120.0,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  // space
-                                  SizedBox(
-                                    height: 15.0,
-                                  ),
-                                  // folowers column
-                                  Column(
-                                    children: <Widget>[
-                                      // uni followers count
-                                      Text(
-                                        'Followers',
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      // space
-                                      SizedBox(
-                                        height: 8.0,
-                                      ),
-                                      // followers count
-                                      Text(
-                                        '260',
-                                        style: TextStyle(fontSize: 16.0),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // space
-                                  SizedBox(
-                                    height: 20.0,
-                                  ),
-
-                                  // location row
-                                  Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 18.0),
+                                Expanded(
+                                  // container to give height to expanded widget
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10.0),
                                     // color: Colors.pink,
-                                    child: Row(
+                                    // height: 120.0,
+                                    // column 2 inside row 1
+                                    // column 2 for followers and location
+                                    child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                          MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        // location icon
-                                        Icon(
-                                          Icons.location_on,
-                                          size: 20.0,
+                                        // space
+                                        SizedBox(
+                                          height: 15.0,
                                         ),
-                                        // uni location
-                                        Expanded(
-                                          // to wrap location text
-                                          child: Container(
-                                            margin: EdgeInsets.only(top: 10.0),
-                                            child: Text(
-                                              '${uniProfile!.location}',
-                                              // 'Islamabad',
-                                              textAlign: TextAlign.center,
-                                            ),
+                                        // folowers column
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5.0),
+                                          // color: Colors.orange,
+                                          child: Column(
+                                            children: <Widget>[
+                                              // uni followers count
+                                              Text(
+                                                'Followers',
+                                                style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              // space
+                                              SizedBox(
+                                                height: 8.0,
+                                              ),
+                                              // followers count
+                                              Text(
+                                                uniProfile!.followers.length
+                                                    .toString(),
+                                                style:
+                                                    TextStyle(fontSize: 16.0),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+
+                                        // space
+                                        SizedBox(
+                                          height: 20.0,
+                                        ),
+
+                                        // location row
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 18.0),
+                                          // color: Colors.pink,
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              // location icon
+                                              Icon(
+                                                Icons.location_on,
+                                                size: 20.0,
+                                              ),
+                                              // uni location
+                                              Expanded(
+                                                // to wrap location text
+                                                child: Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 10.0),
+                                                  child: Text(
+                                                    '${uniProfile!.location}',
+                                                    // 'Islamabad',
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         )
                                       ],
                                     ),
-                                  )
-                                ],
-                              ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+
+                          // container for navigation bar and its content
+                          /*
+                                Container(
+                    // margin: EdgeInsets.only(top: 80.0),
+                    child: DefaultTabController(
+                      length: 3,
+                      // column to contain tab bar and tab bar views
+                      child: Column(
+                        children: [
+                          // tab bar container
+                          Container(
+                            color: Colors.grey[300],
+                            // top navigation bar (posts - live videos - about)
+                            child: tabBar,
+                          ),
+                          // tab bar view container
+                          Container(
+                            // Tab bar views
+                            child: TabBarView(children: [
+                              // posts widget
+                              MaterialApp(home: Center(child: Text('Posts'))),
+                        
+                              // live videos widget
+                              MaterialApp(home: Center(child: Text('Live videos'))),
+                        
+                              // about widget
+                              MaterialApp(home: Center(child: Text('About')))
+                            ]),
+                          )
                         ],
                       ),
                     ),
+                                )
+                                */
 
-                    // container for navigation bar and its content
-                    /*
-                              Container(
-                  // margin: EdgeInsets.only(top: 80.0),
-                  child: DefaultTabController(
-                    length: 3,
-                    // column to contain tab bar and tab bar views
-                    child: Column(
-                      children: [
-                        // tab bar container
-                        Container(
-                          color: Colors.grey[300],
-                          // top navigation bar (posts - live videos - about)
-                          child: tabBar,
+                          // the tab bar with the items
+                          SizedBox(
+                            height: 50,
+                            child: AppBar(
+                                backgroundColor: Colors.grey[300],
+                                bottom: tabBar),
+                          ),
+
+/*
+                      // create widgets for each tab bar here
+                      Expanded(
+                        child: TabBarView(
+                          // tab bar views
+                          children: [
+                            // first tab bar view widget
+                            // Container(
+                            //   color: Colors.red,
+                            //   child: Center(
+                            //     child: Text(
+                            //       'Posts',
+                            //     ),
+                            //   ),
+                            // ),
+
+                            // all uni posts widget
+                            // setting the stream here so that posts updation is refkected which was earlier not reflecting due to university posts widget inside tabbarview (no difference)
+                            UniversityPosts(
+                                uniProfileImage: uniProfile!.profileImage,
+                                uniName: uniProfile!.name,
+                                uniProfileDocId: uniProfile!.profileDocId),
+
+                            // second tab bar viiew widget
+                            // Container(
+                            //   height: 100.0,
+                            //   // color: Colors.pink,
+                            //   child: Center(
+                            //     child: Text(
+                            //       'Live videos',
+                            //     ),
+                            //   ),
+                            // ),
+
+                            // third tab bar view widget
+                            Container(
+                              height: 100.0,
+                              // color: Colors.orange,
+                              child: Center(
+                                child: Text(
+                                  'About',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        // tab bar view container
+                      ),
+                      */
+                        ]),
+                      ),
+                    )
+                  ],
+                  body: Expanded(
+                    child: TabBarView(
+                      // tab bar views
+                      children: [
+                        // first tab bar view widget
+                        // Container(
+                        //   color: Colors.red,
+                        //   child: Center(
+                        //     child: Text(
+                        //       'Posts',
+                        //     ),
+                        //   ),
+                        // ),
+
+                        // all uni posts widget
+                        // setting the stream here so that posts updation is refkected which was earlier not reflecting due to university posts widget inside tabbarview (no difference)
+                        UniversityPosts(
+                            uniProfileImage: uniProfile!.profileImage,
+                            uniName: uniProfile!.name,
+                            uniProfileDocId: uniProfile!.profileDocId),
+
+                        // second tab bar viiew widget
+                        /*
+                            Container(
+                              height: 100.0,
+                              // color: Colors.pink,
+                              child: Center(
+                                child: Text(
+                                  'Live videos',
+                                ),
+                              ),
+                            ),
+                            */
+
+                        // third tab bar view widget
                         Container(
-                          // Tab bar views
-                          child: TabBarView(children: [
-                            // posts widget
-                            MaterialApp(home: Center(child: Text('Posts'))),
-                      
-                            // live videos widget
-                            MaterialApp(home: Center(child: Text('Live videos'))),
-                      
-                            // about widget
-                            MaterialApp(home: Center(child: Text('About')))
-                          ]),
-                        )
+                          height: 100.0,
+                          // color: Colors.orange,
+                          child: Center(
+                            child: Text(
+                              'About',
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                              )
-                              */
-
-                    // the tab bar with the items
-                    SizedBox(
-                      height: 50,
-                      child: AppBar(
-                          backgroundColor: Colors.grey[300], bottom: tabBar),
+                ),
+              ),
+              // bottom navigation bar
+              bottomNavigationBar: BottomNavigationBar(
+                  iconSize: 30.0,
+                  selectedFontSize: 16.0,
+                  unselectedFontSize: 16.0,
+                  backgroundColor: Colors.blue[200],
+                  selectedItemColor: const Color.fromARGB(255, 30, 136, 229),
+                  selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  unselectedLabelStyle: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600),
+                  currentIndex: _selectedIndex,
+                  onTap: (value) {
+                    // setState(() {
+                    //   _selectedIndex = value;
+                    // });
+                    // on create option clicked show create options modal
+                    if (value == 0) {
+                      _showCreateOptions(context);
+                    }
+                  },
+                  items: [
+                    // create button
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.add_circle_outline_sharp,
+                        color: Colors.black87,
+                      ),
+                      label: 'Create',
                     ),
 
-                    // create widgets for each tab bar here
-                    Expanded(
-                      child: TabBarView(
-                        // tab bar views
-                        children: [
-                          // first tab bar view widget
-                          // Container(
-                          //   color: Colors.red,
-                          //   child: Center(
-                          //     child: Text(
-                          //       'Posts',
-                          //     ),
-                          //   ),
-                          // ),
-
-                          // all uni posts widget
-                          // setting the stream here so that posts updation is refkected which was earlier not reflecting due to university posts widget inside tabbarview (no difference)
-                          UniversityPosts(
-                              uniProfileImage: uniProfile!.profileImage,
-                              uniName: uniProfile!.name,
-                              uniProfileDocId: uniProfile!.profileDocId),
-
-                          // second tab bar viiew widget
-                          Container(
-                            height: 100.0,
-                            // color: Colors.pink,
-                            child: Center(
-                              child: Text(
-                                'Live videos',
+                    // profile button
+                    BottomNavigationBarItem(
+                      // icon: Image(
+                      //   image: AssetImage('assets/arid-logo.jpg'),
+                      //   width: 30,
+                      //   height: 30,
+                      // ),
+                      // icon: Icon(
+                      //   Icons.account_circle_sharp,
+                      //   color: Colors.black87,
+                      // ),
+                      // based on uni profile image is there or not show avatar
+                      icon: uniProfile!.profileImage == ''
+                          ? Container(
+                              child: CircleAvatar(
+                                foregroundImage: AssetImage('assets/uni.jpg'),
+                                radius: 15.0,
                               ),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 2.0,
+                                    color:
+                                        const Color.fromARGB(255, 30, 136, 229),
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0))),
+                            )
+                          : Container(
+                              child: CircleAvatar(
+                                  foregroundImage:
+                                      NetworkImage(uniProfile!.profileImage)),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 2.0,
+                                    color:
+                                        const Color.fromARGB(255, 30, 136, 229),
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0))),
                             ),
-                          ),
-
-                          // third tab bar view widget
-                          Container(
-                            height: 100.0,
-                            // color: Colors.orange,
-                            child: Center(
-                              child: Text(
-                                'About',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      label: 'Profile',
+                      // activeIcon: Image(
+                      //   image: AssetImage('assets/arid-logo.jpg'),
+                      //   width: 30,
+                      //   height: 30,
+                      // )
+                      // activeIcon: Icon(
+                      //   Icons.account_circle_sharp,
+                      //   color: Colors.blue[600],
+                      // )
+                      // activeIcon: uniProfile!.profileImage=='' ? Image.asset('assets/uni.jpg') : Image.network(uniProfile!.profileImage),
                     ),
                   ]),
-                ),
-                // bottom navigation bar
-                bottomNavigationBar: BottomNavigationBar(
-                    iconSize: 30.0,
-                    selectedFontSize: 16.0,
-                    unselectedFontSize: 16.0,
-                    backgroundColor: Colors.blue[200],
-                    selectedLabelStyle: TextStyle(
-                        color: Colors.blue[900], fontWeight: FontWeight.bold),
-                    unselectedLabelStyle: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w600),
-                    currentIndex: _selectedIndex,
-                    onTap: (value) {
-                      // setState(() {
-                      //   _selectedIndex = value;
-                      // });
-                      // on create option clicked show create options modal
-                      if (value == 0) {
-                        _showCreateOptions(context);
-                      }
-                    },
-                    items: [
-                      // create button
-                      BottomNavigationBarItem(
-                          icon: Icon(
-                            Icons.add_circle_outline_sharp,
-                            color: Colors.black87,
-                          ),
-                          label: 'Create',
-                          activeIcon: Icon(
-                            Icons.add_circle_outline_sharp,
-                            color: Colors.blue[600],
-                          )),
-
-                      // profile button
-                      BottomNavigationBarItem(
-                        // icon: Image(
-                        //   image: AssetImage('assets/arid-logo.jpg'),
-                        //   width: 30,
-                        //   height: 30,
-                        // ),
-                        // icon: Icon(
-                        //   Icons.account_circle_sharp,
-                        //   color: Colors.black87,
-                        // ),
-                        // based on uni profile image is there or not show avatar
-                        icon: uniProfile!.profileImage == ''
-                            ? Container(
-                                child: CircleAvatar(
-                                  foregroundImage: AssetImage('assets/uni.jpg'),
-                                  radius: 15.0,
-                                ),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 30, 136, 229),
-                                    ),
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(20.0))),
-                              )
-                            : Container(
-                                child: CircleAvatar(
-                                    foregroundImage:
-                                        NetworkImage(uniProfile!.profileImage)),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 30, 136, 229),
-                                    ),
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(20.0))),
-                              ),
-                        label: 'Profile',
-                        // activeIcon: Image(
-                        //   image: AssetImage('assets/arid-logo.jpg'),
-                        //   width: 30,
-                        //   height: 30,
-                        // )
-                        // activeIcon: Icon(
-                        //   Icons.account_circle_sharp,
-                        //   color: Colors.blue[600],
-                        // )
-                        // activeIcon: uniProfile!.profileImage=='' ? Image.asset('assets/uni.jpg') : Image.network(uniProfile!.profileImage),
-                      ),
-                    ]),
-              ),
             ));
   }
 }
+
 
 // import 'dart:io';
 // import 'package:flutter/material.dart';

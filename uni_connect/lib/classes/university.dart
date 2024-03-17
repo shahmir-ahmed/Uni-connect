@@ -111,7 +111,8 @@ class UniveristyProfile {
       required this.location,
       required this.type,
       required this.description,
-      required this.fieldsOffered});
+      required this.fieldsOffered,
+      required this.followers});
 
   // for search result
   UniveristyProfile.forSearch({
@@ -124,6 +125,17 @@ class UniveristyProfile {
   // for with id object
   UniveristyProfile.withId({
     required this.profileDocId,
+  });
+
+  // for with followers object
+  UniveristyProfile.withFollowers({
+    required this.followers,
+  });
+
+  // for with id and followers object
+  UniveristyProfile.withIdAndFollowers({
+    required this.profileDocId,
+    required this.followers,
   });
 
   // create profile in database (when registering)
@@ -182,7 +194,8 @@ class UniveristyProfile {
         location: documentSnapshot.get('location'),
         type: documentSnapshot.get('type'),
         description: documentSnapshot.get('description'),
-        fieldsOffered: documentSnapshot.get('fields_offered') ?? []);
+        fieldsOffered: documentSnapshot.get('fields_offered') ?? [],
+        followers: documentSnapshot.get('followers') ?? []);
   }
 
   // get profile stream (based on university account id)
@@ -218,11 +231,15 @@ class UniveristyProfile {
     try {
       // snapshot to university profile type objects and then all in a list return
       return snapshot.docs
-          .map((doc) => UniveristyProfile.forSearch(
+          .map((doc) => UniveristyProfile(
               profileDocId: doc.id ?? '',
               profileImage: '',
-              name: doc.get("name").toString(),
-              location: doc.get("location").toString()))
+              name: doc.get("name").toString() ?? '',
+              location: doc.get("location").toString() ?? '',
+              type: doc.get('type') ?? '',
+              description: doc.get('description') ?? '',
+              fieldsOffered: doc.get('fields_offered') ?? [],
+              followers: doc.get('followers') ?? []))
           .toList();
     } catch (e) {
       print(e.toString());
@@ -245,18 +262,37 @@ class UniveristyProfile {
   }
 
   // update university followers list
-  String? updateFollowers() {
+  Future<String> updateFollowers() async{
     try {
       // update the university followers list
-      profileCollection
-          .doc(profileDocId)
-          .update({'followers': followers});
+      await profileCollection.doc(profileDocId).update({'followers': followers});
 
       return 'success';
     } catch (e) {
       // print error
       print("ERR in updateFollowers: ${e.toString()}");
+      return 'error';
+    }
+  }
+/*
+  // document snapshot to university object having followers list only
+  _snapshotToUniFollowers(DocumentSnapshot<Map<String, dynamic>> snapshot){
+    try {
+      return UniveristyProfile.withFollowers(followers: snapshot.get('followers') ?? []);
+    } catch (e) {
+      print('Error in _snapshotToUniFollowers: $e');
       return null;
     }
   }
+
+  // return stream of university followers
+  Stream<UniveristyProfile>? getUniversityFollowersStream() {
+    try {
+      return profileCollection.doc(profileDocId).snapshots().map((snapshot) => _snapshotToUniFollowers(snapshot));
+    } catch (e) {
+      print('Error in getUniversityFollowerStream $e');
+      return null;
+    }
+  }
+  */
 }

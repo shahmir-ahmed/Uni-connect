@@ -58,6 +58,7 @@ class SettingsScreen extends StatelessWidget {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
       title: Text("Confirm?"),
       content: Text("Are you sure you want to logout?"),
       actions: [

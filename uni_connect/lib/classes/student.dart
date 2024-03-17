@@ -167,10 +167,10 @@ class StudentProfile {
   }
 
   // update the student's following list
-  String followUnFollowUni(dynamic followingList) {
+  Future<String> followUnFollowUni(dynamic followingList) async {
     try {
       // set the new following list on the student's document following_unis field by update method to merge with any existing data in the document
-      profileCollection
+      await profileCollection
           .doc(profileDocId)
           .update({'following_unis': followingList});
 
