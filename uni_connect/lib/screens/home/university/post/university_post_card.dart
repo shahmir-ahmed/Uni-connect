@@ -287,7 +287,7 @@ class _PostContentState extends State<PostContent> {
           Container(
             margin: EdgeInsets.only(bottom: 6.0),
             // color: Colors.pink,
-          // post header row
+            // post header row
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

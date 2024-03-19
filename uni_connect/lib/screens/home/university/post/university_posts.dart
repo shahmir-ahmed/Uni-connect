@@ -81,6 +81,7 @@ class _UniversityPostsState extends State<UniversityPosts> {
                         // posts to show, mapping to individual container widget to display
                         uniPosts!
                             .map((uniPost) => UniPostCard(
+                                // key: ValueKey<String>(widget.uniProfileDocId as String),
                                 post: uniPost,
                                 profileImage: widget.uniProfileImage,
                                 uniName: widget.uniName,

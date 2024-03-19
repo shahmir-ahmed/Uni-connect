@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/screens/home/university/about/edit_profile.dart';
 import 'package:uni_connect/screens/home/university/post/create_post.dart';
 // import 'package:uni_connect/screens/home/university/post_card.dart';
 import 'package:uni_connect/screens/home/university/post/university_posts.dart';
@@ -29,6 +30,9 @@ class _UniversityHomeState extends State<UniversityHome> {
 
   // university profile object
   UniveristyProfile? uniProfile;
+
+  // fields offered count
+  int fOcount = 1;
 
   // uni posts stream
   // Stream<List<Post>?>? postsStream;
@@ -626,52 +630,141 @@ class _UniversityHomeState extends State<UniversityHome> {
                       ),
                     )
                   ],
-                  body: Expanded(
-                    child: TabBarView(
-                      // tab bar views
-                      children: [
-                        // first tab bar view widget
-                        // Container(
-                        //   color: Colors.red,
-                        //   child: Center(
-                        //     child: Text(
-                        //       'Posts',
-                        //     ),
-                        //   ),
-                        // ),
+                  body: TabBarView(
+                    // tab bar views
+                    children: [
+                      // first tab bar view widget
+                      // Container(
+                      //   color: Colors.red,
+                      //   child: Center(
+                      //     child: Text(
+                      //       'Posts',
+                      //     ),
+                      //   ),
+                      // ),
 
-                        // all uni posts widget
-                        // setting the stream here so that posts updation is refkected which was earlier not reflecting due to university posts widget inside tabbarview (no difference)
-                        UniversityPosts(
-                            uniProfileImage: uniProfile!.profileImage,
-                            uniName: uniProfile!.name,
-                            uniProfileDocId: uniProfile!.profileDocId),
+                      // all uni posts widget
+                      // setting the stream here so that posts updation is refkected which was earlier not reflecting due to university posts widget inside tabbarview (no difference)
+                      UniversityPosts(
+                          uniProfileImage: uniProfile!.profileImage,
+                          uniName: uniProfile!.name,
+                          uniProfileDocId: uniProfile!.profileDocId),
 
-                        // second tab bar viiew widget
-                        /*
-                            Container(
-                              height: 100.0,
-                              // color: Colors.pink,
-                              child: Center(
-                                child: Text(
-                                  'Live videos',
-                                ),
+                      // second tab bar viiew widget
+                      /*
+                          Container(
+                            height: 100.0,
+                            // color: Colors.pink,
+                            child: Center(
+                              child: Text(
+                                'Live videos',
                               ),
                             ),
-                            */
-
-                        // third tab bar view widget
-                        Container(
-                          height: 100.0,
-                          // color: Colors.orange,
-                          child: Center(
-                            child: Text(
-                              'About',
-                            ),
                           ),
+                          */
+
+                      // third tab bar view widget
+                      // about tab bar
+                      Container(
+                        padding: EdgeInsets.all(15.0),
+                        // height: 100.0,
+                        // color: Colors.orange,
+                        // child: Center(
+                        //   child: Text(
+                        //     'About',
+                        //   ),
+                        // ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // edit profile button row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // push edit profile screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfileScreen(
+                                                    uniProfile: uniProfile)));
+                                  },
+                                  child: Text('Edit Profile'),
+                                  style: mainScreenButtonStyle,
+                                )
+                              ],
+                            ),
+
+                            // space
+                            // SizedBox(height: 4.0,),
+
+                            // name text label
+                            Text(
+                              'Name:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+
+                            // name text
+                            Text(uniProfile!.name),
+
+                            // space
+                            SizedBox(
+                              height: 12.0,
+                            ),
+
+                            // decsription label
+                            Text(
+                              'Description:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+
+                            // description
+                            Text(uniProfile!.description == ''
+                                ? 'Not set'
+                                : uniProfile!.description),
+
+                            // space
+                            SizedBox(
+                              height: 12.0,
+                            ),
+
+                            // Location label
+                            Text(
+                              'Location:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+
+                            // location
+                            Text(uniProfile!.location),
+
+                            // space
+                            SizedBox(
+                              height: 12.0,
+                            ),
+
+                            // Fields offered label
+                            Text(
+                              'Fields offered:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+
+                            // fields offered
+                            uniProfile!.fieldsOffered.length > 0
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: uniProfile!.fieldsOffered
+                                        .map((fieldOffered) =>
+                                            Text('${fOcount++}. $fieldOffered'))
+                                        .toList(),
+                                  )
+                                : Text('Not set')
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -761,7 +854,6 @@ class _UniversityHomeState extends State<UniversityHome> {
             ));
   }
 }
-
 
 // import 'dart:io';
 // import 'package:flutter/material.dart';
