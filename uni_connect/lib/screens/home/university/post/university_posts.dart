@@ -32,6 +32,14 @@ class _UniversityPostsState extends State<UniversityPosts> {
   // all uni posts
   List<Post>? uniPosts;
 
+  // method to set uni posts as null so that when deleting, updating post, posts shoudl refresh
+  refreshPosts() {
+    setState(() {
+      uniPosts = null;
+    });
+    print('refreshing');
+  }
+
   // build method
   @override
   Widget build(BuildContext context) {
@@ -81,11 +89,16 @@ class _UniversityPostsState extends State<UniversityPosts> {
                         // posts to show, mapping to individual container widget to display
                         uniPosts!
                             .map((uniPost) => UniPostCard(
-                                // key: ValueKey<String>(widget.uniProfileDocId as String),
+                                key: UniqueKey(),
                                 post: uniPost,
                                 profileImage: widget.uniProfileImage,
                                 uniName: widget.uniName,
                                 uniProfileDocId: widget.uniProfileDocId,
+                                // refreshPosts: () {
+                                //   setState(() {
+                                //     uniPosts!.remove(uniPost);
+                                //   });
+                                // }
                                 ))
                             .toList()),
               );

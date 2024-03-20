@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/shared/constants.dart';
 
@@ -13,7 +16,115 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  // fields offered multiple field controller
+  List<TextEditingController> listController = [];
+
   // form attributes
+  String? name, description, location;
+  List<dynamic>? fieldsOffered;
+
+  // profile image file object
+  File? pickedImage;
+  // image error text
+  String fileError = '';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // initialize list
+    // listController. = List.filled(
+    //     widget.uniProfile!.fieldsOffered.length, TextEditingController(),
+    //     growable: true);
+    // set text in each fields according to current fields offered list
+    for (var i = 0; i < widget.uniProfile!.fieldsOffered.length; i++) {
+      // listController[i].text = widget.uniProfile!.fieldsOffered[i];
+      listController.add(
+          TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
+    }
+    // set field offering text list
+    fieldsOffered = widget.uniProfile!.fieldsOffered;
+
+    // print(fieldsOffered); [Computer Science, Botany, DVM]
+
+    // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
+  }
+
+  // select source to upload image i.e. gallery/camera
+  void mediaPickerOptions(context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SingleChildScrollView(
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10.0),
+            topRight: Radius.circular(10.0),
+          ),
+          child: Container(
+            color: Colors.white,
+            height: 220,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "Pic image from",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      pickImage(ImageSource.camera);
+                    },
+                    icon: const Icon(Icons.camera),
+                    label: const Text("Camera"),
+                    style: mainScreenButtonStyle,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      pickImage(ImageSource.gallery);
+                    },
+                    icon: const Icon(Icons.image),
+                    label: const Text("Gallery"),
+                    style: mainScreenButtonStyle,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Pick image
+  void pickImage(ImageSource imageType) async {
+    try {
+      // app crashes if heavy image is selected
+      final photo = await ImagePicker().pickImage(source: imageType);
+      if (photo == null) return;
+      final tempImage = File(photo.path);
+      print(photo.path); // jpg file
+      // update the image and error variable and notify the widget to update its state using setState
+      setState(() {
+        pickedImage = tempImage;
+        fileError = '';
+      });
+
+      // Close the image picker screen
+      Navigator.pop(context);
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,21 +141,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  // profile pic label
+                  Text(
+                    'Profile picture:',
+                    style: fieldLabelStyle,
+                  ),
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+
+                  // space
+
+                  // profile pic and upload button row
                   Container(
-                    color: Colors.orange,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    // color: Colors.orange,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // profile photo upload, preview
-                        CircleAvatar(
-                          backgroundImage: AssetImage('assets/uni.jpg'),
-                          radius: 50.0,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // profile photo upload, preview
+                            // if image is not present
+                            (widget.uniProfile!.profileImage == '' && pickedImage==null)
+                                // then show dummy uni image
+                                ? CircleAvatar(
+                                    backgroundImage: AssetImage('assets/uni.jpg'),
+                                    radius: 60.0,
+                                  )
+                                // if no image is picked
+                                : pickedImage != null
+                                    ?
+                                    // then show picked image
+                                    CircleAvatar(
+                                        backgroundImage: FileImage(pickedImage as File),
+                                        radius: 45.0,
+                                      )
+                                    // otherwise show uni actual profile image
+                                    : CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            widget.uniProfile!.profileImage),
+                                      ),
+                            // space
+                            SizedBox(
+                              height: 7.0,
+                            ),
+                            // upload button
+                            ElevatedButton.icon(
+                                style: mainScreenButtonStyle,
+                                onPressed: () {
+                                  mediaPickerOptions(context);
+                                },
+                                icon: Icon(Icons.upload),
+                                label: Text('Upload')),
+                          ],
                         ),
-                        // upload button
-                        ElevatedButton.icon(
-                            onPressed: () {},
-                            icon: Icon(Icons.upload),
-                            label: Text('Upload')),
                       ],
                     ),
                   ),
@@ -54,18 +210,196 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 28.0,
                   ),
 
-                  // name row
+                  // name label
                   Text(
                     'Name: ',
                     style: fieldLabelStyle,
                   ),
-                  // field
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  // name field
                   TextFormField(
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.name,
                     onChanged: (value) {
+                      setState(() {
+                        name = value.trim();
+                      });
+                    },
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // description label
+                  Text(
+                    'Description: ',
+                    style: fieldLabelStyle,
+                  ),
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  // description field
+                  TextFormField(
+                    minLines: 3,
+                    maxLines: 999,
+                    decoration: formInputDecoration,
+                    initialValue: widget.uniProfile!.description,
+                    onChanged: (value) {
+                      setState(() {
+                        description = value.trim();
+                      });
+                    },
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // location label
+                  Text(
+                    'Location: ',
+                    style: fieldLabelStyle,
+                  ),
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  // location field
+                  TextFormField(
+                    decoration: formInputDecoration,
+                    initialValue: widget.uniProfile!.location,
+                    onChanged: (value) {
                       // name = value;
                     },
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // fields offered label and add text field button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // fields offered label
+                      Text(
+                        'Fields offered: ',
+                        style: fieldLabelStyle,
+                      ),
+
+                      // add text field button
+                      listController != null
+                          ? ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  listController!.add(TextEditingController());
+                                });
+                              },
+                              child: Icon(Icons.add),
+                              style: mainScreenButtonStyle,
+                            )
+                          : SizedBox()
+                    ],
+                  ),
+                  // fields offered fields
+                  listController != null
+                      ? ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          shrinkWrap: true,
+                          itemCount: listController!.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Row(
+                                children: [
+                                  // serial number
+                                  Container(
+                                    child: Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  // space
+                                  SizedBox(
+                                    width: 20.0,
+                                  ),
+                                  // field
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width - 150,
+                                    child: TextFormField(
+                                      controller: listController![index],
+                                      decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.black))),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          fieldsOffered![index] = value.trim();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  // space
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  // delete field button
+                                  index != 0
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              listController![index].clear();
+                                              listController![index].dispose();
+                                              listController!.removeAt(index);
+                                            });
+                                          },
+                                          child: const Icon(
+                                            Icons.delete,
+                                            color: Colors.blue,
+                                            size: 35,
+                                          ),
+                                        )
+                                      : const SizedBox()
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      : SizedBox(),
+
+                  // space
+                  SizedBox(
+                    height: 27.0,
+                  ),
+
+                  // update button row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // update button
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.done),
+                        label: Text('Update profile'),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.blue),
+                            foregroundColor:
+                                MaterialStatePropertyAll(Colors.white),
+                            maximumSize: MaterialStatePropertyAll(Size(
+                                MediaQuery.of(context).size.width - 100, 200))),
+                      )
+                    ],
                   )
                 ],
               ),

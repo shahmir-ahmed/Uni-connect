@@ -1,5 +1,8 @@
+import 'dart:ffi';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/comment.dart';
 import 'package:uni_connect/classes/like.dart';
@@ -24,11 +27,17 @@ class UniPostCard extends StatefulWidget {
   // uni profile doc id
   late String? uniProfileDocId;
 
+  // refresh uni posts method
+  // Function refreshPosts;
+
   UniPostCard(
-      {required this.post,
+      {super.key,
+      required this.post,
       required this.profileImage,
       required this.uniName,
-      required this.uniProfileDocId}); // constructor
+      required this.uniProfileDocId,
+      // required this.refreshPosts
+      }); // constructor
 
   @override
   State<UniPostCard> createState() => _UniPostCardState();
@@ -74,6 +83,7 @@ class _UniPostCardState extends State<UniPostCard> {
                 profileImage: widget.profileImage,
                 uniName: widget.uniName,
                 uniProfileDocId: widget.uniProfileDocId,
+                // refreshPosts: widget.refreshPosts,
               )),
         ),
       ),
@@ -95,11 +105,16 @@ class PostContent extends StatefulWidget {
   // uni name
   late String? uniProfileDocId;
 
+  // refresh post method
+  // Function refreshPosts;
+
   PostContent(
       {required this.post,
       required this.profileImage,
       required this.uniName,
-      required this.uniProfileDocId}); // constructor
+      required this.uniProfileDocId,
+      // required this.refreshPosts
+      }); // constructor
 
   @override
   State<PostContent> createState() => _PostContentState();
@@ -116,6 +131,7 @@ class _PostContentState extends State<PostContent> {
     // Load the mediaPath when the widget is initialized.
     _loadMediaPath();
     // print('inside initstate');
+    // print("refreshPosts method: ${widget.refreshPosts}");
   }
 
   // method to load media path of the post and assign the path and rebuild the card widget when path is fetched
@@ -185,6 +201,9 @@ class _PostContentState extends State<PostContent> {
 
         // call delete post method
         await post.deletePost();
+
+        // widget.refreshPosts(); // refresh posts
+        // stucks at loading screen
 
         // pop progress screen
         Navigator.pop(context);

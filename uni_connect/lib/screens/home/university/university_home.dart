@@ -37,6 +37,9 @@ class _UniversityHomeState extends State<UniversityHome> {
   // uni posts stream
   // Stream<List<Post>?>? postsStream;
 
+  // uni profile image url
+  // String? profileImagePath;
+
   // tabs for top navigation bar
   TabBar tabBar = TabBar(
       unselectedLabelColor: Colors.black,
@@ -329,6 +332,17 @@ class _UniversityHomeState extends State<UniversityHome> {
     }
   }
 
+  // load profile image (seperated because need to await for the method so this method will be async)
+  _loadProfileImage(imagePath) async {
+    var result = await UniveristyProfile.empty()
+        .getProfileImagePath(uniProfile!.profileDocId);
+    if (result == null) {
+      return '';
+    } else {
+      return result;
+    }
+  }
+
   // build method
   @override
   Widget build(BuildContext context) {
@@ -351,6 +365,16 @@ class _UniversityHomeState extends State<UniversityHome> {
     // }
 
     // print('posts stream: $postsStream'); // present
+
+    // load uni profile id if object is got and image path is not empty
+    if (uniProfile != null) {
+      if (uniProfile!.profileImage != '') {
+        setState(() {
+          uniProfile!.profileImage =
+              _loadProfileImage(uniProfile!.profileDocId);
+        });
+      }
+    }
 
     // if stream is setup but theere is no value passed down in the stream yet then show loading
     return uniProfile == null
@@ -421,10 +445,10 @@ class _UniversityHomeState extends State<UniversityHome> {
                                               )
                                             :
                                             // if there is profile picture path
-                                            Image.file(
-                                                File(uniProfile!.profileImage),
-                                                width: 100,
-                                                height: 100,
+                                            CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    uniProfile!.profileImage),
+                                                radius: 45,
                                               ),
 
                                         // space
@@ -752,14 +776,13 @@ class _UniversityHomeState extends State<UniversityHome> {
 
                             // fields offered
                             uniProfile!.fieldsOffered.length > 0
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: uniProfile!.fieldsOffered
-                                        .map((fieldOffered) =>
-                                            Text('${fOcount++}. $fieldOffered'))
-                                        .toList(),
-                                  )
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: uniProfile!.fieldsOffered.length,
+                                    itemBuilder: (context, index) {
+                                      return Text(
+                                          '${index + 1}. ${uniProfile!.fieldsOffered[index]}');
+                                    })
                                 : Text('Not set')
                           ],
                         ),
