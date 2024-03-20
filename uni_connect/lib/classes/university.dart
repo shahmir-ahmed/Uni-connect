@@ -114,6 +114,16 @@ class UniveristyProfile {
       required this.fieldsOffered,
       required this.followers});
 
+  // for profile
+  UniveristyProfile.updateProfile(
+      {required this.profileDocId,
+      required this.profileImage,
+      required this.name,
+      required this.location,
+      required this.type,
+      required this.description,
+      required this.fieldsOffered});
+
   // for search result
   UniveristyProfile.forSearch({
     required this.profileDocId,
@@ -262,10 +272,12 @@ class UniveristyProfile {
   }
 
   // update university followers list
-  Future<String> updateFollowers() async{
+  Future<String> updateFollowers() async {
     try {
       // update the university followers list
-      await profileCollection.doc(profileDocId).update({'followers': followers});
+      await profileCollection
+          .doc(profileDocId)
+          .update({'followers': followers});
 
       return 'success';
     } catch (e) {
@@ -274,6 +286,30 @@ class UniveristyProfile {
       return 'error';
     }
   }
+
+  // update university profile about
+  Future<String> updateProfile() async {
+    try {
+      // update the university followers list
+      await profileCollection.doc(profileDocId).update({
+        'name': name,
+        'description': description,
+        'location': location,
+        'type': type,
+        'fields_offered': fieldsOffered
+      });
+
+      // update profile pic in storage
+
+
+      return 'success';
+    } catch (e) {
+      // print error
+      print("ERR in updateFollowers: ${e.toString()}");
+      return 'error';
+    }
+  }
+
 /*
   // document snapshot to university object having followers list only
   _snapshotToUniFollowers(DocumentSnapshot<Map<String, dynamic>> snapshot){

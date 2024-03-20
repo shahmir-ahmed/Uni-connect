@@ -16,17 +16,26 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // fields offered multiple field controller
+  // fields offered multiple field controllers list
   List<TextEditingController> listController = [];
 
   // form attributes
-  String? name, description, location;
-  List<dynamic>? fieldsOffered;
+  String name = '';
+  String description = '';
+  String location = '';
+  String type = '';
+  List<dynamic> fieldsOffered = [];
 
   // profile image file object
   File? pickedImage;
   // image error text
   String fileError = '';
+
+  // form key
+  final _formKey = GlobalKey<FormState>();
+
+  // reg exp variable for name field
+  static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
 
   @override
   void initState() {
@@ -41,13 +50,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // listController[i].text = widget.uniProfile!.fieldsOffered[i];
       listController.add(
           TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
+      // print('here');
     }
+    // print(widget.uniProfile!.fieldsOffered);
     // set field offering text list
     fieldsOffered = widget.uniProfile!.fieldsOffered;
 
     // print(fieldsOffered); [Computer Science, Botany, DVM]
 
     // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
+
+    // initially set all form values (in case user not changes that field that field is not saved as empty in the database)
+    name = widget.uniProfile!.name;
+    description = widget.uniProfile!.description;
+    location = widget.uniProfile!.location;
+    type = widget.uniProfile!.type;
+    // fieldsOffered = widget.uniProfile!.fieldsOffered;
+    fieldsOffered = List<String>.from(widget.uniProfile!.fieldsOffered);
+
+    // print('init');
   }
 
   // select source to upload image i.e. gallery/camera
@@ -138,6 +159,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: EdgeInsets.all(20.0),
             // form
             child: Form(
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -167,19 +189,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // profile photo upload, preview
-                            // if image is not present
-                            (widget.uniProfile!.profileImage == '' && pickedImage==null)
+                            // if image is not present and no image is picked
+                            (widget.uniProfile!.profileImage == '' &&
+                                    pickedImage == null)
                                 // then show dummy uni image
                                 ? CircleAvatar(
-                                    backgroundImage: AssetImage('assets/uni.jpg'),
+                                    backgroundImage:
+                                        AssetImage('assets/uni.jpg'),
                                     radius: 60.0,
                                   )
-                                // if no image is picked
+                                // if image is picked
                                 : pickedImage != null
                                     ?
                                     // then show picked image
                                     CircleAvatar(
-                                        backgroundImage: FileImage(pickedImage as File),
+                                        backgroundImage:
+                                            FileImage(pickedImage as File),
                                         radius: 45.0,
                                       )
                                     // otherwise show uni actual profile image
@@ -191,6 +216,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             SizedBox(
                               height: 7.0,
                             ),
+
+                            // error
+                            Text(
+                              fileError,
+                              style: TextStyle(color: Colors.red),
+                            ),
+
+                            // space
+                            SizedBox(
+                              height: 7.0,
+                            ),
                             // upload button
                             ElevatedButton.icon(
                                 style: mainScreenButtonStyle,
@@ -198,7 +234,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   mediaPickerOptions(context);
                                 },
                                 icon: Icon(Icons.upload),
-                                label: Text('Upload')),
+                                label: Text('Upload new picture')),
                           ],
                         ),
                       ],
@@ -228,6 +264,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         name = value.trim();
                       });
                     },
+                    validator: (value) {
+                      // if name is empty at the time of validation return helper text
+                      if (value!.trim().isEmpty) {
+                        return 'Please enter university name';
+                      }
+                      // contains characters other than alphabets
+                      else if (!nameRegExp.hasMatch(value)) {
+                        return 'Please enter valid university name';
+                      }
+                      // valid name
+                      else {
+                        return null;
+                      }
+                    },
                   ),
 
                   // space
@@ -255,6 +305,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         description = value.trim();
                       });
                     },
+                    validator: (value) {
+                      // if description field is empty at the time of validation return helper text
+                      if (value!.trim().isEmpty) {
+                        return 'Please enter description';
+                      }
+                      // valid description
+                      else {
+                        return null;
+                      }
+                    },
                   ),
 
                   // space
@@ -276,7 +336,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.location,
                     onChanged: (value) {
-                      // name = value;
+                      setState(() {
+                        location = value.trim();
+                      });
+                    },
+                    validator: (value) {
+                      // if location field is empty at the time of validation return helper text
+                      if (value!.trim().isEmpty) {
+                        return 'Please enter location';
+                      }
+                      // valid location
+                      else {
+                        return null;
+                      }
+                    },
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // Type label
+                  Text(
+                    'Type: ',
+                    style: fieldLabelStyle,
+                  ),
+                  // space
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  // location field
+                  TextFormField(
+                    decoration: formInputDecoration,
+                    initialValue: widget.uniProfile!.type,
+                    onChanged: (value) {
+                      setState(() {
+                        type = value.trim();
+                      });
+                    },
+                    validator: (value) {
+                      // if location field is empty at the time of validation return helper text
+                      if (value!.trim().isEmpty) {
+                        return 'Please enter type';
+                      }
+                      // valid location
+                      else {
+                        return null;
+                      }
                     },
                   ),
 
@@ -296,86 +403,95 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
 
                       // add text field button
-                      listController != null
-                          ? ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  listController!.add(TextEditingController());
-                                });
-                              },
-                              child: Icon(Icons.add),
-                              style: mainScreenButtonStyle,
-                            )
-                          : SizedBox()
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            listController.add(TextEditingController());
+                            fieldsOffered.add("");
+                          });
+                        },
+                        icon: Icon(Icons.add),
+                        label: Text("Add new field"),
+                        style: mainScreenButtonStyle,
+                      )
                     ],
                   ),
                   // fields offered fields
-                  listController != null
-                      ? ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          shrinkWrap: true,
-                          itemCount: listController!.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child: Row(
-                                children: [
-                                  // serial number
-                                  Container(
-                                    child: Text(
-                                      '${index + 1}.',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  // space
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  // field
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width - 150,
-                                    child: TextFormField(
-                                      controller: listController![index],
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.black))),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          fieldsOffered![index] = value.trim();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  // space
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  // delete field button
-                                  index != 0
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              listController![index].clear();
-                                              listController![index].dispose();
-                                              listController!.removeAt(index);
-                                            });
-                                          },
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.blue,
-                                            size: 35,
-                                          ),
-                                        )
-                                      : const SizedBox()
-                                ],
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    shrinkWrap: true,
+                    itemCount: listController.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Row(
+                          children: [
+                            // serial number
+                            Container(
+                              child: Text(
+                                '${index + 1}.',
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                            );
-                          },
-                        )
-                      : SizedBox(),
+                            ),
+                            // space
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            // field
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 150,
+                              child: TextFormField(
+                                controller: listController[index],
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.black))),
+                                onChanged: (value) {
+                                  setState(() {
+                                    fieldsOffered[index] = value.trim();
+                                  });
+                                },
+                                validator: (value) {
+                                  // if field offered field is empty at the time of validation return helper text
+                                  if (value!.trim().isEmpty) {
+                                    return 'Please enter field offered';
+                                  }
+                                  // valid field offered
+                                  else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            // space
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            // delete field button
+                            index != 0
+                                ? GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        listController[index].clear();
+                                        listController[index].dispose();
+                                        listController.removeAt(index);
+                                        // remove this field offered from fields offered list also
+                                        fieldsOffered.removeAt(index);
+                                      });
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.blue,
+                                      size: 35,
+                                    ),
+                                  )
+                                : const SizedBox()
+                          ],
+                        ),
+                      );
+                    },
+                  ),
 
                   // space
                   SizedBox(
@@ -388,7 +504,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       // update button
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {
+                          // check image is empty and image is not selected
+                          if (widget.uniProfile!.profileImage == '' &&
+                              pickedImage == null) {
+                            // set file error
+                            setState(() {
+                              fileError = 'Please select profile picture';
+                            });
+                          }
+                          // if form is valid
+                          if (_formKey.currentState!.validate()) {
+                            // update uni profile details
+                            // print(pickedImage);
+                            // print(name);
+                            // print(description);
+                            // print(location);
+                            // print(type);
+                            print(fieldsOffered);
+
+                            // show alert for confirmation
+
+                            final result =
+                                await UniveristyProfile.updateProfile(
+                                        profileDocId:
+                                            widget.uniProfile!.profileDocId,
+                                        profileImage: '',
+                                        name: name,
+                                        location: location,
+                                        type: type,
+                                        description: description,
+                                        fieldsOffered: fieldsOffered)
+                                    .updateProfile();
+
+                            if (result == 'success') {
+                              // show succes snackbar
+                              // show snack bar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Profile updated!')),
+                              );
+                              // pop screen
+                              Navigator.pop(context);
+                            } else {
+                              // show error snackbar
+                              // show snack bar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Error updating profile. Please try again later!')),
+                              );
+                              // pop screen
+                              Navigator.pop(context);
+                            }
+                          }
+                        },
                         icon: Icon(Icons.done),
                         label: Text('Update profile'),
                         style: ButtonStyle(

@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
+import 'package:uni_connect/shared/constants.dart';
 import 'package:video_player/video_player.dart';
 import 'package:uni_connect/classes/post.dart';
 
-class UpdatePost extends StatefulWidget {
+class EditPost extends StatefulWidget {
   /*
   // post doc id var for updating post
   late String postId;
@@ -36,13 +37,13 @@ class UpdatePost extends StatefulWidget {
   late Post post;
 
   // contrcuctor to take the post object
-  UpdatePost({required this.post});
+  EditPost({required this.post});
 
   @override
-  State<UpdatePost> createState() => _UpdatePostState();
+  State<EditPost> createState() => _EditPostState();
 }
 
-class _UpdatePostState extends State<UpdatePost> {
+class _EditPostState extends State<EditPost> {
   // form key
   final _formKey = GlobalKey<FormState>();
 
@@ -311,7 +312,7 @@ class _UpdatePostState extends State<UpdatePost> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Update post'),
+          title: const Text('Edit post'),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -394,8 +395,9 @@ class _UpdatePostState extends State<UpdatePost> {
                                       // show options of 360, image, video
                                       mediaPickerOptions(context);
                                     },
+                                    style: mainScreenButtonStyle,
                                     icon: const Icon(Icons.add_a_photo_sharp),
-                                    label: const Text('Upload Photo/Video')),
+                                    label: const Text('Upload new photo/video')),
                               )
                             ],
                           )),
@@ -565,6 +567,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                       }
                                     }
                                   },
+                                  style: mainScreenButtonStyle,
                                   icon: const Icon(Icons.upload),
                                   label: const Text('Update Post')),
                             ),

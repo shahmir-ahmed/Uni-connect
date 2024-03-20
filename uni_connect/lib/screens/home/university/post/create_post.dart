@@ -381,9 +381,10 @@ class _CreatePostState extends State<CreatePost> {
                           SizedBox(
                             height: 180.0,
                             child: TextFormField(
-                              maxLines: null,
-                              expands: true,
-                              keyboardType: TextInputType.multiline,
+                              minLines: 6,
+                              maxLines: 999,
+                              // expands: true,
+                              // keyboardType: TextInputType.multiline,
                               textCapitalization: TextCapitalization.sentences,
                               decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(

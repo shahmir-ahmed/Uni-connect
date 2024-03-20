@@ -89,7 +89,7 @@ class _UniversityPostsState extends State<UniversityPosts> {
                         // posts to show, mapping to individual container widget to display
                         uniPosts!
                             .map((uniPost) => UniPostCard(
-                                key: UniqueKey(),
+                                // key: UniqueKey(), // because post is removed by below refreshPosts but scattered
                                 post: uniPost,
                                 profileImage: widget.uniProfileImage,
                                 uniName: widget.uniName,

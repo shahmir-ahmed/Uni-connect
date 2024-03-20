@@ -8,7 +8,7 @@ import 'package:uni_connect/classes/comment.dart';
 import 'package:uni_connect/classes/like.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/screens/home/university/post/post_comments.dart';
-import 'package:uni_connect/screens/home/university/post/update_post.dart';
+import 'package:uni_connect/screens/home/university/post/edit_post.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/image_view.dart';
@@ -31,7 +31,8 @@ class UniPostCard extends StatefulWidget {
   // Function refreshPosts;
 
   UniPostCard(
-      {super.key,
+      {
+        // super.key,
       required this.post,
       required this.profileImage,
       required this.uniName,
@@ -154,7 +155,7 @@ class _PostContentState extends State<PostContent> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => UpdatePost(post: widget.post)
+                builder: (context) => EditPost(post: widget.post)
                 // UpdatePost(
                 //   postId: widget.post.postId as String,
                 //   postDescription: widget.post.description as String,
@@ -203,7 +204,7 @@ class _PostContentState extends State<PostContent> {
         await post.deletePost();
 
         // widget.refreshPosts(); // refresh posts
-        // stucks at loading screen
+        // stucks at loading screen calling this with UniqueKey
 
         // pop progress screen
         Navigator.pop(context);
