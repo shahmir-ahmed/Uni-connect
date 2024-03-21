@@ -87,10 +87,10 @@ class Post {
       await ref.putFile(File(mediaPath!)); // upload the media at the reference
 
       // create likes document in the likes collection for this post
-      Like.empty().likesCollection.doc(postId).set({'liked_by': []});
+      await Like.empty().likesCollection.doc(postId).set({'liked_by': []});
 
       // create comments document in the comments collection for this post
-      Comment.empty().commentsCollection.doc(postId).set({
+      await Comment.empty().commentsCollection.doc(postId).set({
         'comments': [
           // commnet_by and comment Map for each comment
           // {}
@@ -119,6 +119,7 @@ class Post {
           .toList();
     } catch (e) {
       print("ERR in _postsCollectionToList function: ${e.toString()}");
+      return null;
     }
   }
 
@@ -133,6 +134,7 @@ class Post {
           .map((collection) => _postsCollectionToList(collection));
     } catch (e) {
       print("ERR in getPostsStream: ${e.toString()}");
+      return null;
     }
   }
 
@@ -140,6 +142,7 @@ class Post {
   Future<String> getPostMediaPath() async {
     // filename i.e. id of the post
     try {
+      // print('postId: $postId');
       // get ref object to the post media file
       final ref = storage.FirebaseStorage.instance
           .ref()
@@ -147,6 +150,8 @@ class Post {
           .child(postId!);
 
       final mediaUrl = await ref.getDownloadURL(); // get the file/media path
+
+      // print('mediaUrl: $mediaUrl');
 
       // return the url of media
       return mediaUrl;

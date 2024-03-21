@@ -30,15 +30,17 @@ class UniPostCard extends StatefulWidget {
   // refresh uni posts method
   // Function refreshPosts;
 
-  UniPostCard(
-      {
-        // super.key,
-      required this.post,
-      required this.profileImage,
-      required this.uniName,
-      required this.uniProfileDocId,
-      // required this.refreshPosts
-      }); // constructor
+  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+
+  UniPostCard({
+    super.key,
+    required this.post,
+    required this.profileImage,
+    required this.uniName,
+    required this.uniProfileDocId,
+    required this.homeScreenContext,
+    // required this.refreshPosts
+  }); // constructor
 
   @override
   State<UniPostCard> createState() => _UniPostCardState();
@@ -84,6 +86,7 @@ class _UniPostCardState extends State<UniPostCard> {
                 profileImage: widget.profileImage,
                 uniName: widget.uniName,
                 uniProfileDocId: widget.uniProfileDocId,
+                homeScreenContext: widget.homeScreenContext
                 // refreshPosts: widget.refreshPosts,
               )),
         ),
@@ -109,13 +112,16 @@ class PostContent extends StatefulWidget {
   // refresh post method
   // Function refreshPosts;
 
-  PostContent(
-      {required this.post,
-      required this.profileImage,
-      required this.uniName,
-      required this.uniProfileDocId,
-      // required this.refreshPosts
-      }); // constructor
+  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+
+  PostContent({
+    required this.post,
+    required this.profileImage,
+    required this.uniName,
+    required this.uniProfileDocId,
+    required this.homeScreenContext,
+    // required this.refreshPosts
+  }); // constructor
 
   @override
   State<PostContent> createState() => _PostContentState();
@@ -154,8 +160,7 @@ class _PostContentState extends State<PostContent> {
             mediaPath; // set the media path then pass the object
         Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => EditPost(post: widget.post)
+            MaterialPageRoute(builder: (context) => EditPost(post: widget.post)
                 // UpdatePost(
                 //   postId: widget.post.postId as String,
                 //   postDescription: widget.post.description as String,
@@ -167,7 +172,7 @@ class _PostContentState extends State<PostContent> {
 
         break;
       case '🗑 Delete post':
-        showAlertDialog(context); // show alert dialog
+        showAlertDialog(widget.homeScreenContext); // show alert dialog
         break;
     }
   }
@@ -194,11 +199,14 @@ class _PostContentState extends State<PostContent> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ProgressScreen(text: 'Deleting post')));
+                builder: (context) =>
+                    ProgressScreen(text: 'Deleting post...')));
 
         // call delete post method on this post object
         Post post = widget
             .post; // get the post object into another object here then call
+
+        // print('post ${post.postId}');
 
         // call delete post method
         await post.deletePost();
@@ -208,6 +216,7 @@ class _PostContentState extends State<PostContent> {
 
         // pop progress screen
         Navigator.pop(context);
+        // Navigator.of(context).pop();
 
         // show snackbar of success message
         ScaffoldMessenger.of(context).showSnackBar(
@@ -324,12 +333,12 @@ class _PostContentState extends State<PostContent> {
                         :
                         // if there is profile picture path
                         CircleAvatar(
-                            foregroundImage: FileImage(
-                              File(widget.profileImage!),
+                            backgroundImage: NetworkImage(
+                              widget.profileImage!,
                               // width: 100,
                               // height: 100,
                             ),
-                            radius: 20,
+                            radius: 18,
                           ),
                     // gap
                     SizedBox(
@@ -510,8 +519,9 @@ class _PostContentState extends State<PostContent> {
 
   // Extracted a method for building the media button to improve readability.
   Widget buildMediaButton() {
-    // if media path is being currently or error fetching path so '' stored in path
+    // if media path is not currently fetched or error fetching path so '' stored in path
     if (mediaPath == null || mediaPath == '') {
+      // print("mediaPath: $mediaPath");
       return WithinScreenProgress.withPadding(
         text: '',
         paddingTop: 50.0,

@@ -152,7 +152,8 @@ class _EditPostState extends State<EditPost> {
                 children: [
                   Text(
                     "Pic $type From",
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(
@@ -199,11 +200,12 @@ class _EditPostState extends State<EditPost> {
       // update the image and error variable and notify the widget to update its state using setState
       setState(() {
         pickedImage = tempImage; // set picked image value
-        
+
         fileError = ''; // clear file error
 
         // no other media type variable value should be present
-        initialVideo = null; // set initial video as null which is being shown as current video of post (if there)
+        initialVideo =
+            null; // set initial video as null which is being shown as current video of post (if there)
         pickedVideo =
             null; // set picked video as null if user already picked a video first which is being shown at the preview
 
@@ -350,7 +352,8 @@ class _EditPostState extends State<EditPost> {
                                             // (initialVideo != null || pickedVideo != null)
                                             (_controller != null &&
                                                     (initialVideo != null ||
-                                                        pickedVideo != null)) // from initial video and picked video anyone shoudl be present to display the videoplayer
+                                                        pickedVideo !=
+                                                            null)) // from initial video and picked video anyone shoudl be present to display the videoplayer
                                                 ? AspectRatio(
                                                     aspectRatio: _controller!
                                                         .value.aspectRatio,
@@ -397,7 +400,8 @@ class _EditPostState extends State<EditPost> {
                                     },
                                     style: mainScreenButtonStyle,
                                     icon: const Icon(Icons.add_a_photo_sharp),
-                                    label: const Text('Upload new photo/video')),
+                                    label:
+                                        const Text('Upload new photo/video')),
                               )
                             ],
                           )),
@@ -419,38 +423,35 @@ class _EditPostState extends State<EditPost> {
                           ),
 
                           // text field for post description
-                          SizedBox(
-                            height: 180.0,
-                            child: TextFormField(
-                              initialValue: postDescription,
-                              maxLines: null,
-                              expands: true,
-                              keyboardType: TextInputType.multiline,
-                              decoration: const InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0)),
-                                      borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(255, 88, 88, 88))),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0)))),
-                              onChanged: (value) {
-                                setState(() {
-                                  postDescription = value.trim();
-                                });
-                              },
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Please enter description'
-                                  : null,
-                            ),
+                          TextFormField(
+                            minLines: 6,
+                            maxLines: 999,
+                            initialValue: postDescription,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 88, 88, 88))),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0)))),
+                            onChanged: (value) {
+                              setState(() {
+                                postDescription = value.trim();
+                              });
+                            },
+                            validator: (value) => value!.trim().isEmpty
+                                ? 'Please enter description'
+                                : null,
                           ),
                           // space
                           const SizedBox(height: 10.0),
@@ -510,12 +511,13 @@ class _EditPostState extends State<EditPost> {
                                       else {
                                         // create post object as media type video
                                         post = Post.withId(
-                                            postId: widget.post.postId,
-                                            mediaType: 'video',
-                                            mediaPath: initialVideo == null
-                                                ? pickedVideo!.path
-                                                : initialVideo!.path,
-                                            description: postDescription,);
+                                          postId: widget.post.postId,
+                                          mediaType: 'video',
+                                          mediaPath: initialVideo == null
+                                              ? pickedVideo!.path
+                                              : initialVideo!.path,
+                                          description: postDescription,
+                                        );
                                       }
 
                                       // show progress screen
@@ -530,16 +532,19 @@ class _EditPostState extends State<EditPost> {
                                       // if the image is not changed means initial image is there which is the same video so update only the post document i.e. description only
                                       // or the video is not changed means initial video is there which is the same video so update only the post document i.e. description only
                                       String? result1, result2;
-                                      if (initialImage != null || initialVideo != null) {
-                                         result1 = post.updatePostDoc(); // update post document only
+                                      if (initialImage != null ||
+                                          initialVideo != null) {
+                                        result1 = post
+                                            .updatePostDoc(); // update post document only
                                       } else {
-                                        result2 =
-                                            await post.updatePost(); // update document and media in storage also
+                                        result2 = await post
+                                            .updatePost(); // update document and media in storage also
                                       }
 
                                       // if error occured updating document in db or
                                       // if error occured updating document/ updating media in db
-                                      if (result1 == 'error' || result2 == 'error') {
+                                      if (result1 == 'error' ||
+                                          result2 == 'error') {
                                         print('Error updating post');
                                         Navigator.pop(
                                             context); // close progress screen

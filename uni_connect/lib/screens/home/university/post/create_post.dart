@@ -378,39 +378,36 @@ class _CreatePostState extends State<CreatePost> {
                           ),
 
                           // text field for post description
-                          SizedBox(
-                            height: 180.0,
-                            child: TextFormField(
-                              minLines: 6,
-                              maxLines: 999,
-                              // expands: true,
-                              // keyboardType: TextInputType.multiline,
-                              textCapitalization: TextCapitalization.sentences,
-                              decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0))),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0)),
-                                      borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(255, 88, 88, 88))),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0)))),
-                              onChanged: (value) {
-                                setState(() {
-                                  postDescription = value.trim();
-                                });
-                              },
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Please enter description'
-                                  : null,
-                            ),
+                          TextFormField(
+                            minLines: 6,
+                            maxLines: 999,
+                            // expands: true,
+                            // keyboardType: TextInputType.multiline,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 88, 88, 88))),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0)))),
+                            onChanged: (value) {
+                              setState(() {
+                                postDescription = value.trim();
+                              });
+                            },
+                            validator: (value) => value!.trim().isEmpty
+                                ? 'Please enter description'
+                                : null,
                           ),
                           // space
                           SizedBox(height: 10.0),
@@ -504,8 +501,16 @@ class _CreatePostState extends State<CreatePost> {
                                       }
                                       // post doc and image/video saved in db
                                       else {
+                                        // print('waiting');
+                                        // // wait 2 second so that post media is uploaded in the storage
+                                        // await Future.delayed(
+                                        //     Duration(seconds: 5));
+
                                         // send notifications to all the users who are subscribed to profileId_followers topic
                                         _sendNotification();
+
+                                        print('notifications sent');
+
                                         Navigator.pop(
                                             context); // close progress screen
                                         // close the current create post screen

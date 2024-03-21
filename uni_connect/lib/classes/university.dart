@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 
@@ -299,13 +301,44 @@ class UniveristyProfile {
         'fields_offered': fieldsOffered
       });
 
-      // update profile pic in storage
+      // if new profile image is selected
+      if (profileImage.isNotEmpty) {
+        // print('here');
+        // update profile pic in storage
+        // upload uni profile pic with the uni profile id as media file name
+        final ref = storage.FirebaseStorage.instance
+            .ref()
+            .child('uni_profile_images')
+            .child(
+                profileDocId); // get the reference to the file in the uni_profile_images folder
 
+        // print('ref: $ref');
+
+        // check if image already exists at path then delete the image at path otherwosie upload new image
+        try {
+          final ref = storage.FirebaseStorage.instance
+              .ref()
+              .child('uni_profile_images')
+              .child(profileDocId);
+
+          // print('ref: $ref'); // to check what gets print when there is no image of this name : ref: Reference(app: [DEFAULT], fullPath: uni_profile_images/c4JoUpPtAvIYGcWZx6or.jpg)
+          // print('here');
+          final imageUrl = await ref.getDownloadURL();
+
+          // if no error occured while getting download url means url is present then delete
+          await ref.delete(); // delete the current object at path and
+        } catch (e) {
+          print('Image not deleted: $e');
+        }
+
+        // put new file at the reference after deleting if image is already present otherwise without deleting
+        await ref.putFile(File(profileImage)); // put new file at the reference
+      }
 
       return 'success';
     } catch (e) {
       // print error
-      print("ERR in updateFollowers: ${e.toString()}");
+      print("ERR in updateProfile: ${e.toString()}");
       return 'error';
     }
   }

@@ -417,6 +417,85 @@ class _UniProfileState extends State<UniProfileScreen> {
                       : Container()),
 
               // third tab bar view widget
+              SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(15.0),
+                  // height: 100.0,
+                  // color: Colors.orange,
+                  // child: Center(
+                  //   child: Text(
+                  //     'About',
+                  //   ),
+                  // ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // name text label
+                      Text(
+                        'Name:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      // name text
+                      Text(widget.uniProfile!.name),
+
+                      // space
+                      SizedBox(
+                        height: 12.0,
+                      ),
+
+                      // decsription label
+                      Text(
+                        'Description:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      // description
+                      Text(widget.uniProfile!.description == ''
+                          ? 'Not set'
+                          : widget.uniProfile!.description),
+
+                      // space
+                      SizedBox(
+                        height: 12.0,
+                      ),
+
+                      // Location label
+                      Text(
+                        'Location:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      // location
+                      Text(widget.uniProfile!.location),
+
+                      // space
+                      SizedBox(
+                        height: 12.0,
+                      ),
+
+                      // Fields offered label
+                      Text(
+                        'Fields offered:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      // fields offered
+                      widget.uniProfile!.fieldsOffered.length > 0
+                          ? ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: widget.uniProfile!.fieldsOffered.length,
+                              itemBuilder: (context, index) {
+                                return Text(
+                                    '${index + 1}. ${widget.uniProfile!.fieldsOffered[index]}');
+                              })
+                          : Text('Not set')
+                    ],
+                  ),
+                ),
+              ),
+              /*
               Container(
                 height: 100.0,
                 // color: Colors.orange,
@@ -426,6 +505,7 @@ class _UniProfileState extends State<UniProfileScreen> {
                   ),
                 ),
               ),
+              */
             ],
           ),
         ),

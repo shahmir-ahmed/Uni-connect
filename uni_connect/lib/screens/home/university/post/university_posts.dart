@@ -15,11 +15,15 @@ class UniversityPosts extends StatefulWidget {
   // uni name
   String uniName;
 
+  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+
   // const to get the uni profile id
   UniversityPosts(
       {required this.uniProfileDocId,
       required this.uniProfileImage,
-      required this.uniName});
+      required this.uniName,
+      required this.homeScreenContext
+      });
 
   @override
   State<UniversityPosts> createState() => _UniversityPostsState();
@@ -30,15 +34,17 @@ class _UniversityPostsState extends State<UniversityPosts> {
   List<Post>? posts;
 
   // all uni posts
-  List<Post>? uniPosts;
+  // List<Post>? uniPosts;
 
   // method to set uni posts as null so that when deleting, updating post, posts shoudl refresh
+  /*
   refreshPosts() {
     setState(() {
       uniPosts = null;
     });
-    print('refreshing');
+    // print('refreshing');
   }
+  */
 
   // build method
   @override
@@ -49,6 +55,7 @@ class _UniversityPostsState extends State<UniversityPosts> {
     // print('new posts list: $posts');
 
     // get the posts of this uni based on the uni profile doc id (only if posts are passed down the stream and not initial data null is there)
+    /*
     if (posts != null && uniPosts == null) {
       setState(() {
         uniPosts = posts!
@@ -56,6 +63,7 @@ class _UniversityPostsState extends State<UniversityPosts> {
             .toList();
       });
     }
+    */
 
     // print('value in posts stream: $posts');
 
@@ -68,39 +76,42 @@ class _UniversityPostsState extends State<UniversityPosts> {
     // }
 
     // posts card widget for each post of uni
-    return uniPosts == null
+    return posts == null
         ? WithinScreenProgress(
             text: 'Loading posts',
           )
-        // if there are no university posts in the list
-        : uniPosts!.isEmpty
-            ? Container(
-                // color: Colors.red,
-                child: Center(
-                  child: Text(
-                    'You have not created any posts yet!',
-                  ),
-                ),
-              )
-            // university posts
-            : SingleChildScrollView(
-                child: Column(
-                    children:
-                        // posts to show, mapping to individual container widget to display
-                        uniPosts!
-                            .map((uniPost) => UniPostCard(
-                                // key: UniqueKey(), // because post is removed by below refreshPosts but scattered
-                                post: uniPost,
-                                profileImage: widget.uniProfileImage,
-                                uniName: widget.uniName,
-                                uniProfileDocId: widget.uniProfileDocId,
-                                // refreshPosts: () {
-                                //   setState(() {
-                                //     uniPosts!.remove(uniPost);
-                                //   });
-                                // }
-                                ))
-                            .toList()),
-              );
+        // if there are no posts in the list
+        // : posts!.isEmpty
+        //     ? Container(
+        //         // color: Colors.red,
+        //         child: Center(
+        //           child: Text(
+        //             'You have not created any posts yet!',
+        //           ),
+        //         ),
+        //       )
+        // university posts
+        : SingleChildScrollView(
+            child: Column(
+                children:
+                    // posts to show, mapping to individual container widget to display
+                    posts!
+                        .where((post) =>
+                            post.uniProfileId == widget.uniProfileDocId)
+                        .map((uniPost) => UniPostCard(
+                              key: UniqueKey(), // because post is removed by below refreshPosts but scattered
+                              post: uniPost,
+                              profileImage: widget.uniProfileImage,
+                              uniName: widget.uniName,
+                              uniProfileDocId: widget.uniProfileDocId,
+                              homeScreenContext: widget.homeScreenContext,
+                              // refreshPosts: () {
+                              //   setState(() {
+                              //     uniPosts!.remove(uniPost);
+                              //   });
+                              // }
+                            ))
+                        .toList()),
+          );
   }
 }

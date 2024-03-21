@@ -3,13 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  EditProfileScreen({required this.uniProfile});
+  EditProfileScreen({required this.uniProfile, required this.loadProfileImage});
 
   // uni profile object
   UniveristyProfile? uniProfile;
+
+  // load profile image method
+  Function loadProfileImage;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -36,6 +40,111 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // reg exp variable for name field
   static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
+
+  // show alert dialog for delete post
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        // close the alert dialog
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text(
+        "Yes",
+      ),
+      onPressed: () async {
+        // close the alert dialog
+        Navigator.of(context).pop();
+
+        // push loading screen
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ProgressScreen(text: 'Updating profile...')));
+
+        // result variable
+        String result = '';
+
+        // call update profile
+        if (pickedImage == null) {
+          result = await UniveristyProfile.updateProfile(
+                  profileDocId: widget.uniProfile!.profileDocId,
+                  profileImage: '',
+                  name: name,
+                  location: location,
+                  type: type,
+                  description: description,
+                  fieldsOffered: fieldsOffered)
+              .updateProfile();
+        } else {
+          result = await UniveristyProfile.updateProfile(
+                  profileDocId: widget.uniProfile!.profileDocId,
+                  profileImage: pickedImage!.path,
+                  name: name,
+                  location: location,
+                  type: type,
+                  description: description,
+                  fieldsOffered: fieldsOffered)
+              .updateProfile();
+        }
+
+        // updated
+        if (result == 'success') {
+          // if new image is picked
+          if (pickedImage != null) {
+            // call load profile image method of home screen (after 2 seconds because when this is called no image is present at the location in storage sow ait for the image to upload then call)
+            await Future.delayed(Duration(seconds: 2), () {
+              widget.loadProfileImage();
+            });
+          }
+            // pop loading screen
+            Navigator.pop(context);
+
+          // pop edit profile screen
+          Navigator.pop(context);
+
+          // show snack bar
+          // show succes snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated!')),
+          );
+        } else {
+          // show error snackbar
+          // show snack bar
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content:
+                    Text('Error updating profile. Please try again later!')),
+          );
+          // pop screen
+          Navigator.pop(context);
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: Text("Confirm?"),
+      content: Text("Are you sure you want to update profile?"),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -159,6 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: EdgeInsets.all(20.0),
             // form
             child: Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,12 +315,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     CircleAvatar(
                                         backgroundImage:
                                             FileImage(pickedImage as File),
-                                        radius: 45.0,
+                                        radius: 60.0,
                                       )
                                     // otherwise show uni actual profile image
                                     : CircleAvatar(
                                         backgroundImage: NetworkImage(
                                             widget.uniProfile!.profileImage),
+                                        radius: 60.0,
                                       ),
                             // space
                             SizedBox(
@@ -473,9 +584,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ? GestureDetector(
                                     onTap: () {
                                       setState(() {
+                                        // Clear the error message associated with the deleted field
+                                        _formKey.currentState!.validate();
                                         listController[index].clear();
                                         listController[index].dispose();
                                         listController.removeAt(index);
+
                                         // remove this field offered from fields offered list also
                                         fieldsOffered.removeAt(index);
                                       });
@@ -521,42 +635,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             // print(description);
                             // print(location);
                             // print(type);
-                            print(fieldsOffered);
+                            // print(fieldsOffered);
 
                             // show alert for confirmation
-
-                            final result =
-                                await UniveristyProfile.updateProfile(
-                                        profileDocId:
-                                            widget.uniProfile!.profileDocId,
-                                        profileImage: '',
-                                        name: name,
-                                        location: location,
-                                        type: type,
-                                        description: description,
-                                        fieldsOffered: fieldsOffered)
-                                    .updateProfile();
-
-                            if (result == 'success') {
-                              // show succes snackbar
-                              // show snack bar
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Profile updated!')),
-                              );
-                              // pop screen
-                              Navigator.pop(context);
-                            } else {
-                              // show error snackbar
-                              // show snack bar
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Error updating profile. Please try again later!')),
-                              );
-                              // pop screen
-                              Navigator.pop(context);
-                            }
+                            showAlertDialog(context);
                           }
                         },
                         icon: Icon(Icons.done),
