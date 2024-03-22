@@ -335,8 +335,8 @@ class _UniversityHomeState extends State<UniversityHome> {
 
   // load profile image (seperated because need to await for the method so this method will be async)
   loadProfileImage() async {
-    var result = await UniveristyProfile.empty()
-        .getProfileImagePath(uniProfile!.profileDocId);
+    var result = await UniveristyProfile.withId(profileDocId: uniProfile!.profileDocId)
+        .getProfileImagePath();
     if (result != null) {
       setState(() {
         uniProfile!.profileImage = result;
@@ -521,6 +521,7 @@ class _UniversityHomeState extends State<UniversityHome> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 18.0),
                                         // color: Colors.pink,
+                                        margin: EdgeInsets.only(top: 10.0),
                                         child: Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
@@ -536,8 +537,8 @@ class _UniversityHomeState extends State<UniversityHome> {
                                             Expanded(
                                               // to wrap location text
                                               child: Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 10.0),
+                                                // margin:
+                                                //     EdgeInsets.only(top: 10.0),
                                                 child: Text(
                                                   '${uniProfile!.location}',
                                                   // 'Islamabad',
@@ -670,11 +671,11 @@ class _UniversityHomeState extends State<UniversityHome> {
                       value: Post.empty().getPostsStream(),
                       initialData: null,
                       child: UniversityPosts(
-                          uniProfileImage: uniProfile!.profileImage,
-                          uniName: uniProfile!.name,
-                          uniProfileDocId: uniProfile!.profileDocId,
-                          homeScreenContext: context,
-                          ),
+                        uniProfileImage: uniProfile!.profileImage,
+                        uniName: uniProfile!.name,
+                        uniProfileDocId: uniProfile!.profileDocId,
+                        homeScreenContext: context,
+                      ),
                     ),
 
                     // second tab bar viiew widget

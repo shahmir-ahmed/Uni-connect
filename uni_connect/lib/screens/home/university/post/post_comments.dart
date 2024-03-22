@@ -82,6 +82,14 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
   // comment by set check
   bool commentBySet = false;
 
+  // controller for comment field to clear it
+  final TextEditingController _textEditingController = TextEditingController();
+
+  // function to clear comment field using controller
+  void clearTextField() {
+    _textEditingController.clear();
+  }
+
   // converts comment at each index in post comments list to a widget
   // return a list of widgets for post comments
   List<Widget> _commentsWidgetList() {
@@ -157,7 +165,7 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
     final commentObj = Provider.of<Comment?>(
         context); // due tot this being final the value comment is not changed
 
-    // print(commentObj);
+    // print('commentObj ${commentObj!.comments!.length}');
 
     // check comments are present or not
     if (commentObj != null && postComments == null) {
@@ -203,7 +211,7 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
         // comment input field section to comment
         // form container
         Container(
-            height: 40.0,
+            height: 50.0,
             child: Container(
               color: const Color.fromARGB(255, 209, 209, 209),
               padding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -214,6 +222,7 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                   Container(
                     width: MediaQuery.of(context).size.width - 66,
                     child: TextFormField(
+                      controller: _textEditingController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius:
@@ -253,6 +262,9 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                             //         comment.remove('comment_by_name'))
                             //     .toList();
 
+                            // clear comment text field
+                            clearTextField();
+
                             // add the new comment in the list
                             postComments!.add({
                               'comment': commentText,
@@ -262,6 +274,11 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                                   widget.commentByType == 'student'
                                       ? 'student'
                                       : 'university'
+                            });
+
+                            // set comment as empty to change button
+                            setState(() {
+                              commentText = '';
                             });
 
                             // set name on new comment
@@ -276,21 +293,19 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                                 .updateComments();
 
                             if (result == 'success') {
-                              // clear comment text field
-
                               // show comment posted message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Comment posted!')),
-                              );
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   SnackBar(content: Text('Comment posted!')),
+                              // );
                             } else if (result == null) {
                               // set latest commments color as red
-                              
+
                               // show error message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Something went wrong. Please try again later.')),
-                              );
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   SnackBar(
+                              //       content: Text(
+                              //           'Something went wrong. Please try again later.')),
+                              // );
                             }
 
                             // clear comment text field

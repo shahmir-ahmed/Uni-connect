@@ -7,7 +7,10 @@ import 'package:uni_connect/screens/within_screen_progress.dart';
 // widget to contain/show all university posts
 class UniversityPosts extends StatefulWidget {
   // uni profile id
-  String uniProfileDocId;
+  String? uniProfileDocId;
+
+  // student profile id
+  String? stdProfileId;
 
   // uni profile image path
   String uniProfileImage;
@@ -15,15 +18,22 @@ class UniversityPosts extends StatefulWidget {
   // uni name
   String uniName;
 
-  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+  BuildContext?
+      homeScreenContext; // Accept context as a parameter // home screen widget context
 
   // const to get the uni profile id
   UniversityPosts(
       {required this.uniProfileDocId,
       required this.uniProfileImage,
       required this.uniName,
-      required this.homeScreenContext
-      });
+      required this.homeScreenContext});
+
+  UniversityPosts.ForStudent({
+    required this.stdProfileId,
+    required this.uniProfileDocId,
+    required this.uniProfileImage,
+    required this.uniName,
+  });
 
   @override
   State<UniversityPosts> createState() => _UniversityPostsState();
@@ -75,6 +85,18 @@ class _UniversityPostsState extends State<UniversityPosts> {
     //   setState({uniPost.mediaPath = Post.empty().getPostMediaPath() as String});
     // }
 
+    /* Done
+    if (posts != null) {
+      // add liked by and comments list in each post speed up addition manually
+      posts!.forEach((post) {
+        post.postsCollection.doc(post.postId).update({
+          'post_likes': [],
+          'post_comments': [],
+        });
+      });
+    }
+    */
+
     // posts card widget for each post of uni
     return posts == null
         ? WithinScreenProgress(
@@ -92,26 +114,48 @@ class _UniversityPostsState extends State<UniversityPosts> {
         //       )
         // university posts
         : SingleChildScrollView(
-            child: Column(
-                children:
-                    // posts to show, mapping to individual container widget to display
-                    posts!
+            child: widget.homeScreenContext != null
+                ? Column(
+                    children:
+                        // University side posts
+                        // posts to show, mapping to individual container widget to display
+                        posts!
+                            .where((post) =>
+                                post.uniProfileId == widget.uniProfileDocId)
+                            .map((uniPost) => UniPostCard(
+                                  key:
+                                      UniqueKey(), // because post widget child widgets should be attached
+                                  post: uniPost,
+                                  profileImage: widget.uniProfileImage,
+                                  uniName: widget.uniName,
+                                  uniProfileDocId: widget.uniProfileDocId,
+                                  homeScreenContext: widget.homeScreenContext,
+                                  // refreshPosts: () {
+                                  //   setState(() {
+                                  //     uniPosts!.remove(uniPost);
+                                  //   });
+                                  // }
+                                ))
+                            .toList()
+                          // Sort the posts based on postCreatedAt
+                          ..sort((a, b) => b.post.postCreatedAt!
+                              .compareTo(a.post.postCreatedAt!)))
+                : Column(
+                    children: posts!
                         .where((post) =>
                             post.uniProfileId == widget.uniProfileDocId)
-                        .map((uniPost) => UniPostCard(
-                              key: UniqueKey(), // because post is removed by below refreshPosts but scattered
+                        .map((uniPost) => UniPostCard.ForStudent(
+                              key:
+                                  UniqueKey(),
                               post: uniPost,
                               profileImage: widget.uniProfileImage,
                               uniName: widget.uniName,
-                              uniProfileDocId: widget.uniProfileDocId,
-                              homeScreenContext: widget.homeScreenContext,
-                              // refreshPosts: () {
-                              //   setState(() {
-                              //     uniPosts!.remove(uniPost);
-                              //   });
-                              // }
+                              stdProfileDocId: widget.stdProfileId,
                             ))
-                        .toList()),
+                        .toList()
+                      // Sort the posts based on postCreatedAt
+                      ..sort((a, b) => b.post.postCreatedAt!
+                          .compareTo(a.post.postCreatedAt!))),
           );
   }
 }

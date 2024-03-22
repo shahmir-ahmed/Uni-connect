@@ -101,8 +101,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               widget.loadProfileImage();
             });
           }
-            // pop loading screen
-            Navigator.pop(context);
+          // pop loading screen
+          Navigator.pop(context);
 
           // pop edit profile screen
           Navigator.pop(context);
@@ -161,9 +161,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
       // print('here');
     }
+    // if fields offered are initially empty then set a single text field in
+    if (widget.uniProfile!.fieldsOffered.length == 0) {
+      listController.add(TextEditingController());
+    }
     // print(widget.uniProfile!.fieldsOffered);
     // set field offering text list
-    fieldsOffered = widget.uniProfile!.fieldsOffered;
+    // fieldsOffered = widget.uniProfile!.fieldsOffered;
 
     // print(fieldsOffered); [Computer Science, Botany, DVM]
 
@@ -368,6 +372,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // name field
                   TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.name,
                     onChanged: (value) {
@@ -407,6 +412,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // description field
                   TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
                     minLines: 3,
                     maxLines: 999,
                     decoration: formInputDecoration,
@@ -444,6 +450,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // location field
                   TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.location,
                     onChanged: (value) {
@@ -479,6 +486,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // location field
                   TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.type,
                     onChanged: (value) {
@@ -553,6 +561,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             SizedBox(
                               width: MediaQuery.of(context).size.width - 150,
                               child: TextFormField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 controller: listController[index],
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(

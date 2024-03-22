@@ -24,13 +24,17 @@ class UniPostCard extends StatefulWidget {
   // uni name
   late String? uniName;
 
-  // uni profile doc id
+  // uni profile doc id for commenting
   late String? uniProfileDocId;
+
+  // student profile doc id for commenting
+  late String? stdProfileDocId;
 
   // refresh uni posts method
   // Function refreshPosts;
 
-  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+  BuildContext?
+      homeScreenContext; // Accept context as a parameter // home screen widget context
 
   UniPostCard({
     super.key,
@@ -40,6 +44,15 @@ class UniPostCard extends StatefulWidget {
     required this.uniProfileDocId,
     required this.homeScreenContext,
     // required this.refreshPosts
+  }); // constructor
+
+  // for student side post
+  UniPostCard.ForStudent({
+    super.key,
+    required this.post,
+    required this.profileImage,
+    required this.uniName,
+    required this.stdProfileDocId,
   }); // constructor
 
   @override
@@ -64,8 +77,8 @@ class _UniPostCardState extends State<UniPostCard> {
       initialData: null,
       // comment stream setup
       child: StreamProvider.value(
-        value: Comment.id(docId: widget.post.postId).getCommentsStream(),
         initialData: null,
+        value: Comment.id(docId: widget.post.postId).getCommentsStream(),
         child: Container(
           // width: MediaQuery.of(context).size.width - 10,
           // height: MediaQuery.of(context).size.height - 380,
@@ -81,14 +94,23 @@ class _UniPostCardState extends State<UniPostCard> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
               // container inside card
-              child: PostContent(
-                post: widget.post,
-                profileImage: widget.profileImage,
-                uniName: widget.uniName,
-                uniProfileDocId: widget.uniProfileDocId,
-                homeScreenContext: widget.homeScreenContext
-                // refreshPosts: widget.refreshPosts,
-              )),
+              // uni side
+              child: widget.homeScreenContext != null
+                  ? PostContent(
+                      post: widget.post,
+                      profileImage: widget.profileImage,
+                      uniName: widget.uniName,
+                      uniProfileDocId: widget.uniProfileDocId,
+                      homeScreenContext: widget.homeScreenContext
+                      // refreshPosts: widget.refreshPosts,
+                      )
+                  // student side
+                  : PostContent.ForStudent(
+                      post: widget.post,
+                      profileImage: widget.profileImage,
+                      uniName: widget.uniName,
+                      stdProfileDocId: widget.stdProfileDocId,
+                    )),
         ),
       ),
     );
@@ -98,7 +120,7 @@ class _UniPostCardState extends State<UniPostCard> {
 // Post content class
 class PostContent extends StatefulWidget {
   // const PostContent({super.key});
-  late Post post; // post
+  late Post post; // post object
 
   // uni profile image
   late String? profileImage;
@@ -106,13 +128,17 @@ class PostContent extends StatefulWidget {
   // uni name
   late String? uniName;
 
-  // uni name
+  // uni profile id for commenting
   late String? uniProfileDocId;
+
+  // student profile id for commenting
+  late String? stdProfileDocId;
 
   // refresh post method
   // Function refreshPosts;
 
-  final BuildContext homeScreenContext; // Accept context as a parameter // home screen widget context
+  BuildContext?
+      homeScreenContext; // Accept context as a parameter // home screen widget context
 
   PostContent({
     required this.post,
@@ -121,6 +147,13 @@ class PostContent extends StatefulWidget {
     required this.uniProfileDocId,
     required this.homeScreenContext,
     // required this.refreshPosts
+  }); // constructor
+
+  PostContent.ForStudent({
+    required this.post,
+    required this.profileImage,
+    required this.uniName,
+    required this.stdProfileDocId,
   }); // constructor
 
   @override
@@ -137,7 +170,7 @@ class _PostContentState extends State<PostContent> {
 
     // Load the mediaPath when the widget is initialized.
     _loadMediaPath();
-    // print('inside initstate');
+    // print('inside initstate'); // issue when a post is lliked the post media refreshes because initsatte is called again when something new arrives in stream i.e. posts docs are updated or collection has changed so keeping post likes seperatd till now to avoid this refreshing
     // print("refreshPosts method: ${widget.refreshPosts}");
   }
 
@@ -172,7 +205,7 @@ class _PostContentState extends State<PostContent> {
 
         break;
       case '🗑 Delete post':
-        showAlertDialog(widget.homeScreenContext); // show alert dialog
+        showAlertDialog(widget.homeScreenContext!); // show alert dialog
         break;
     }
   }
@@ -275,14 +308,25 @@ class _PostContentState extends State<PostContent> {
         // then count the liked by list items and set count to variable
         // print('here');
         setState(() {
-          likesCount = like.likedBy!.length;
-          // if the post is liked by the uni then set the flag as true
-          like.likedBy!.forEach((userId) {
-            if (userId == widget.post.uniProfileId) {
-              // && the liked variable is still false
-              liked = true;
-            }
-          });
+          likesCount = like!.likedBy!.length;
+          // likesCount = widget.post.postLikes!.length;
+          if (widget.homeScreenContext != null) {
+            // if the post is liked by the uni then set the flag as true
+            like.likedBy!.forEach((likedUserId) {
+              if (likedUserId == widget.uniProfileDocId) {
+                // && the liked variable is still false
+                liked = true;
+              }
+            });
+          } else {
+            // if the post is liked by the student then set the flag as true
+            like.likedBy!.forEach((likedUserId) {
+              if (likedUserId == widget.stdProfileDocId) {
+                // && the liked variable is still false
+                liked = true;
+              }
+            });
+          }
           // allLoaded = true;
         });
       }
@@ -295,6 +339,7 @@ class _PostContentState extends State<PostContent> {
         // then count the comments items and set count to variable
         // print('here');
         setState(() {
+          // commentsCount = widget.post.postComments!.length;
           commentsCount = comment.comments!.length;
         });
       }
@@ -344,27 +389,37 @@ class _PostContentState extends State<PostContent> {
                     SizedBox(
                       width: 10.0,
                     ),
-                    // uni name text
-                    widget.uniName!.length > 28
-                        ? Text('${widget.uniName!.substring(0, 28)}...')
-                        : Text('${widget.uniName!}'),
+                    widget.homeScreenContext != null
+                        ?
+                        // uni name text
+                        widget.uniName!.length > 28
+                            ? Text('${widget.uniName!.substring(0, 28)}...')
+                            : Text('${widget.uniName!}')
+                        : // uni name text for student
+                        widget.uniName!.length > 32
+                            ? Text('${widget.uniName!.substring(0, 32)}...')
+                            : Text('${widget.uniName!}'),
                   ],
                 ),
-                // row inside three dot menu for managing post
-                // three dot menu
-                PopupMenuButton<String>(
-                  color: Colors.white,
-                  onSelected: handleClick,
-                  itemBuilder: (BuildContext context) {
-                    return {'📝 Edit post', '🗑 Delete post'}
-                        .map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
-                  },
-                ),
+                // show only on uni side
+                widget.homeScreenContext != null
+                    ?
+                    // row inside three dot menu for managing post
+                    // three dot menu
+                    PopupMenuButton<String>(
+                        color: Colors.white,
+                        onSelected: handleClick,
+                        itemBuilder: (BuildContext context) {
+                          return {'📝 Edit post', '🗑 Delete post'}
+                              .map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                      )
+                    : SizedBox(),
               ],
             ),
           ),
@@ -414,7 +469,8 @@ class _PostContentState extends State<PostContent> {
                       ? ElevatedButton(
                           onPressed: () async {
                             // add the uni profile id in the liked by list of the like object
-                            like!.likedBy!.add(widget.post.uniProfileId);
+                            like!.likedBy!.add(widget.stdProfileDocId);
+                            // widget.post.postLikes!.add(widget.post.uniProfileId);
                             // call the like method
                             await like.likePost();
                             // set liked as true
@@ -448,7 +504,7 @@ class _PostContentState extends State<PostContent> {
                           onPressed: () async {
                             // call the unlike method
                             // remove the uni profile id from the liked by list of the like object of this post
-                            like!.likedBy!.remove(widget.post.uniProfileId);
+                            like!.likedBy!.remove(widget.stdProfileDocId);
                             // call the ulike method
                             await like.unLikePost();
                             // set liked as false
@@ -481,17 +537,30 @@ class _PostContentState extends State<PostContent> {
               Expanded(
                   child: ElevatedButton.icon(
                 onPressed: () {
-                  // show all the comments of post in a comment screen
-                  // by passing the comment list to the screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CommentsScreen(
-                              commentDocId: widget.post.postId,
-                              commenterProfileId: widget.uniProfileDocId,
-                              commentByType: 'university',
-                            )),
-                  );
+                  widget.homeScreenContext != null
+                      ?
+                      // show all the comments of post in a comment screen
+                      // by passing the comment list to the screen
+                      // for university
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CommentsScreen(
+                                    commentDocId: widget.post.postId,
+                                    commenterProfileId: widget.uniProfileDocId,
+                                    commentByType: 'university',
+                                  )),
+                        )
+                      // for student
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CommentsScreen(
+                                    commentDocId: widget.post.postId,
+                                    commenterProfileId: widget.stdProfileDocId,
+                                    commentByType: 'student',
+                                  )),
+                        );
                 },
                 icon: Icon(
                   Icons.messenger_outline,
@@ -520,8 +589,14 @@ class _PostContentState extends State<PostContent> {
   // Extracted a method for building the media button to improve readability.
   Widget buildMediaButton() {
     // if media path is not currently fetched or error fetching path so '' stored in path
-    if (mediaPath == null || mediaPath == '') {
+    if (mediaPath == null || mediaPath == 'error') {
       // print("mediaPath: $mediaPath");
+      // if error fetching means new post media is not present in the storage now
+      if (mediaPath == 'error') {
+        // again load media path
+        _loadMediaPath();
+      }
+      // print('mediaPath $mediaPath');
       return WithinScreenProgress.withPadding(
         text: '',
         paddingTop: 50.0,

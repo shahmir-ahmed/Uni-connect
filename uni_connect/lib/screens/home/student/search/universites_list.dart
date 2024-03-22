@@ -15,14 +15,31 @@ class UniversitiesList extends StatefulWidget {
 }
 
 class _UniversitiesListState extends State<UniversitiesList> {
+  // uni profileimage
+  String? profileImage;
+
   // fetch the uni profile photo
-  Future<String> _getProfilePhoto(profileDocId) async {
-    // get university profile image
-    // get the profile image of the university (if exists) (getting here because needs to show in search)
-    final imagePath = await UniveristyProfile.empty()
-            .getProfileImagePath(profileDocId) ??
-        ''; // set empty path if there is no image found i.e. null is returned
-    return imagePath;
+  _getProfilePhoto(profileDocId) async {
+    try {
+      // get university profile image
+      // get the profile image of the university (if exists) (getting here because needs to show in search)
+      final imagePath = await UniveristyProfile.withId(
+                  profileDocId: profileDocId)
+              .getProfileImagePath() ??
+          ''; // set empty path if there is no image found i.e. null is returned
+      setState(() {
+        profileImage = imagePath;
+      });
+    } catch (e) {
+      print('Error in _getProfilePhoto: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // _getProfilePhoto(profileDocId);
   }
 
   @override

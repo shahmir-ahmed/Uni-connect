@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/classes/virtual_event.dart';
 import 'package:uni_connect/screens/home/student/uni_profile/follow_unfollow_button.dart';
 import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/virtual_event_cards.dart';
+import 'package:uni_connect/screens/home/university/post/university_posts.dart';
+import 'package:uni_connect/screens/within_screen_progress.dart';
 
+// Student side university profile screen
 class UniProfileScreen extends StatefulWidget {
   // const UniversityProfileScreen({super.key});
 
@@ -76,6 +80,7 @@ class _UniProfileState extends State<UniProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('University Profile'),
+        backgroundColor: Colors.blue[400],
       ),
       body: DefaultTabController(
         length: 3,
@@ -390,7 +395,7 @@ class _UniProfileState extends State<UniProfileScreen> {
               //     uniName: uniProfile!.name,
               //     uniProfileDocId: uniProfile!.profileDocId),
 
-              // first tab bar viiew widget
+              /*
               Container(
                 height: 100.0,
                 // color: Colors.pink,
@@ -400,6 +405,22 @@ class _UniProfileState extends State<UniProfileScreen> {
                   ),
                 ),
               ),
+              */
+              // first tab bar viiew widget
+              // all uni posts widget
+              // all posts stream setup
+              stdProfileDocId != null
+                  ? StreamProvider.value(
+                      value: Post.empty().getPostsStream(),
+                      initialData: null,
+                      child: UniversityPosts.ForStudent(
+                        uniProfileDocId: widget.uniProfile!.profileDocId,
+                        uniProfileImage: widget.uniProfile!.profileImage,
+                        uniName: widget.uniProfile!.name,
+                        stdProfileId: stdProfileDocId,
+                      ),
+                    )
+                  : WithinScreenProgress(text: 'Loading posts'),
 
               // second tab bar view widget
               Container(
@@ -485,7 +506,8 @@ class _UniProfileState extends State<UniProfileScreen> {
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: widget.uniProfile!.fieldsOffered.length,
+                              itemCount:
+                                  widget.uniProfile!.fieldsOffered.length,
                               itemBuilder: (context, index) {
                                 return Text(
                                     '${index + 1}. ${widget.uniProfile!.fieldsOffered[index]}');

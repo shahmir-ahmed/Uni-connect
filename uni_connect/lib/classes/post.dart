@@ -26,9 +26,27 @@ class Post {
   // post id
   String? postId;
 
+  // post id
+  Timestamp? postCreatedAt;
+
+  // post likes
+  // List<dynamic>? postLikes;
+
+  // post likes
+  // List<dynamic>? postComments;
+
   // methods
   // constructor
-  Post(
+  Post({
+    required this.postId,
+    required this.mediaType,
+    required this.mediaPath,
+    required this.description,
+    required this.postCreatedAt,
+    required this.uniProfileId,
+  });
+
+  Post.withoutCreatedAt(
       {required this.postId,
       required this.mediaType,
       required this.mediaPath,
@@ -55,11 +73,15 @@ class Post {
       required this.description});
 
   // constructor
-  Post.withoutMedia(
-      {required this.postId,
-      required this.mediaType,
-      required this.description,
-      this.uniProfileId});
+  Post.withoutMedia({
+    required this.postId,
+    required this.mediaType,
+    required this.description,
+    required this.postCreatedAt,
+    // required this.postLikes,
+    // required this.postComments,
+    required this.uniProfileId,
+  });
 
   // empty constructor
   Post.empty();
@@ -71,6 +93,12 @@ class Post {
       DocumentReference documentReference = await postsCollection.add({
         'post_description': description,
         'post_media_type': mediaType,
+        // 'post_likes': [],
+        // 'post_comments': [
+          // commnet_by and comment Map for each comment
+          // {}
+        // ],
+        'post_created_at': DateTime.now(),
         'university_profile_id': uniProfileId // or uni id can be named
       });
 
@@ -89,6 +117,7 @@ class Post {
       // create likes document in the likes collection for this post
       await Like.empty().likesCollection.doc(postId).set({'liked_by': []});
 
+/*
       // create comments document in the comments collection for this post
       await Comment.empty().commentsCollection.doc(postId).set({
         'comments': [
@@ -96,6 +125,7 @@ class Post {
           // {}
         ]
       });
+      */
 
       return 'success';
     } catch (e) {
@@ -115,6 +145,9 @@ class Post {
               // media: media,
               description: doc.get('post_description') ??
                   '', // issue was here in post_description field so put try catch in every function
+              // postLikes: doc.get('post_likes'),
+              // postComments: doc.get('post_comments'),
+              postCreatedAt: doc.get('post_created_at'),
               uniProfileId: doc.get('university_profile_id') ?? ''))
           .toList();
     } catch (e) {
@@ -157,7 +190,7 @@ class Post {
       return mediaUrl;
     } catch (e) {
       print("Err in retrieving post media: ${e.toString()}");
-      return '';
+      return 'error';
     }
   }
 
@@ -253,4 +286,28 @@ class Post {
       print("ERR in deletePost: ${e.toString()}");
     }
   }
+
+/*
+  // like a post
+  Future<String?> likePost() async {
+    try {
+      // set the new post likes list of this post document
+      await postsCollection.doc(postId).update({'post_likes': postLikes});
+    } catch (e) {
+      print('Error in likePost: ${e.toString()}');
+      return null;
+    }
+  }
+
+  // unlike a post (same like post method logic)
+  Future<String?> unLikePost() async {
+    try {
+      // set the new post likes list of this post document
+      await postsCollection.doc(postId).update({'post_likes': postLikes});
+    } catch (e) {
+      print('Error in unLikePost: ${e.toString()}');
+      return null;
+    }
+  }
+  */
 }
