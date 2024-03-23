@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  EditProfileScreen({required this.uniProfile, required this.loadProfileImage});
+  EditProfileScreen({required this.studentProfile});
 
-  // uni profile object
-  UniveristyProfile? uniProfile;
+  // student profile object
+  StudentProfile studentProfile;
 
-  // load profile image method
-  Function loadProfileImage;
+  // load profile image on previous screen method
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -21,43 +20,27 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   // fields offered multiple field controllers list
-  List<TextEditingController> listController = [];
+  List<TextEditingController> listController1 = [];
+
+  // uni locations preferred multiple field controllers list
+  List<TextEditingController> listController2 = [];
 
   // form attributes
-  String name = '';
-  String description = '';
-  String location = '';
-  String type = '';
-  List<dynamic> fieldsOffered = [];
+  String stdName = '';
+  String stdGender = '';
+  String stdCollege = '';
+  List<dynamic> fieldsOfInterest = [];
+  List<dynamic> uniLocationsPreferred = [];
 
   // profile image file object
   File? pickedImage;
   // image error text
   String fileError = '';
 
-  // posssible fields offered list
-  List<String> possibleFieldsOffered = [
-    "Medical Sciences",
-    "Engineering",
-    "Technical",
-    "Computer Sciences & Information Technology",
-    "Art & Design",
-    "Management Sciences",
-    "Social Sciences",
-    "Biological & Life Sciences",
-    "Chemical & Material Sciences",
-    "Physics & Numerical Sciences",
-    "Earth & Environmental Sciences",
-    "Agricultural Sciences",
-    "Religious Studies",
-    "Media Studies",
-    "Commerce / Finance & Accounting"
-  ];
-
   // form key
   final _formKey = GlobalKey<FormState>();
 
-  // reg exp variable for name field
+  // reg exp variable for name, gender field
   static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
 
   // show alert dialog for delete post
@@ -90,25 +73,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         // call update profile
         if (pickedImage == null) {
-          result = await UniveristyProfile.updateProfile(
-                  profileDocId: widget.uniProfile!.profileDocId,
-                  profileImage: '',
-                  name: name,
-                  location: location,
-                  type: type,
-                  description: description,
-                  fieldsOffered: fieldsOffered)
-              .updateProfile();
+          // result = await UniveristyProfile.updateProfile(
+          //         profileDocId: widget.uniProfile!.profileDocId,
+          //         profileImage: '',
+          //         name: name,
+          //         location: location,
+          //         type: type,
+          //         description: description,
+          //         fieldsOffered: fieldsOffered)
+          //     .updateProfile();
         } else {
-          result = await UniveristyProfile.updateProfile(
-                  profileDocId: widget.uniProfile!.profileDocId,
-                  profileImage: pickedImage!.path,
-                  name: name,
-                  location: location,
-                  type: type,
-                  description: description,
-                  fieldsOffered: fieldsOffered)
-              .updateProfile();
+          // result = await UniveristyProfile.updateProfile(
+          //         profileDocId: widget.uniProfile!.profileDocId,
+          //         profileImage: pickedImage!.path,
+          //         name: name,
+          //         location: location,
+          //         type: type,
+          //         description: description,
+          //         fieldsOffered: fieldsOffered)
+          //     .updateProfile();
         }
 
         // updated
@@ -117,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (pickedImage != null) {
             // call load profile image method of home screen (after 2 seconds because when this is called no image is present at the location in storage sow ait for the image to upload then call)
             await Future.delayed(Duration(seconds: 2), () {
-              widget.loadProfileImage();
+              // widget.loadProfileImage();
             });
           }
           // pop loading screen
@@ -139,7 +122,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 content:
                     Text('Error updating profile. Please try again later!')),
           );
-          // pop screen
+          // pop edit profile screen
           Navigator.pop(context);
         }
       },
@@ -169,38 +152,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // initialize list
-    // listController. = List.filled(
-    //     widget.uniProfile!.fieldsOffered.length, TextEditingController(),
-    //     growable: true);
-    // set text in each fields according to current fields offered list
-    for (var i = 0; i < widget.uniProfile!.fieldsOffered.length; i++) {
-      // listController[i].text = widget.uniProfile!.fieldsOffered[i];
-      listController.add(
-          TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
-      // print('here');
+    // initialize both lists
+    // set text in each fields according to current fields of interest list
+    for (var i = 0; i < widget.studentProfile.fieldsOfInterest.length; i++) {
+      listController1.add(TextEditingController(
+          text: widget.studentProfile.fieldsOfInterest[i]));
     }
-    // if fields offered are initially empty then set a single text field in
-    if (widget.uniProfile!.fieldsOffered.length == 0) {
-      listController.add(TextEditingController());
+    // if fields of interest are initially empty then set a single text field in
+    if (widget.studentProfile.fieldsOfInterest.isEmpty) {
+      listController1.add(TextEditingController());
     }
-    // print(widget.uniProfile!.fieldsOffered);
-    // set field offering text list
-    // fieldsOffered = widget.uniProfile!.fieldsOffered;
 
-    // print(fieldsOffered); [Computer Science, Botany, DVM]
+    // set text in each fields according to current uni locations pref. list
+    for (var i = 0;
+        i < widget.studentProfile.uniLocationsPreferred.length;
+        i++) {
+      listController2.add(TextEditingController(
+          text: widget.studentProfile.uniLocationsPreferred[i]));
+    }
+    // if uni locations pref. are initially empty then set a single text field in
+    if (widget.studentProfile.uniLocationsPreferred.isEmpty) {
+      listController2.add(TextEditingController());
+    }
 
-    // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
+    // initially set all form values (in case user not changes that field then that field is not saved as empty in the database)
+    stdName = widget.studentProfile.name;
+    stdGender = widget.studentProfile.gender;
+    stdCollege = widget.studentProfile.college;
+    // copy fields of interests list here
+    fieldsOfInterest =
+        List<String>.from(widget.studentProfile.fieldsOfInterest);
 
-    // initially set all form values (in case user not changes that field that field is not saved as empty in the database)
-    name = widget.uniProfile!.name;
-    description = widget.uniProfile!.description;
-    location = widget.uniProfile!.location;
-    type = widget.uniProfile!.type;
-    // fieldsOffered = widget.uniProfile!.fieldsOffered;
-    fieldsOffered = List<String>.from(widget.uniProfile!.fieldsOffered);
-
-    // print('init');
+    // copy uni locations pref. list here
+    uniLocationsPreferred =
+        List<String>.from(widget.studentProfile.uniLocationsPreferred);
   }
 
   // select source to upload image i.e. gallery/camera
@@ -323,12 +308,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           children: [
                             // profile photo upload, preview
                             // if image is not present and no image is picked
-                            (widget.uniProfile!.profileImage == '' &&
+                            (widget.studentProfile.profileImage == '' &&
                                     pickedImage == null)
-                                // then show dummy uni image
+                                // then show dummy student image
                                 ? CircleAvatar(
                                     backgroundImage:
-                                        AssetImage('assets/uni.jpg'),
+                                        AssetImage('assets/student.jpg'),
                                     radius: 60.0,
                                   )
                                 // if image is picked
@@ -343,7 +328,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     // otherwise show uni actual profile image
                                     : CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                            widget.uniProfile!.profileImage),
+                                            widget.studentProfile.profileImage),
                                         radius: 60.0,
                                       ),
                             // space
@@ -393,20 +378,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   TextFormField(
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
-                    initialValue: widget.uniProfile!.name,
+                    initialValue: widget.studentProfile.name,
                     onChanged: (value) {
                       setState(() {
-                        name = value.trim();
+                        stdName = value.trim();
                       });
                     },
                     validator: (value) {
                       // if name is empty at the time of validation return helper text
                       if (value!.trim().isEmpty) {
-                        return 'Please enter university name';
+                        return 'Please enter name';
                       }
                       // contains characters other than alphabets
                       else if (!nameRegExp.hasMatch(value)) {
-                        return 'Please enter valid university name';
+                        return 'Please enter valid name';
                       }
                       // valid name
                       else {
@@ -420,67 +405,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 28.0,
                   ),
 
-                  // description label
+                  // Gender label
                   Text(
-                    'Description: ',
+                    'Gender: ',
                     style: fieldLabelStyle,
                   ),
                   // space
                   SizedBox(
                     height: 7.0,
                   ),
-                  // description field
-                  TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    minLines: 3,
-                    maxLines: 999,
-                    decoration: formInputDecoration,
-                    initialValue: widget.uniProfile!.description,
-                    onChanged: (value) {
-                      setState(() {
-                        description = value.trim();
-                      });
-                    },
-                    validator: (value) {
-                      // if description field is empty at the time of validation return helper text
-                      if (value!.trim().isEmpty) {
-                        return 'Please enter description';
-                      }
-                      // valid description
-                      else {
-                        return null;
-                      }
-                    },
-                  ),
-
-                  // space
-                  SizedBox(
-                    height: 28.0,
-                  ),
-
-                  // location label
-                  Text(
-                    'Location: ',
-                    style: fieldLabelStyle,
-                  ),
-                  // space
-                  SizedBox(
-                    height: 7.0,
-                  ),
-                  // location field
+                  // gender dropdown field
                   TextFormField(
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
-                    initialValue: widget.uniProfile!.location,
+                    initialValue: widget.studentProfile.gender,
                     onChanged: (value) {
                       setState(() {
-                        location = value.trim();
+                        stdGender = value.trim();
                       });
                     },
                     validator: (value) {
                       // if location field is empty at the time of validation return helper text
                       if (value!.trim().isEmpty) {
-                        return 'Please enter location';
+                        return 'Please enter gender';
+                      }
+                      // contains characters other than alphabets
+                      else if (!nameRegExp.hasMatch(value)) {
+                        return 'Please enter valid gender';
                       }
                       // valid location
                       else {
@@ -494,31 +445,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 28.0,
                   ),
 
-                  // Type label
+                  // college name label
                   Text(
-                    'Type: ',
+                    'College/High School: ',
                     style: fieldLabelStyle,
                   ),
                   // space
                   SizedBox(
                     height: 7.0,
                   ),
-                  // location field
+                  // college name field
                   TextFormField(
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
-                    initialValue: widget.uniProfile!.type,
+                    initialValue: widget.studentProfile.college,
                     onChanged: (value) {
                       setState(() {
-                        type = value.trim();
+                        stdCollege = value.trim();
                       });
                     },
                     validator: (value) {
-                      // if location field is empty at the time of validation return helper text
+                      // if college field is empty at the time of validation return helper text
                       if (value!.trim().isEmpty) {
-                        return 'Please enter type';
+                        return 'Please enter college name';
                       }
-                      // valid location
+                      // valid college name
                       else {
                         return null;
                       }
@@ -530,13 +481,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 28.0,
                   ),
 
-                  // fields offered label and add text field button
+                  // pref. label
+                  Text(
+                    'Preferences: ',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // fields of interest label and add text field button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // fields offered label
+                      // fields of interest label
                       Text(
-                        'Fields offered: ',
+                        'Fields of interest: ',
                         style: fieldLabelStyle,
                       ),
 
@@ -544,8 +507,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ElevatedButton.icon(
                         onPressed: () {
                           setState(() {
-                            listController.add(TextEditingController());
-                            fieldsOffered.add("");
+                            // add new input field in list
+                            listController1.add(TextEditingController());
+                            // add empty element in fields of interest list
+                            fieldsOfInterest.add("");
                           });
                         },
                         icon: Icon(Icons.add),
@@ -554,12 +519,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       )
                     ],
                   ),
-                  // fields offered fields
+                  // fields of interest fields
                   ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     shrinkWrap: true,
-                    itemCount: listController.length,
+                    itemCount: listController1.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 15),
@@ -582,20 +547,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: TextFormField(
                                 textCapitalization:
                                     TextCapitalization.sentences,
-                                controller: listController[index],
+                                controller: listController1[index],
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                         borderSide:
                                             BorderSide(color: Colors.black))),
                                 onChanged: (value) {
                                   setState(() {
-                                    fieldsOffered[index] = value.trim();
+                                    fieldsOfInterest[index] = value.trim();
                                   });
                                 },
                                 validator: (value) {
-                                  // if field offered field is empty at the time of validation return helper text
+                                  // if field of interest field is empty at the time of validation return helper text
                                   if (value!.trim().isEmpty) {
-                                    return 'Please enter field offered';
+                                    return 'Please enter field of interest';
                                   }
                                   // valid field offered
                                   else {
@@ -614,13 +579,128 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     onTap: () {
                                       setState(() {
                                         // Clear the error message associated with the deleted field
-                                        _formKey.currentState!.validate();
-                                        listController[index].clear();
-                                        listController[index].dispose();
-                                        listController.removeAt(index);
+                                        // _formKey.currentState!.validate();
+                                        listController1[index].clear();
+                                        listController1[index].dispose();
+                                        listController1.removeAt(index);
 
-                                        // remove this field offered from fields offered list also
-                                        fieldsOffered.removeAt(index);
+                                        // remove this field of interest from fields of interest list also
+                                        fieldsOfInterest.removeAt(index);
+                                      });
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.blue,
+                                      size: 35,
+                                    ),
+                                  )
+                                : const SizedBox()
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+
+                  // space
+                  SizedBox(
+                    height: 28.0,
+                  ),
+
+                  // university locations preferred label and add text field button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // university locations preferred label
+                      Text(
+                        'University locations preferred: ',
+                        style: fieldLabelStyle,
+                      ),
+
+                      // add text field button
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            // add new input field in list
+                            listController2.add(TextEditingController());
+                            // add empty element in university locations preferred list
+                            uniLocationsPreferred.add("");
+                          });
+                        },
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                        style: mainScreenButtonStyle,
+                      )
+                    ],
+                  ),
+                  // university locations preferred fields
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    shrinkWrap: true,
+                    itemCount: listController2.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Row(
+                          children: [
+                            // serial number
+                            Container(
+                              child: Text(
+                                '${index + 1}.',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            // space
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            // field
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 150,
+                              child: TextFormField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                controller: listController2[index],
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.black))),
+                                onChanged: (value) {
+                                  setState(() {
+                                    uniLocationsPreferred[index] = value.trim();
+                                  });
+                                },
+                                validator: (value) {
+                                  // if university location preferred field is empty at the time of validation return helper text
+                                  if (value!.trim().isEmpty) {
+                                    return 'Please enter preferred location';
+                                  }
+                                  // valid field offered
+                                  else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            // space
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            // delete field button
+                            index != 0
+                                ? GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        // Clear the error message associated with the deleted field
+                                        // _formKey.currentState!.validate();
+                                        listController2[index].clear();
+                                        listController2[index].dispose();
+                                        listController2.removeAt(index);
+
+                                        // remove this field offered from university locations preferred list also
+                                        uniLocationsPreferred.removeAt(index);
                                       });
                                     },
                                     child: const Icon(
@@ -649,7 +729,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ElevatedButton.icon(
                         onPressed: () async {
                           // check image is empty and image is not selected
-                          if (widget.uniProfile!.profileImage == '' &&
+                          if (widget.studentProfile.profileImage == '' &&
                               pickedImage == null) {
                             // set file error
                             setState(() {

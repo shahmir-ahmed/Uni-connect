@@ -5,6 +5,7 @@ import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/home/student/news_feed.dart';
+import 'package:uni_connect/screens/home/student/profile/student_profile.dart';
 import 'package:uni_connect/screens/home/student/search/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,6 +122,8 @@ class _StudentHomeState extends State<StudentHome> {
     // print("student profile id: $stdProfileDocId");
   }
 
+  // get student name and profile pic path using profile id to display in the home screen
+
   @override
   void initState() {
     // TODO: implement initState
@@ -147,45 +150,34 @@ class _StudentHomeState extends State<StudentHome> {
         centerTitle: true,
         backgroundColor: Colors.blue[400],
         actions: [
-          // student profile button
-          MaterialButton(
-            onPressed: () async {
-              /*
-                // show snackbar
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('Logging out...')));
-
-                // logout user
-                await _logoutUser();
-
-                // hide logging out snackbar
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                Navigator.pop(context); // pop home screen
-
-                // push main screen
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MainScreen()));
-                // push authenticate student screen with signin true
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AuthenticateStudent(
-                              showSignIn: true,
-                            )));
-                // logout message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Logged out successfully!')),
-                );
-              */
-            },
-            child: CircleAvatar(
-              backgroundImage: AssetImage("assets/student.jpg"),
-            ),
-            color: Colors.blue[400],
-            elevation: 0.0,
-            minWidth: 18.0,
-          )
+          // student profile id is present then show button
+          stdProfileDocId != null
+              ?
+              // student profile button
+              MaterialButton(
+                  minWidth: 10.0,
+                  highlightElevation: 0.0,
+                  onPressed: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            // show student profile screen with stream supplied to the screen
+                            builder: (context) => StreamProvider.value(
+                                  initialData: null,
+                                  value: StudentProfile.withId(
+                                          profileDocId: stdProfileDocId!)
+                                      .getStudentProfileStream(),
+                                  child: StudentProfileScreen(),
+                                )));
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage("assets/student.jpg"),
+                  ),
+                  color: Colors.blue[400],
+                  elevation: 0.0,
+                  // minWidth: 18.0,
+                )
+              : SizedBox()
         ],
       ),
       // News Feed

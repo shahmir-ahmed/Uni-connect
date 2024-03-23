@@ -80,12 +80,13 @@ class Student {
 // Student Profile class
 class StudentProfile {
   // student profile attributes
+  late String profileDocId;
+  late String profileImage;
   late String name;
   late String gender;
   late String college;
-  late String fieldsOfInterest;
-  late String uniLocationsPreferred;
-  late String profileDocId;
+  late List<dynamic> fieldsOfInterest;
+  late List<dynamic> uniLocationsPreferred;
 
   // following unis list
   late List<dynamic> followingUnis;
@@ -103,7 +104,10 @@ class StudentProfile {
       required this.college,
       required this.gender,
       required this.fieldsOfInterest,
-      required this.uniLocationsPreferred});
+      required this.uniLocationsPreferred,
+      required this.followingUnis,
+      required this.profileImage,
+      });
 
   // empty const.
   StudentProfile.empty();
@@ -111,7 +115,7 @@ class StudentProfile {
   // const. for unis student is following
   StudentProfile.followingUnis({required this.followingUnis});
 
-  // with id
+  // with id only
   StudentProfile.withId({required this.profileDocId});
 
   // create student profile in database (when registering)
@@ -179,6 +183,39 @@ class StudentProfile {
       // print error
       print("ERR in followUnFollowUni: ${e.toString()}");
       return "error";
+    }
+  }
+
+  // student profile doc snapshot to student profile type object
+   StudentProfile? _snapshotToStudentProfileObject(doc) {
+    try {
+      return StudentProfile(
+          name: doc.get('name') ?? '',
+          college: doc.get('college') ?? '',
+          gender: doc.get('gender') ?? '',
+          fieldsOfInterest: doc.get('fields_of_interest') ?? [],
+          followingUnis: doc.get('following_unis') ?? [],
+          uniLocationsPreferred: doc.get('uni_locations_preferred') ?? [],
+          profileImage: '',
+          );
+    } catch (e) {
+      // print error
+      print("ERR in _snapshotToStudentProfileObject: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // get student profile stream
+  Stream<StudentProfile?>? getStudentProfileStream() {
+    try {
+      return profileCollection
+          .doc(profileDocId)
+          .snapshots()
+          .map((snapshot) => _snapshotToStudentProfileObject(snapshot));
+    } catch (e) {
+      // print error
+      print("ERR in getStudentProfileStream: ${e.toString()}");
+      return null;
     }
   }
 }

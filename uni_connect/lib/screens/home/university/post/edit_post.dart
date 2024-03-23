@@ -88,6 +88,7 @@ class _EditPostState extends State<EditPost> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
@@ -100,6 +101,7 @@ class _EditPostState extends State<EditPost> {
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Upload Image"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -112,6 +114,7 @@ class _EditPostState extends State<EditPost> {
                     },
                     icon: const Icon(Icons.image_outlined),
                     label: const Text("Upload 360° Image"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -122,6 +125,7 @@ class _EditPostState extends State<EditPost> {
                     },
                     icon: const Icon(Icons.video_file),
                     label: const Text("Upload Video"),
+                    style: mainScreenButtonStyle,
                   ),
                 ],
               ),
@@ -149,6 +153,7 @@ class _EditPostState extends State<EditPost> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
                     "Pic $type From",
@@ -168,6 +173,7 @@ class _EditPostState extends State<EditPost> {
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
+                    style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -178,6 +184,7 @@ class _EditPostState extends State<EditPost> {
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Gallery"),
+                    style: mainScreenButtonStyle
                   ),
                   const SizedBox(
                     height: 10,
