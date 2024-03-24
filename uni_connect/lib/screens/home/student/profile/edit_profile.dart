@@ -45,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // posssible fields of interest list
   List<String> possibleFieldsOfInterest = [
-    "Please select field of interest",
+    "Select field of interest",
     "Medical Sciences",
     "Engineering",
     "Technical",
@@ -64,7 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ];
 
   // gender list
-  List<String> genderList = ["Please select gender", "Male", "Female"];
+  List<String> genderList = ["Select gender", "Male", "Female"];
 
   // profile image file object
   File? pickedImage;
@@ -144,11 +144,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // pop loading screen
           Navigator.pop(context);
 
-          // pop edit profile screen
-          Navigator.pop(context);
+          if (pickedImage != null) {
+            // pop edit profile screen and return new image path
+            Navigator.pop(context, 'updated');
+          } else {
+            // pop edit profile screen with empty image path i.e. image not changed
+            Navigator.pop(context, 'not updated');
+          }
 
           // pop profile screen
-          Navigator.pop(context);
+          // Navigator.pop(context);
 
           // show snack bar
           // show succes snackbar
@@ -305,7 +310,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // if initially empty list then add a dummy field
     if (widget.studentProfile.fieldsOfInterest.isEmpty) {
       // listController.add(TextEditingController());
-      fieldsOfInterest!.add("Please select field of interest");
+      fieldsOfInterest!.add("Select field of interest");
     }
 
     // copy uni locations pref. list here
@@ -425,6 +430,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // name field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.studentProfile.name,
@@ -486,7 +492,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     }).toList(),
                     validator: (value) {
                       // if 0 index is selected show error
-                      if (value == "Please select gender") {
+                      if (value == "Select gender") {
                         return "Please select gender";
                       } else {
                         return null;
@@ -510,6 +516,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // college name field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.studentProfile.college,
@@ -562,8 +569,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onPressed: () {
                           setState(() {
                             // add new value as first index's value
-                            fieldsOfInterest!
-                                .add("Please select field of interest");
+                            fieldsOfInterest!.add("Select field of interest");
                           });
                         },
                         icon: Icon(Icons.add),
@@ -626,7 +632,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       validator: (value) {
                                         // if 0 index is selected show error
                                         if (value ==
-                                            "Please select field of interest") {
+                                            "Select field of interest") {
                                           return "Please select field of interest ${index + 1}";
                                         }
                                         // if this field offered is already present in fields offered list then show error on both fields

@@ -40,7 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // posssible fields offered list
   List<String> possibleFieldsOffered = [
-    "Please select field offered",
+    "Select field offered",
     "Medical Sciences",
     "Engineering",
     "Technical",
@@ -170,59 +170,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // initialize list
-    // listController. = List.filled(
-    //     widget.uniProfile!.fieldsOffered.length, TextEditingController(),
-    //     growable: true);
-    /*
-    // set text in each fields according to current fields offered list
-    for (var i = 0; i < widget.uniProfile!.fieldsOffered.length; i++) {
-      // listController[i].text = widget.uniProfile!.fieldsOffered[i];
-      // listController.add(
-      //     TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
-      // listController.add(
-      //     DropdownButton());
-      // print('here');
-    }
-    */
-    // if fields offered are initially empty then set a single text field in
-    /*
-    if (widget.uniProfile!.fieldsOffered.isEmpty) {
-      // listController.add(TextEditingController());
-      fieldsOffered!.add("");
-    }
-    */
-    // print(widget.uniProfile!.fieldsOffered);
-    // set field offering text list
-    // fieldsOffered = widget.uniProfile!.fieldsOffered;
-
-    // print(fieldsOffered); [Computer Science, Botany, DVM]
-
-    // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
-
-    // print(listController);
-
-    // initially set all form values (in case user not changes that field that field is not saved as empty in the database)
-    name = widget.uniProfile!.name;
-    description = widget.uniProfile!.description;
-    location = widget.uniProfile!.location;
-    type = widget.uniProfile!.type;
-    // fieldsOffered = widget.uniProfile!.fieldsOffered;
-    fieldsOffered = List<String>.from(widget.uniProfile!.fieldsOffered);
-
-    // if initially empty list then add a dummy field
-    if (widget.uniProfile!.fieldsOffered.isEmpty) {
-      // listController.add(TextEditingController());
-      fieldsOffered!.add("Please select field offered");
-    }
-
-    // print('init');
-  }
-
   // select source to upload image i.e. gallery/camera
   void mediaPickerOptions(context) {
     showModalBottomSheet(
@@ -297,6 +244,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (error) {
       debugPrint(error.toString());
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // initialize list
+    // listController. = List.filled(
+    //     widget.uniProfile!.fieldsOffered.length, TextEditingController(),
+    //     growable: true);
+    /*
+    // set text in each fields according to current fields offered list
+    for (var i = 0; i < widget.uniProfile!.fieldsOffered.length; i++) {
+      // listController[i].text = widget.uniProfile!.fieldsOffered[i];
+      // listController.add(
+      //     TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
+      // listController.add(
+      //     DropdownButton());
+      // print('here');
+    }
+    */
+    // if fields offered are initially empty then set a single text field in
+    /*
+    if (widget.uniProfile!.fieldsOffered.isEmpty) {
+      // listController.add(TextEditingController());
+      fieldsOffered!.add("");
+    }
+    */
+    // print(widget.uniProfile!.fieldsOffered);
+    // set field offering text list
+    // fieldsOffered = widget.uniProfile!.fieldsOffered;
+
+    // print(fieldsOffered); [Computer Science, Botany, DVM]
+
+    // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
+
+    // print(listController);
+
+    // initially set all form values (in case user not changes that field that field is not saved as empty in the database)
+    name = widget.uniProfile!.name;
+    description = widget.uniProfile!.description;
+    location = widget.uniProfile!.location;
+    type = widget.uniProfile!.type;
+    // fieldsOffered = widget.uniProfile!.fieldsOffered;
+    fieldsOffered = List<String>.from(widget.uniProfile!.fieldsOffered);
+
+    // if initially empty list then add a dummy field
+    if (widget.uniProfile!.fieldsOffered.isEmpty) {
+      // listController.add(TextEditingController());
+      fieldsOffered!.add("Select field offered");
+    }
+
+    // print('init');
   }
 
   @override
@@ -402,7 +402,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   // name label
                   Text(
-                    'Name: ',
+                    'Name:',
                     style: fieldLabelStyle,
                   ),
                   // space
@@ -411,6 +411,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // name field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.name,
@@ -442,7 +443,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   // description label
                   Text(
-                    'Description: ',
+                    'Description:',
                     style: fieldLabelStyle,
                   ),
                   // space
@@ -451,6 +452,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // description field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     minLines: 3,
                     maxLines: 999,
@@ -489,6 +491,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // location field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.location,
@@ -525,6 +528,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // location field
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: formInputDecoration,
                     initialValue: widget.uniProfile!.type,
@@ -566,7 +570,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           setState(() {
                             // listController.add(TextEditingController());
                             // add new value as first index's value
-                            fieldsOffered!.add("Please select field offered");
+                            fieldsOffered!.add("Select field offered");
                           });
                         },
                         icon: Icon(Icons.add),
@@ -632,8 +636,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       }).toList(),
                                       validator: (value) {
                                         // if 0 index is selected show error
-                                        if (value ==
-                                            "Please select field offered") {
+                                        if (value == "Select field offered") {
                                           return "Please select field offered ${index + 1}";
                                         }
                                         // if this field offered is already present in fields offered list then show error on both fields

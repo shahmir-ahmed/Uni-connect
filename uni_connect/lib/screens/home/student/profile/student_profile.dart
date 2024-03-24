@@ -9,7 +9,9 @@ import 'package:uni_connect/shared/constants.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   StudentProfileScreen(
-      {required this.profileImageUrl, required this.loadName, required this.loadProfileImage});
+      {required this.profileImageUrl,
+      required this.loadName,
+      required this.loadProfileImage});
 
   // load name and profile image methods in home screen to call when student has updated the profile
   Function loadName;
@@ -23,11 +25,37 @@ class StudentProfileScreen extends StatefulWidget {
 }
 
 class _StudentProfileScreenState extends State<StudentProfileScreen> {
+  // student profile image path/url
+  String profileImage = '';
+
+  String studentProfileId = '';
+
+  // get student profile pic path using profile id to display in the home screen
+  loadProfileImage() async {
+    try {
+      final result =
+          await StudentProfile.withId(profileDocId: studentProfileId!)
+              .getProfileImage();
+
+      if (result == 'error') {
+        // if error occured means profile image not present
+      } else {
+        setState(() {
+          profileImage = result;
+        });
+      }
+    } catch (e) {
+      print('Error in loadProfileImage: ${e.toString()}');
+      return null;
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // print('inside initstate of student profile'); // called first time not again when something new arrives in strea
+    profileImage = widget.profileImageUrl;
   }
 
   @override
@@ -39,6 +67,11 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     // if (studentProfileObj != null) {
     //   print('student profile obj fields: ${studentProfileObj.fieldsOfInterest}');
     // }
+
+    // get the student profile id if the object is present and student id is empty
+    if (studentProfileObj != null && studentProfileId.isEmpty) {
+      studentProfileId = studentProfileObj.profileDocId;
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -99,7 +132,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                           Container(
                               // padding: EdgeInsets.only(left: 15.0),
                               // if studnet has not set the profile image yet then this will be empty otherwise show image
-                              child: widget.profileImageUrl == ""
+                              child: profileImage == ""
                                   ? CircleAvatar(
                                       backgroundImage:
                                           AssetImage('assets/student.jpg'),
@@ -107,7 +140,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                     )
                                   : CircleAvatar(
                                       backgroundImage:
-                                          NetworkImage(widget.profileImageUrl),
+                                          NetworkImage(profileImage),
                                       radius: 45.0,
                                     )),
 
@@ -150,20 +183,26 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {
+                            onPressed: () async {
                               // push edit profile screen
-                              Navigator.push(
+                              final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             studentProfile: studentProfileObj,
-                                            profileImageUrl:
-                                                widget.profileImageUrl,
-                                            loadName:
-                                                widget.loadName,
+                                            profileImageUrl: profileImage,
+                                            loadName: widget.loadName,
                                             loadProfileImage:
                                                 widget.loadProfileImage,
                                           )));
+
+                              // print('result $result');
+                              if (result == 'not updated') {
+                                // do nothing
+                              } else {
+                                // call method to fetch new profile image from storage
+                                loadProfileImage();
+                              }
                             },
                             label: Text(
                               'Edit Profile',
