@@ -600,7 +600,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       );
                     },
                   ),
-
+/*
                   // space
                   SizedBox(
                     height: 28.0,
@@ -715,6 +715,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       );
                     },
                   ),
+                  */
 
                   // space
                   SizedBox(

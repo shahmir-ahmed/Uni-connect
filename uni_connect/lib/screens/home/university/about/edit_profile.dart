@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
@@ -21,14 +23,15 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   // fields offered multiple field controllers list
-  List<TextEditingController> listController = [];
+  // List<TextEditingController> listController = [];
+  // List<DropdownButton> listController = [];
 
   // form attributes
   String name = '';
   String description = '';
   String location = '';
   String type = '';
-  List<dynamic> fieldsOffered = [];
+  List<dynamic>? fieldsOffered = [];
 
   // profile image file object
   File? pickedImage;
@@ -37,6 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // posssible fields offered list
   List<String> possibleFieldsOffered = [
+    "Please select field offered",
     "Medical Sciences",
     "Engineering",
     "Technical",
@@ -90,6 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         // call update profile
         if (pickedImage == null) {
+          // if new image is not selected then not update image
           result = await UniveristyProfile.updateProfile(
                   profileDocId: widget.uniProfile!.profileDocId,
                   profileImage: '',
@@ -97,7 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   location: location,
                   type: type,
                   description: description,
-                  fieldsOffered: fieldsOffered)
+                  fieldsOffered: fieldsOffered!)
               .updateProfile();
         } else {
           result = await UniveristyProfile.updateProfile(
@@ -107,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   location: location,
                   type: type,
                   description: description,
-                  fieldsOffered: fieldsOffered)
+                  fieldsOffered: fieldsOffered!)
               .updateProfile();
         }
 
@@ -173,17 +178,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // listController. = List.filled(
     //     widget.uniProfile!.fieldsOffered.length, TextEditingController(),
     //     growable: true);
+    /*
     // set text in each fields according to current fields offered list
     for (var i = 0; i < widget.uniProfile!.fieldsOffered.length; i++) {
       // listController[i].text = widget.uniProfile!.fieldsOffered[i];
-      listController.add(
-          TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
+      // listController.add(
+      //     TextEditingController(text: widget.uniProfile!.fieldsOffered[i]));
+      // listController.add(
+      //     DropdownButton());
       // print('here');
     }
+    */
     // if fields offered are initially empty then set a single text field in
-    if (widget.uniProfile!.fieldsOffered.length == 0) {
-      listController.add(TextEditingController());
+    /*
+    if (widget.uniProfile!.fieldsOffered.isEmpty) {
+      // listController.add(TextEditingController());
+      fieldsOffered!.add("");
     }
+    */
     // print(widget.uniProfile!.fieldsOffered);
     // set field offering text list
     // fieldsOffered = widget.uniProfile!.fieldsOffered;
@@ -192,6 +204,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // print('profile pic: ${widget.uniProfile!.profileImage}'); ''
 
+    // print(listController);
+
     // initially set all form values (in case user not changes that field that field is not saved as empty in the database)
     name = widget.uniProfile!.name;
     description = widget.uniProfile!.description;
@@ -199,6 +213,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     type = widget.uniProfile!.type;
     // fieldsOffered = widget.uniProfile!.fieldsOffered;
     fieldsOffered = List<String>.from(widget.uniProfile!.fieldsOffered);
+
+    // if initially empty list then add a dummy field
+    if (widget.uniProfile!.fieldsOffered.isEmpty) {
+      // listController.add(TextEditingController());
+      fieldsOffered!.add("Please select field offered");
+    }
 
     // print('init');
   }
@@ -544,8 +564,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ElevatedButton.icon(
                         onPressed: () {
                           setState(() {
-                            listController.add(TextEditingController());
-                            fieldsOffered.add("");
+                            // listController.add(TextEditingController());
+                            // add new value as first index's value
+                            fieldsOffered!.add("Please select field offered");
                           });
                         },
                         icon: Icon(Icons.add),
@@ -555,86 +576,136 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                   // fields offered fields
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    shrinkWrap: true,
-                    itemCount: listController.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Row(
-                          children: [
-                            // serial number
-                            Container(
-                              child: Text(
-                                '${index + 1}.',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            // space
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                            // field
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - 150,
-                              child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                controller: listController[index],
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.black))),
-                                onChanged: (value) {
-                                  setState(() {
-                                    fieldsOffered[index] = value.trim();
-                                  });
-                                },
-                                validator: (value) {
-                                  // if field offered field is empty at the time of validation return helper text
-                                  if (value!.trim().isEmpty) {
-                                    return 'Please enter field offered';
-                                  }
-                                  // valid field offered
-                                  else {
-                                    return null;
-                                  }
-                                },
-                              ),
-                            ),
-                            // space
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            // delete field button
-                            index != 0
-                                ? GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        // Clear the error message associated with the deleted field
-                                        _formKey.currentState!.validate();
-                                        listController[index].clear();
-                                        listController[index].dispose();
-                                        listController.removeAt(index);
-
-                                        // remove this field offered from fields offered list also
-                                        fieldsOffered.removeAt(index);
-                                      });
-                                    },
-                                    child: const Icon(
-                                      Icons.delete,
-                                      color: Colors.blue,
-                                      size: 35,
+                  // crender when not null
+                  fieldsOffered != null
+                      // first item should not be empty i.e. when list is empty
+                      // ? fieldsOffered![0].isNotEmpty
+                      ? ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          shrinkWrap: true,
+                          // itemCount: listController.length,
+                          itemCount: fieldsOffered!.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Row(
+                                children: [
+                                  // serial number
+                                  Container(
+                                    child: Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                  )
-                                : const SizedBox()
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                                  ),
+                                  // space
+                                  SizedBox(
+                                    width: 20.0,
+                                  ),
+                                  // field
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width - 150,
+                                    child: DropdownButtonFormField(
+                                      decoration: formInputDecoration,
+                                      // padding: EdgeInsets.all(10.0),
+                                      isExpanded: true,
+                                      // icon: Icon(Icons.arrow_drop_down),
+                                      // iconSize: 30,
+                                      // underline: SizedBox(),
+                                      // hint: Text(
+                                      //     'Please select field offered ${index + 1}'), // Not necessary for Option 1
+                                      value: fieldsOffered![index],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          fieldsOffered![index] = newValue;
+                                        });
+                                      },
+                                      // show all possible field offered
+                                      items: possibleFieldsOffered
+                                          .map((possibleFieldOffered) {
+                                        return DropdownMenuItem(
+                                          child: new Text(possibleFieldOffered),
+                                          value: possibleFieldOffered,
+                                        );
+                                      }).toList(),
+                                      validator: (value) {
+                                        // if 0 index is selected show error
+                                        if (value ==
+                                            "Please select field offered") {
+                                          return "Please select field offered ${index + 1}";
+                                        }
+                                        // if this field offered is already present in fields offered list then show error on both fields
+                                        else if (fieldsOffered!
+                                                .where((fieldOffered) =>
+                                                    fieldOffered == value)
+                                                .length >
+                                            1) {
+                                          return 'Field offered already selected';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    /*
+                          child: TextFormField(
+                            textCapitalization:
+                                TextCapitalization.sentences,
+                            controller: listController[index],
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black))),
+                            onChanged: (value) {
+                              setState(() {
+                                fieldsOffered[index] = value.trim();
+                              });
+                            },
+                            validator: (value) {
+                              // if field offered field is empty at the time of validation return helper text
+                              if (value!.trim().isEmpty) {
+                                return 'Please enter field offered';
+                              }
+                              // valid field offered
+                              else {
+                                return null;
+                              }
+                            },
+                          ),
+                          */
+                                  ),
+                                  // space
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  // delete field button
+                                  index != 0
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              // Clear the error message associated with the deleted field
+                                              // _formKey.currentState!.validate();
+                                              // listController[index].clear();
+                                              // listController[index].dispose();
+                                              // listController.removeAt(index);
+
+                                              // remove this field offered from fields offered list also
+                                              fieldsOffered!.removeAt(index);
+                                            });
+                                          },
+                                          child: const Icon(
+                                            Icons.delete,
+                                            color: Colors.blue,
+                                            size: 35,
+                                          ),
+                                        )
+                                      : const SizedBox()
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      : SizedBox(),
 
                   // space
                   SizedBox(

@@ -141,6 +141,8 @@ class _StudentHomeState extends State<StudentHome> {
     // Moved from here to main because notification was being recived when user logs in and also after that checked where to put the code and main.dart was the correct place
   }
 
+  // get student profile image and name using profile doc id
+
   @override
   Widget build(BuildContext context) {
     // _showSnackBar(context);

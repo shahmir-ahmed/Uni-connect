@@ -15,7 +15,6 @@ class StudentProfileScreen extends StatefulWidget {
 }
 
 class _StudentProfileScreenState extends State<StudentProfileScreen> {
-  // fetch student image from storage
 
   @override
   void initState() {
@@ -213,14 +212,17 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       height: 20.0,
                     ),
 
+                    /*
+
                     // preferences section
 
-                    // college label
+                    // pref. label
                     Text(
                       'Preferences:',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20.0),
                     ),
+                    */
 
                     // space
                     SizedBox(
@@ -251,7 +253,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                             'Not set',
                             style: TextStyle(fontSize: 16.0),
                           ),
-
+/*
                     // space
                     SizedBox(
                       height: 12.0,
@@ -281,6 +283,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                             'Not set',
                             style: TextStyle(fontSize: 16.0),
                           ),
+                  */
                   ],
                 ),
               ))
