@@ -8,14 +8,21 @@ import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class StudentProfileScreen extends StatefulWidget {
-  const StudentProfileScreen({super.key});
+  StudentProfileScreen(
+      {required this.profileImageUrl, required this.loadName, required this.loadProfileImage});
+
+  // load name and profile image methods in home screen to call when student has updated the profile
+  Function loadName;
+  Function loadProfileImage;
+
+  // student profile image path/url
+  String profileImageUrl;
 
   @override
   State<StudentProfileScreen> createState() => _StudentProfileScreenState();
 }
 
 class _StudentProfileScreenState extends State<StudentProfileScreen> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -29,6 +36,9 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     final studentProfileObj = Provider.of<StudentProfile?>(context);
 
     // print('student profile obj: $studentProfileObj');
+    // if (studentProfileObj != null) {
+    //   print('student profile obj fields: ${studentProfileObj.fieldsOfInterest}');
+    // }
 
     return Scaffold(
         appBar: AppBar(
@@ -87,12 +97,19 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                         children: [
                           // profile image
                           Container(
-                            // padding: EdgeInsets.only(left: 15.0),
-                            child: CircleAvatar(
-                              backgroundImage: AssetImage('assets/student.jpg'),
-                              radius: 45.0,
-                            ),
-                          ),
+                              // padding: EdgeInsets.only(left: 15.0),
+                              // if studnet has not set the profile image yet then this will be empty otherwise show image
+                              child: widget.profileImageUrl == ""
+                                  ? CircleAvatar(
+                                      backgroundImage:
+                                          AssetImage('assets/student.jpg'),
+                                      radius: 45.0,
+                                    )
+                                  : CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(widget.profileImageUrl),
+                                      radius: 45.0,
+                                    )),
 
                           // following count column
                           Container(
@@ -140,6 +157,12 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             studentProfile: studentProfileObj,
+                                            profileImageUrl:
+                                                widget.profileImageUrl,
+                                            loadName:
+                                                widget.loadName,
+                                            loadProfileImage:
+                                                widget.loadProfileImage,
                                           )));
                             },
                             label: Text(
@@ -212,8 +235,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       height: 20.0,
                     ),
 
-                    /*
-
                     // preferences section
 
                     // pref. label
@@ -222,7 +243,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20.0),
                     ),
-                    */
 
                     // space
                     SizedBox(

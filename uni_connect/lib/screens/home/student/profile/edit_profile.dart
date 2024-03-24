@@ -7,12 +7,23 @@ import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  EditProfileScreen({required this.studentProfile});
+  EditProfileScreen(
+      {required this.studentProfile,
+      required this.profileImageUrl,
+      required this.loadName,
+      required this.loadProfileImage});
 
   // student profile object
   StudentProfile studentProfile;
 
-  // load profile image on previous screen method
+  // load name and profile image methods in home screen to call when student has updated the profile
+  Function loadName;
+  Function loadProfileImage;
+
+  // student profile image path/url
+  String profileImageUrl;
+
+  // load profile image on previous screen method/return back new url to previous screen
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -20,17 +31,40 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   // fields offered multiple field controllers list
-  List<TextEditingController> listController1 = [];
+  // List<TextEditingController> listController1 = [];
 
   // uni locations preferred multiple field controllers list
-  List<TextEditingController> listController2 = [];
+  // List<TextEditingController> listController2 = [];
 
   // form attributes
   String stdName = '';
   String stdGender = '';
   String stdCollege = '';
-  List<dynamic> fieldsOfInterest = [];
+  List<dynamic>? fieldsOfInterest = [];
   List<dynamic> uniLocationsPreferred = [];
+
+  // posssible fields of interest list
+  List<String> possibleFieldsOfInterest = [
+    "Please select field of interest",
+    "Medical Sciences",
+    "Engineering",
+    "Technical",
+    "Computer Sciences & Information Technology",
+    "Art & Design",
+    "Management Sciences",
+    "Social Sciences",
+    "Biological & Life Sciences",
+    "Chemical & Material Sciences",
+    "Physics & Numerical Sciences",
+    "Earth & Environmental Sciences",
+    "Agricultural Sciences",
+    "Religious Studies",
+    "Media Studies",
+    "Commerce / Finance & Accounting"
+  ];
+
+  // gender list
+  List<String> genderList = ["Please select gender", "Male", "Female"];
 
   // profile image file object
   File? pickedImage;
@@ -73,26 +107,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         // call update profile
         if (pickedImage == null) {
-          // result = await UniveristyProfile.updateProfile(
-          //         profileDocId: widget.uniProfile!.profileDocId,
-          //         profileImage: '',
-          //         name: name,
-          //         location: location,
-          //         type: type,
-          //         description: description,
-          //         fieldsOffered: fieldsOffered)
-          //     .updateProfile();
+          result = await StudentProfile.forUpdateProfile(
+            profileDocId: widget.studentProfile.profileDocId,
+            profileImageUrl: '',
+            name: stdName,
+            gender: stdGender,
+            college: stdCollege,
+            fieldsOfInterest: fieldsOfInterest!,
+          ).updateProfile();
         } else {
-          // result = await UniveristyProfile.updateProfile(
-          //         profileDocId: widget.uniProfile!.profileDocId,
-          //         profileImage: pickedImage!.path,
-          //         name: name,
-          //         location: location,
-          //         type: type,
-          //         description: description,
-          //         fieldsOffered: fieldsOffered)
-          //     .updateProfile();
+          result = await StudentProfile.forUpdateProfile(
+            profileDocId: widget.studentProfile.profileDocId,
+            profileImageUrl: pickedImage!.path,
+            name: stdName,
+            gender: stdGender,
+            college: stdCollege,
+            fieldsOfInterest: fieldsOfInterest!,
+          ).updateProfile();
         }
+
+        // print('result $result');
 
         // updated
         if (result == 'success') {
@@ -100,13 +134,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (pickedImage != null) {
             // call load profile image method of home screen (after 2 seconds because when this is called no image is present at the location in storage sow ait for the image to upload then call)
             await Future.delayed(Duration(seconds: 2), () {
-              // widget.loadProfileImage();
+              widget.loadProfileImage();
             });
           }
+
+          // call load name to load name in the home screen
+          widget.loadName();
+
           // pop loading screen
           Navigator.pop(context);
 
           // pop edit profile screen
+          Navigator.pop(context);
+
+          // pop profile screen
           Navigator.pop(context);
 
           // show snack bar
@@ -146,46 +187,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return alert;
       },
     );
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // initialize both lists
-    // set text in each fields according to current fields of interest list
-    for (var i = 0; i < widget.studentProfile.fieldsOfInterest.length; i++) {
-      listController1.add(TextEditingController(
-          text: widget.studentProfile.fieldsOfInterest[i]));
-    }
-    // if fields of interest are initially empty then set a single text field in
-    if (widget.studentProfile.fieldsOfInterest.isEmpty) {
-      listController1.add(TextEditingController());
-    }
-
-    // set text in each fields according to current uni locations pref. list
-    for (var i = 0;
-        i < widget.studentProfile.uniLocationsPreferred.length;
-        i++) {
-      listController2.add(TextEditingController(
-          text: widget.studentProfile.uniLocationsPreferred[i]));
-    }
-    // if uni locations pref. are initially empty then set a single text field in
-    if (widget.studentProfile.uniLocationsPreferred.isEmpty) {
-      listController2.add(TextEditingController());
-    }
-
-    // initially set all form values (in case user not changes that field then that field is not saved as empty in the database)
-    stdName = widget.studentProfile.name;
-    stdGender = widget.studentProfile.gender;
-    stdCollege = widget.studentProfile.college;
-    // copy fields of interests list here
-    fieldsOfInterest =
-        List<String>.from(widget.studentProfile.fieldsOfInterest);
-
-    // copy uni locations pref. list here
-    uniLocationsPreferred =
-        List<String>.from(widget.studentProfile.uniLocationsPreferred);
   }
 
   // select source to upload image i.e. gallery/camera
@@ -265,6 +266,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    /*
+    // initialize both lists
+    // set text in each fields according to current fields of interest list
+    for (var i = 0; i < widget.studentProfile.fieldsOfInterest.length; i++) {
+      listController1.add(TextEditingController(
+          text: widget.studentProfile.fieldsOfInterest[i]));
+    }
+    // if fields of interest are initially empty then set a single text field in
+    if (widget.studentProfile.fieldsOfInterest.isEmpty) {
+      listController1.add(TextEditingController());
+    }
+
+    // set text in each fields according to current uni locations pref. list
+    for (var i = 0;
+        i < widget.studentProfile.uniLocationsPreferred.length;
+        i++) {
+      listController2.add(TextEditingController(
+          text: widget.studentProfile.uniLocationsPreferred[i]));
+    }
+    // if uni locations pref. are initially empty then set a single text field in
+    if (widget.studentProfile.uniLocationsPreferred.isEmpty) {
+      listController2.add(TextEditingController());
+    }
+    */
+
+    // initially set all form values (in case user not changes that field then that field is not saved as empty in the database)
+    stdName = widget.studentProfile.name;
+    stdGender = widget.studentProfile.gender;
+    stdCollege = widget.studentProfile.college;
+    // copy fields of interests list here
+    fieldsOfInterest =
+        List<String>.from(widget.studentProfile.fieldsOfInterest);
+
+    // if initially empty list then add a dummy field
+    if (widget.studentProfile.fieldsOfInterest.isEmpty) {
+      // listController.add(TextEditingController());
+      fieldsOfInterest!.add("Please select field of interest");
+    }
+
+    // copy uni locations pref. list here
+    // uniLocationsPreferred =
+    //     List<String>.from(widget.studentProfile.uniLocationsPreferred);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -308,7 +357,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           children: [
                             // profile photo upload, preview
                             // if image is not present and no image is picked
-                            (widget.studentProfile.profileImage == '' &&
+                            (widget.profileImageUrl == '' &&
                                     pickedImage == null)
                                 // then show dummy student image
                                 ? CircleAvatar(
@@ -325,10 +374,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             FileImage(pickedImage as File),
                                         radius: 60.0,
                                       )
-                                    // otherwise show uni actual profile image
+                                    // otherwise show student actual profile image
                                     : CircleAvatar(
                                         backgroundImage: NetworkImage(
-                                            widget.studentProfile.profileImage),
+                                            widget.profileImageUrl),
                                         radius: 60.0,
                                       ),
                             // space
@@ -415,26 +464,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 7.0,
                   ),
                   // gender dropdown field
-                  TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
+                  DropdownButtonFormField(
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                        fontSize: 16.0),
                     decoration: formInputDecoration,
-                    initialValue: widget.studentProfile.gender,
-                    onChanged: (value) {
+                    isExpanded: true,
+                    value: stdGender,
+                    onChanged: (newValue) {
                       setState(() {
-                        stdGender = value.trim();
+                        stdGender = newValue!;
                       });
                     },
+                    // show all possible field offered
+                    items: genderList.map((gender) {
+                      return DropdownMenuItem(
+                        child: new Text(gender),
+                        value: gender,
+                      );
+                    }).toList(),
                     validator: (value) {
-                      // if location field is empty at the time of validation return helper text
-                      if (value!.trim().isEmpty) {
-                        return 'Please enter gender';
-                      }
-                      // contains characters other than alphabets
-                      else if (!nameRegExp.hasMatch(value)) {
-                        return 'Please enter valid gender';
-                      }
-                      // valid location
-                      else {
+                      // if 0 index is selected show error
+                      if (value == "Please select gender") {
+                        return "Please select gender";
+                      } else {
                         return null;
                       }
                     },
@@ -492,6 +546,129 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   SizedBox(
                     height: 28.0,
                   ),
+
+                  // fields of interest label and add text field button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // fields of interest label
+                      Text(
+                        'Fields of interest: ',
+                        style: fieldLabelStyle,
+                      ),
+
+                      // add text field button
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            // add new value as first index's value
+                            fieldsOfInterest!
+                                .add("Please select field of interest");
+                          });
+                        },
+                        icon: Icon(Icons.add),
+                        label: Text("Add new field"),
+                        style: mainScreenButtonStyle,
+                      )
+                    ],
+                  ),
+
+                  // fields of interest dropdown fields
+                  // render when not null
+                  fieldsOfInterest != null
+                      ? ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          shrinkWrap: true,
+                          itemCount: fieldsOfInterest!.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Row(
+                                children: [
+                                  // serial number
+                                  Container(
+                                    child: Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  // space
+                                  SizedBox(
+                                    width: 20.0,
+                                  ),
+                                  // field
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width - 150,
+                                    child: DropdownButtonFormField(
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.black,
+                                          fontSize: 16.0),
+                                      decoration: formInputDecoration,
+                                      isExpanded: true,
+                                      value: fieldsOfInterest![index],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          fieldsOfInterest![index] = newValue;
+                                        });
+                                      },
+                                      // show all possible field offered
+                                      items: possibleFieldsOfInterest
+                                          .map((possibleFieldOffered) {
+                                        return DropdownMenuItem(
+                                          child: new Text(possibleFieldOffered),
+                                          value: possibleFieldOffered,
+                                        );
+                                      }).toList(),
+                                      validator: (value) {
+                                        // if 0 index is selected show error
+                                        if (value ==
+                                            "Please select field of interest") {
+                                          return "Please select field of interest ${index + 1}";
+                                        }
+                                        // if this field offered is already present in fields offered list then show error on both fields
+                                        else if (fieldsOfInterest!
+                                                .where((fieldOfInterest) =>
+                                                    fieldOfInterest == value)
+                                                .length >
+                                            1) {
+                                          return 'Field of interest already selected';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                  // space
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  // delete field button
+                                  index != 0
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              // remove this field offered from fields offered list also
+                                              fieldsOfInterest!.removeAt(index);
+                                            });
+                                          },
+                                          child: const Icon(
+                                            Icons.delete,
+                                            color: Colors.blue,
+                                            size: 35,
+                                          ),
+                                        )
+                                      : const SizedBox()
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      : SizedBox(),
+
+                  /*
 
                   // fields of interest label and add text field button
                   Row(
@@ -600,7 +777,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       );
                     },
                   ),
-/*
+                  */
+
+                  /*
                   // space
                   SizedBox(
                     height: 28.0,
@@ -730,7 +909,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ElevatedButton.icon(
                         onPressed: () async {
                           // check image is empty and image is not selected
-                          if (widget.studentProfile.profileImage == '' &&
+                          if (widget.studentProfile.profileImageUrl == '' &&
                               pickedImage == null) {
                             // set file error
                             setState(() {
@@ -741,11 +920,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (_formKey.currentState!.validate()) {
                             // update uni profile details
                             // print(pickedImage);
-                            // print(name);
-                            // print(description);
-                            // print(location);
-                            // print(type);
-                            // print(fieldsOffered);
+                            // print(stdName);
+                            // print(stdCollege);
+                            // print(stdGender);
+                            // print(fieldsOfInterest);
 
                             // show alert for confirmation
                             showAlertDialog(context);

@@ -27,6 +27,12 @@ class _StudentHomeState extends State<StudentHome> {
 
   // Color color = Colors.white;
 
+  // student name
+  String stdName = '';
+
+  // student profile image url
+  String stdProfileImageUrl = '';
+
   // logout student function
   Future<void> _logoutUser() async {
     // clear shared pref data for app
@@ -119,10 +125,53 @@ class _StudentHomeState extends State<StudentHome> {
     setState(() {
       stdProfileDocId = pref.getString("userProfileId");
     });
+
+    // call load name and profile image
+    loadName();
+    loadProfileImage();
     // print("student profile id: $stdProfileDocId");
   }
 
-  // get student name and profile pic path using profile id to display in the home screen
+  // get student name using profile id to display in the home screen
+  loadName() async {
+    try {
+      final result2 =
+          await StudentProfile.withId(profileDocId: stdProfileDocId!).getName();
+
+      // print('result2 $result2');
+
+      // if name fetching error
+      if (result2 == 'error') {
+        // if error occured while fetching student name
+      } else {
+        setState(() {
+          stdName = result2;
+        });
+      }
+    } catch (e) {
+      print('Error in loadName: ${e.toString()}');
+      return null;
+    }
+  }
+
+  // get student profile pic path using profile id to display in the home screen
+  loadProfileImage() async {
+    try {
+      final result = await StudentProfile.withId(profileDocId: stdProfileDocId!)
+          .getProfileImage();
+
+      if (result == 'error') {
+        // if error occured means profile image not present
+      } else {
+        setState(() {
+          stdProfileImageUrl = result;
+        });
+      }
+    } catch (e) {
+      print('Error in loadProfileImage: ${e.toString()}');
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -145,6 +194,7 @@ class _StudentHomeState extends State<StudentHome> {
 
   @override
   Widget build(BuildContext context) {
+    // print('stdName $stdName');
     // _showSnackBar(context);
     return Scaffold(
       appBar: AppBar(
@@ -160,6 +210,7 @@ class _StudentHomeState extends State<StudentHome> {
                   minWidth: 10.0,
                   highlightElevation: 0.0,
                   onPressed: () async {
+                    // show student profile screen
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -169,16 +220,24 @@ class _StudentHomeState extends State<StudentHome> {
                                   value: StudentProfile.withId(
                                           profileDocId: stdProfileDocId!)
                                       .getStudentProfileStream(),
-                                  child: StudentProfileScreen(),
+                                  child: StudentProfileScreen(
+                                    loadName: loadName,
+                                    loadProfileImage: loadProfileImage,
+                                    profileImageUrl: stdProfileImageUrl,
+                                  ),
                                 )));
                   },
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage("assets/student.jpg"),
-                  ),
                   color: Colors.blue[400],
                   elevation: 0.0,
                   // minWidth: 18.0,
-                )
+                  // if student image isnot fetched yet then show dummy image
+                  child: stdProfileImageUrl == ""
+                      ? CircleAvatar(
+                          backgroundImage: AssetImage("assets/student.jpg"),
+                        )
+                      : CircleAvatar(
+                          backgroundImage: NetworkImage(stdProfileImageUrl),
+                        ))
               : SizedBox()
         ],
       ),
@@ -210,7 +269,10 @@ class _StudentHomeState extends State<StudentHome> {
             // color: Colors.white,
             child: Column(
               children: [
-                MyHeaderDrawer(),
+                MyHeaderDrawer(
+                  stdName: stdName,
+                  stdProfileImageUrl: stdProfileImageUrl,
+                ),
                 MyDrawerList(),
               ],
             ),
@@ -277,6 +339,25 @@ class _StudentHomeState extends State<StudentHome> {
           else if (title == "Logout") {
             showAlertDialog(context);
           }
+          // if profile option is clicked
+          else if (title == "Profile") {
+            // show student profile screen
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    // show student profile screen with stream supplied to the screen
+                    builder: (context) => StreamProvider.value(
+                          initialData: null,
+                          value: StudentProfile.withId(
+                                  profileDocId: stdProfileDocId!)
+                              .getStudentProfileStream(),
+                          child: StudentProfileScreen(
+                            loadName: loadName,
+                            loadProfileImage: loadProfileImage,
+                            profileImageUrl: stdProfileImageUrl,
+                          ),
+                        )));
+          }
         },
         child: Padding(
           padding: EdgeInsets.all(15.0),
@@ -309,6 +390,14 @@ class _StudentHomeState extends State<StudentHome> {
 
 // Drawer Header i.e. Student Details
 class MyHeaderDrawer extends StatefulWidget {
+  MyHeaderDrawer({required this.stdName, required this.stdProfileImageUrl});
+
+  // student name
+  String stdName = '';
+
+  // student profile image url
+  String stdProfileImageUrl = '';
+
   @override
   _MyHeaderDrawerState createState() => _MyHeaderDrawerState();
 }
@@ -324,20 +413,28 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            margin: EdgeInsets.only(bottom: 10),
-            height: 70,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: AssetImage('assets/student.jpg'),
-              ),
-            ),
-          ),
+          widget.stdProfileImageUrl == ""
+              ? Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage('assets/student.jpg'),
+                    ),
+                  ),
+                )
+              : Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  height: 70,
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(widget.stdProfileImageUrl),
+                    radius: 40.0,
+                  ),
+                ),
           Text(
-            "Student Name",
-            style: TextStyle(
-                color: Colors.white, fontSize: 20, fontStyle: FontStyle.italic),
+            widget.stdName,
+            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           // Text(
           //   "info@rapidtech.dev",

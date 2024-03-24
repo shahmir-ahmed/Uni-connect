@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 // Student class
 class Student {
@@ -81,7 +83,7 @@ class Student {
 class StudentProfile {
   // student profile attributes
   late String profileDocId;
-  late String profileImage;
+  late String profileImageUrl;
   late String name;
   late String gender;
   late String college;
@@ -99,15 +101,16 @@ class StudentProfile {
   StudentProfile.forRegister({required this.name, required this.college});
 
   // for profile
-  StudentProfile(
-      {required this.name,
-      required this.college,
-      required this.gender,
-      required this.fieldsOfInterest,
-      required this.uniLocationsPreferred,
-      required this.followingUnis,
-      required this.profileImage,
-      });
+  StudentProfile({
+    required this.profileDocId,
+    required this.name,
+    required this.college,
+    required this.gender,
+    required this.fieldsOfInterest,
+    required this.uniLocationsPreferred,
+    required this.followingUnis,
+    required this.profileImageUrl,
+  });
 
   // empty const.
   StudentProfile.empty();
@@ -117,6 +120,16 @@ class StudentProfile {
 
   // with id only
   StudentProfile.withId({required this.profileDocId});
+
+  // for updating profile constructor
+  // for profile
+  StudentProfile.forUpdateProfile(
+      {required this.profileDocId,
+      required this.profileImageUrl,
+      required this.name,
+      required this.gender,
+      required this.college,
+      required this.fieldsOfInterest});
 
   // create student profile in database (when registering)
   Future<String?> createProfile(String studentDocId) async {
@@ -187,17 +200,18 @@ class StudentProfile {
   }
 
   // student profile doc snapshot to student profile type object
-   StudentProfile? _snapshotToStudentProfileObject(doc) {
+  StudentProfile? _snapshotToStudentProfileObject(doc) {
     try {
       return StudentProfile(
-          name: doc.get('name') ?? '',
-          college: doc.get('college') ?? '',
-          gender: doc.get('gender') ?? '',
-          fieldsOfInterest: doc.get('fields_of_interest') ?? [],
-          followingUnis: doc.get('following_unis') ?? [],
-          uniLocationsPreferred: doc.get('uni_locations_preferred') ?? [],
-          profileImage: '',
-          );
+        profileDocId: doc.id,
+        name: doc.get('name') ?? '',
+        college: doc.get('college') ?? '',
+        gender: doc.get('gender') ?? '',
+        fieldsOfInterest: doc.get('fields_of_interest') ?? [],
+        followingUnis: doc.get('following_unis') ?? [],
+        uniLocationsPreferred: doc.get('uni_locations_preferred') ?? [],
+        profileImageUrl: '',
+      );
     } catch (e) {
       // print error
       print("ERR in _snapshotToStudentProfileObject: ${e.toString()}");
@@ -216,6 +230,95 @@ class StudentProfile {
       // print error
       print("ERR in getStudentProfileStream: ${e.toString()}");
       return null;
+    }
+  }
+
+  // update profile method
+  Future<String> updateProfile() async {
+    try {
+      // update the university followers list
+      await profileCollection.doc(profileDocId).update({
+        'name': name,
+        'gender': gender,
+        'college': college,
+        'fields_of_interest': fieldsOfInterest
+      });
+
+      // if new profile image is selected
+      if (profileImageUrl.isNotEmpty) {
+        print('here');
+        // update profile pic in storage
+        // upload student profile pic with the student profile id as media file name
+        final ref = storage.FirebaseStorage.instance
+            .ref()
+            .child('student_profile_images')
+            .child(
+                profileDocId); // get the reference to the file in the uni_profile_images folder
+
+        // print('ref: $ref');
+
+        // check if image already exists at path then delete the image at path otherwosie upload new image
+        try {
+          // print('ref: $ref'); // to check what gets print when there is no image of this name : ref: Reference(app: [DEFAULT], fullPath: uni_profile_images/c4JoUpPtAvIYGcWZx6or.jpg)
+          // print('here');
+          final imageUrl = await ref.getDownloadURL();
+
+          // if no error occured while getting download url means url is present then delete
+          await ref.delete(); // delete the current object at path and
+        } catch (e) {
+          print('Image not deleted: $e');
+        }
+
+        // put new file at the reference after deleting if image is already present otherwise without deleting
+        await ref
+            .putFile(File(profileImageUrl)); // put new file at the reference
+      }
+
+      return 'success';
+    } catch (e) {
+      // print error
+      print("ERR in updateProfile: ${e.toString()}");
+      return 'error';
+    }
+  }
+
+  // get and return student profile image for student home screen
+  Future<String> getProfileImage() async {
+    try {
+      // get profile image path from storage
+      // check if image already exists at path then set the image path
+      final ref = storage.FirebaseStorage.instance
+          .ref()
+          .child('student_profile_images')
+          .child(profileDocId);
+
+      // print('ref: $ref'); // to check what gets print when there is no image of this name : ref: Reference(app: [DEFAULT], fullPath: uni_profile_images/c4JoUpPtAvIYGcWZx6or.jpg)
+      // print('here');
+      final imageUrl = await ref.getDownloadURL();
+
+      // if no error occured while getting download url means url is present then set
+      return imageUrl; // set the image oath on the profile image of this object
+    } catch (e) {
+      // print error
+      print("ERR in getProfileImage: ${e.toString()}");
+      return 'error';
+    }
+  }
+
+  // get student name and profile image for student home screen
+  Future<String> getName() async {
+    try {
+      // get name field using doc id
+      name = await profileCollection
+          .doc(profileDocId)
+          .get()
+          .then((snapshot) => snapshot.get('name'));
+
+      return name;
+    } catch (e) {
+      // print error
+      print("ERR in getName: ${e.toString()}");
+      return 'error';
     }
   }
 }
