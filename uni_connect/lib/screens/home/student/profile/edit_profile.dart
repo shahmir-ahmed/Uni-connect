@@ -307,6 +307,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     fieldsOfInterest =
         List<String>.from(widget.studentProfile.fieldsOfInterest);
 
+    // print(fieldsOfInterest);
+
     // if initially empty list then add a dummy field
     if (widget.studentProfile.fieldsOfInterest.isEmpty) {
       // listController.add(TextEditingController());
@@ -320,6 +322,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.studentProfile.toString());
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
@@ -609,10 +612,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     width:
                                         MediaQuery.of(context).size.width - 150,
                                     child: DropdownButtonFormField(
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          color: Colors.black,
-                                          fontSize: 16.0),
+                                      // style: TextStyle(
+                                      //     fontWeight: FontWeight.normal,
+                                      //     color: Colors.black,
+                                      //     fontSize: 16.0),
                                       decoration: formInputDecoration,
                                       isExpanded: true,
                                       value: fieldsOfInterest![index],

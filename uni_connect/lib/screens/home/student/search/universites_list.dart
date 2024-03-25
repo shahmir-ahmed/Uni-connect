@@ -39,7 +39,7 @@ class _UniversitiesListState extends State<UniversitiesList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // _getProfilePhoto(profileDocId);
+    // _getProfilePhoto(profileDocId); // id
   }
 
   @override
@@ -109,10 +109,15 @@ class _UniversitiesListState extends State<UniversitiesList> {
                       shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.all(Radius.circular(20.0))),
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage("assets/uni.jpg"),
-                        // radius: 30.0,
-                      ),
+                      leading: (profileImage == null || profileImage == '')
+                          ? CircleAvatar(
+                              backgroundImage: AssetImage("assets/uni.jpg"),
+                              // radius: 30.0,
+                            )
+                          : CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(profileImage as String),
+                            ),
                       title: Text("${uni!.name}"),
                       subtitle: Text("${uni.location}"),
                     )))

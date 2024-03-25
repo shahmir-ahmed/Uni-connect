@@ -1,10 +1,10 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
-import 'package:uni_connect/screens/home/student/news_feed.dart';
+import 'package:uni_connect/screens/home/student/news_feed/news_feed.dart';
 import 'package:uni_connect/screens/home/student/profile/student_profile.dart';
 import 'package:uni_connect/screens/home/student/search/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/post.dart';
-import 'package:uni_connect/screens/home/student/post_card.dart';
+import 'package:uni_connect/screens/home/student/news_feed/post_card.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class NewsFeed extends StatefulWidget {

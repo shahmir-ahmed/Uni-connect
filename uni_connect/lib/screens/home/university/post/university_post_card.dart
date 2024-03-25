@@ -55,6 +55,15 @@ class UniPostCard extends StatefulWidget {
     required this.stdProfileDocId,
   }); // constructor
 
+  // for student news feed post cards
+  // UniPostCard.ForStudentNewsFeed({
+  //   super.key,
+  //   required this.post,
+  //   required this.profileImage,
+  //   required this.uniName,
+  //   required this.stdProfileDocId,
+  // }); // constructor
+
   @override
   State<UniPostCard> createState() => _UniPostCardState();
 }
@@ -308,7 +317,7 @@ class _PostContentState extends State<PostContent> {
         // then count the liked by list items and set count to variable
         // print('here');
         setState(() {
-          likesCount = like!.likedBy!.length;
+          likesCount = like.likedBy!.length;
           // likesCount = widget.post.postLikes!.length;
           if (widget.homeScreenContext != null) {
             // if the post is liked by the uni then set the flag as true

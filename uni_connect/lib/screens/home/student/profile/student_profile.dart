@@ -31,7 +31,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
   String studentProfileId = '';
 
   // get student profile pic path using profile id to display in the home screen
-  loadProfileImage() async {
+  loadNewProfileImage() async {
     try {
       final result =
           await StudentProfile.withId(profileDocId: studentProfileId!)
@@ -201,7 +201,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                 // do nothing
                               } else {
                                 // call method to fetch new profile image from storage
-                                loadProfileImage();
+                                loadNewProfileImage();
                               }
                             },
                             label: Text(

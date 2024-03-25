@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/comment.dart';
 import 'package:uni_connect/classes/like.dart';
@@ -53,20 +54,15 @@ class _PostCardState extends State<PostCard> {
               ),
               // container inside card
               child: PostContent(
-                post: widget.post,
-                stdProfileId: widget.stdProfileId
-              )),
+                  post: widget.post, stdProfileId: widget.stdProfileId)),
         ),
       ),
     );
   }
 }
 
-
-
 // Post content class
 class PostContent extends StatefulWidget {
-
   PostContent({required this.post, required this.stdProfileId}); // constructor
 
   // post type object for post data
@@ -439,7 +435,6 @@ class _PostContentState extends State<PostContent> {
   }
 }
 
-
 // Post header widget
 class PostHeader extends StatefulWidget {
   // constructor
@@ -459,10 +454,8 @@ class _PostHeaderState extends State<PostHeader> {
   // uni name
   String uniName = '';
 
-  // get the uni profile image and name
-  _getUniImageAndName() {
-    // get image from firebase storage
-
+  // get the uni name
+  _getUniName() async {
     // get name from firestore and set the value
     UniveristyProfile.empty()
         .profileCollection
@@ -473,51 +466,66 @@ class _PostHeaderState extends State<PostHeader> {
             }));
   }
 
+  // get the uni profile image
+  _getUniImage() async {
+    // get image from firebase storage
+    final result =
+        await UniveristyProfile.withId(profileDocId: widget.uniProfileId)
+            .getProfileImagePath();
+
+    if (result != null) {
+      setState(() {
+        profileImage = result;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // get uni image, name
-    _getUniImageAndName();
+    _getUniName();
+    _getUniImage();
   }
 
   @override
   Widget build(BuildContext context) {
-    // post header row
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // uni name & logo row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // if there is no profile picture path
-            profileImage == ''
-                ? CircleAvatar(
-                    backgroundImage: AssetImage('assets/uni.jpg'),
-                    radius: 20,
-                  )
-                :
-                // if there is profile picture path
-                CircleAvatar(
-                    foregroundImage: FileImage(
-                      File(profileImage),
-                      // width: 100,
-                      // height: 100,
+    // post header container
+    return Container(
+      margin: EdgeInsets.only(bottom: 6.0),
+      // post header row
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // uni name & logo row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // if there is no profile picture path
+              profileImage == ''
+                  ? CircleAvatar(
+                      backgroundImage: AssetImage('assets/uni.jpg'),
+                      radius: 20,
+                    )
+                  :
+                  // if there is profile picture path
+                  CircleAvatar(
+                      backgroundImage: NetworkImage(profileImage),
+                      radius: 20,
                     ),
-                    radius: 20,
-                  ),
-            // gap
-            SizedBox(
-              width: 10.0,
-            ),
-            // uni name text
-            uniName.length > 33
-                ? Text('${uniName.substring(0, 33)}...')
-                : Text(uniName),
-          ],
-        ),
-      ],
+              // gap
+              SizedBox(
+                width: 10.0,
+              ),
+              // uni name text
+              uniName.length > 33
+                  ? Text('${uniName.substring(0, 33)}...')
+                  : Text(uniName),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
