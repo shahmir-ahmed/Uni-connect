@@ -6,7 +6,7 @@
     <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550/>
 </p>-->
 
-Uniconnect is a social platform where universities can create accounts and high school/college students can follow them.
+Uni-connect is a social platform where universities can create accounts and high school/college students can follow them.
 
 ![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
 
