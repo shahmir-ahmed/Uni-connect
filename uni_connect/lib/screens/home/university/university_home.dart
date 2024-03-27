@@ -335,8 +335,9 @@ class _UniversityHomeState extends State<UniversityHome> {
 
   // load profile image (seperated because need to await for the method so this method will be async)
   loadProfileImage() async {
-    var result = await UniveristyProfile.withId(profileDocId: uniProfile!.profileDocId)
-        .getProfileImagePath();
+    var result =
+        await UniveristyProfile.withId(profileDocId: uniProfile!.profileDocId)
+            .getProfileImagePath();
     if (result != null) {
       setState(() {
         uniProfile!.profileImage = result;

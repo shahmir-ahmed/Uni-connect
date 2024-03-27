@@ -103,59 +103,71 @@ class _UniversityPostsState extends State<UniversityPosts> {
             text: 'Loading posts',
           )
         // if there are no posts in the list
-        // : posts!.isEmpty
-        //     ? Container(
-        //         // color: Colors.red,
-        //         child: Center(
-        //           child: Text(
-        //             'You have not created any posts yet!',
-        //           ),
-        //         ),
-        //       )
-        // university posts
-        : SingleChildScrollView(
-            child: widget.homeScreenContext != null
-                ? Column(
-                    children:
-                        // University side posts
-                        // posts to show, mapping to individual container widget to display
-                        posts!
+        /*
+        : posts!.isEmpty
+            ? widget.homeScreenContext != null
+                ? Container(
+                    // color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        'You have not created any posts yet!',
+                      ),
+                    ),
+                  )
+                : Container(
+                    // color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        'No posts created by university yet',
+                      ),
+                    ),
+                  )
+                  */
+            // university posts
+            : SingleChildScrollView(
+                child: widget.homeScreenContext != null
+                    ? Column(
+                        children:
+                            // University side posts
+                            // posts to show, mapping to individual container widget to display
+                            posts!
+                                .where((post) =>
+                                    post.uniProfileId == widget.uniProfileDocId)
+                                .map((uniPost) => UniPostCard(
+                                      key:
+                                          UniqueKey(), // because post widget child widgets should be attached
+                                      post: uniPost,
+                                      profileImage: widget.uniProfileImage,
+                                      uniName: widget.uniName,
+                                      uniProfileDocId: widget.uniProfileDocId,
+                                      homeScreenContext:
+                                          widget.homeScreenContext,
+                                      // refreshPosts: () {
+                                      //   setState(() {
+                                      //     uniPosts!.remove(uniPost);
+                                      //   });
+                                      // }
+                                    ))
+                                .toList()
+                              // Sort the posts based on postCreatedAt
+                              ..sort((a, b) => b.post.postCreatedAt!
+                                  .compareTo(a.post.postCreatedAt!)))
+                    // student side posts
+                    : Column(
+                        children: posts!
                             .where((post) =>
                                 post.uniProfileId == widget.uniProfileDocId)
-                            .map((uniPost) => UniPostCard(
-                                  key:
-                                      UniqueKey(), // because post widget child widgets should be attached
+                            .map((uniPost) => UniPostCard.ForStudent(
+                                  key: UniqueKey(),
                                   post: uniPost,
                                   profileImage: widget.uniProfileImage,
                                   uniName: widget.uniName,
-                                  uniProfileDocId: widget.uniProfileDocId,
-                                  homeScreenContext: widget.homeScreenContext,
-                                  // refreshPosts: () {
-                                  //   setState(() {
-                                  //     uniPosts!.remove(uniPost);
-                                  //   });
-                                  // }
+                                  stdProfileDocId: widget.stdProfileId,
                                 ))
                             .toList()
                           // Sort the posts based on postCreatedAt
                           ..sort((a, b) => b.post.postCreatedAt!
-                              .compareTo(a.post.postCreatedAt!)))
-                : Column(
-                    children: posts!
-                        .where((post) =>
-                            post.uniProfileId == widget.uniProfileDocId)
-                        .map((uniPost) => UniPostCard.ForStudent(
-                              key:
-                                  UniqueKey(),
-                              post: uniPost,
-                              profileImage: widget.uniProfileImage,
-                              uniName: widget.uniName,
-                              stdProfileDocId: widget.stdProfileId,
-                            ))
-                        .toList()
-                      // Sort the posts based on postCreatedAt
-                      ..sort((a, b) => b.post.postCreatedAt!
-                          .compareTo(a.post.postCreatedAt!))),
-          );
+                              .compareTo(a.post.postCreatedAt!))),
+              );
   }
 }

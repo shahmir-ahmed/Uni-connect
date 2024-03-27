@@ -57,6 +57,18 @@ class _UniProfileState extends State<UniProfileScreen> {
         )),
       ]);
 
+  // load profile image (seperated because need to await for the method so this method will be async)
+  loadProfileImage() async {
+    var result = await UniveristyProfile.withId(
+            profileDocId: widget.uniProfile!.profileDocId)
+        .getProfileImagePath();
+    if (result != null) {
+      setState(() {
+        widget.uniProfile!.profileImage = result;
+      });
+    }
+  }
+
   // get the student's profile doc id from shared pref. and save
   _getStudentProfileDocId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -73,6 +85,8 @@ class _UniProfileState extends State<UniProfileScreen> {
     super.initState();
     // get and save the student profile doc id
     _getStudentProfileDocId();
+    // load uni profile image
+    loadProfileImage();
   }
 
   @override
@@ -124,10 +138,10 @@ class _UniProfileState extends State<UniProfileScreen> {
                                       )
                                     :
                                     // if there is profile picture path
-                                    Image.file(
-                                        File(widget.uniProfile!.profileImage),
-                                        width: 100,
-                                        height: 100,
+                                    CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            widget.uniProfile!.profileImage),
+                                        radius: 45,
                                       ),
 
                                 // space

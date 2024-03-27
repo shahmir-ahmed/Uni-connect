@@ -302,6 +302,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // initially set all form values (in case user not changes that field then that field is not saved as empty in the database)
     stdName = widget.studentProfile.name;
     stdGender = widget.studentProfile.gender;
+    // if gender is empty first time
+    if (stdGender.isEmpty) {
+      stdGender = "Select gender";
+    }
     stdCollege = widget.studentProfile.college;
     // copy fields of interests list here
     fieldsOfInterest =

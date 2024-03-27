@@ -16,24 +16,23 @@ class UniversitiesList extends StatefulWidget {
 
 class _UniversitiesListState extends State<UniversitiesList> {
   // uni profileimage
-  String? profileImage;
+  // String? profileImage;
 
-  // fetch the uni profile photo
-  _getProfilePhoto(profileDocId) async {
-    try {
-      // get university profile image
-      // get the profile image of the university (if exists) (getting here because needs to show in search)
-      final imagePath = await UniveristyProfile.withId(
-                  profileDocId: profileDocId)
-              .getProfileImagePath() ??
-          ''; // set empty path if there is no image found i.e. null is returned
-      setState(() {
-        profileImage = imagePath;
-      });
-    } catch (e) {
-      print('Error in _getProfilePhoto: $e');
-    }
-  }
+  // // fetch the uni profile photo
+  // _getProfilePhoto(profileId) async {
+  //   try {
+  //     // get university profile image
+  //     // get the profile image of the university (if exists) (getting here because needs to show in search)
+  //     final imagePath = await UniveristyProfile.withId(profileDocId: profileId)
+  //             .getProfileImagePath() ??
+  //         ''; // set empty path if there is no image found i.e. null is returned
+  //     setState(() {
+  //       profileImage = imagePath;
+  //     });
+  //   } catch (e) {
+  //     print('Error in _getProfilePhoto: $e');
+  //   }
+  // }
 
   @override
   void initState() {
@@ -86,41 +85,90 @@ class _UniversitiesListState extends State<UniversitiesList> {
         // if the query is not empty show those unis which have search query in their name
         Column(
             children: unis
+            // search
                 .where((uni) => uni!.name
                     .toLowerCase()
                     .contains(widget.searchQuery.toLowerCase()))
-                .map((uni) => Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
-                    child: ListTile(
-                      onTap: () {
-                        // show uni profile screen
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UniProfileScreen(
-                                    uniProfile: uni,
-                                  )),
-                        );
-                      },
-                      tileColor: Color.fromARGB(255, 239, 239, 239),
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0))),
-                      leading: (profileImage == null || profileImage == '')
-                          ? CircleAvatar(
-                              backgroundImage: AssetImage("assets/uni.jpg"),
-                              // radius: 30.0,
-                            )
-                          : CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(profileImage as String),
-                            ),
-                      title: Text("${uni!.name}"),
-                      subtitle: Text("${uni.location}"),
-                    )))
+                    // convert each object to tile 
+                .map((uni) => UniversityTile(
+                      uniObj: uni,
+                    ))
                 .toList());
+  }
+}
+
+class UniversityTile extends StatefulWidget {
+  const UniversityTile({
+    super.key,
+    required this.uniObj,
+  });
+
+  final UniveristyProfile uniObj; // uni object
+
+  @override
+  State<UniversityTile> createState() => _UniversityTileState();
+}
+
+class _UniversityTileState extends State<UniversityTile> {
+  // uni profile photo
+  String profileImage = '';
+
+  // fetch the uni profile photo
+  _getProfilePhoto() async {
+    try {
+      // get university profile image
+      // get the profile image of the university (if exists) (getting here because needs to show in search)
+      final imagePath = await UniveristyProfile.withId(
+                  profileDocId: widget.uniObj.profileDocId)
+              .getProfileImagePath() ??
+          ''; // set empty path if there is no image found i.e. null is returned
+      setState(() {
+        profileImage = imagePath;
+      });
+    } catch (e) {
+      print('Error in _getProfilePhoto: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getProfilePhoto(); // fetch the uni profile image
+  }
+
+  // build method
+  @override
+  Widget build(BuildContext context) {
+    // tile tree
+    return Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+        child: ListTile(
+          onTap: () {
+            // show uni profile screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UniProfileScreen(
+                        uniProfile: widget.uniObj,
+                      )),
+            );
+          },
+          tileColor: Color.fromARGB(255, 239, 239, 239),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          leading: profileImage == ''
+              ? CircleAvatar(
+                  backgroundImage: AssetImage("assets/uni.jpg"),
+                  // radius: 30.0,
+                )
+              : CircleAvatar(
+                  backgroundImage: NetworkImage(profileImage),
+                ),
+          title: Text("${widget.uniObj!.name}"),
+          subtitle: Text("${widget.uniObj.location}"),
+        ));
   }
 }

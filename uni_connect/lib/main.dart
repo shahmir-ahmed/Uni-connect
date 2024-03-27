@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,8 @@ import 'package:uni_connect/screens/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:connectivity_plus/connectivity_plus.dart';
+// import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 Future<void> main() async {
   // WidgetsFlutterBinding initializing first before firebase app b/c of error
@@ -33,6 +36,57 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // fcm object
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+/*
+  // internet connection check variables
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
+
+  // internet connection check method
+  getConnectivity() => Connectivity().onConnectivityChanged.listen(
+        (ConnectivityResult result) async {
+          isDeviceConnected = await InternetConnectionChecker().hasConnection;
+          if (!isDeviceConnected && isAlertSet == false) {
+            showDialogBox(context);
+            setState(() => isAlertSet = true);
+          }
+        },
+      );
+
+  // alert dialog box when internet is disconnected
+  showDialogBox(BuildContext context) {
+    // set up the buttons
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () async {
+        // close the alert dialog
+        Navigator.pop(context, 'Cancel');
+        setState(() => isAlertSet = false);
+        isDeviceConnected = await InternetConnectionChecker().hasConnection;
+        if (!isDeviceConnected && isAlertSet == false) {
+          showDialogBox(context);
+          setState(() => isAlertSet = true);
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("No Connection"),
+      content: Text("Please check your internet connectivity"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+  */
 
   /*
   1. When app closed and student logged in 2 times notifcation is showing
@@ -49,6 +103,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    // getConnectivity(); // Firestore works offline through Firestore Persistance feature
     // TODO: implement initState
     super.initState();
     // Initialize Firebase Messaging
@@ -78,7 +133,8 @@ class _MyAppState extends State<MyApp> {
     });
 
     // background notification handler
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler); // double notification showing when app is closed and student logged in is also glitch
+    FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler); // double notification showing when app is closed and student logged in is also glitch
   }
 
   // initialize firebase messaging
