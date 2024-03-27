@@ -94,6 +94,8 @@ class UniveristyProfile {
   late List<dynamic> fieldsOffered;
   late List<dynamic> followers;
 
+  double? relevanceScore; // relevance score of this uni for student recommendations
+
   // university profile collection
   final profileCollection =
       FirebaseFirestore.instance.collection('university_profiles');
@@ -148,6 +150,11 @@ class UniveristyProfile {
   UniveristyProfile.withIdAndFollowers({
     required this.profileDocId,
     required this.followers,
+  });
+
+  // for with fields offered object
+  UniveristyProfile.forSuggestion({
+    required this.fieldsOffered,
   });
 
   // create profile in database (when registering)
@@ -225,7 +232,9 @@ class UniveristyProfile {
       String profileDocId = queryDocumentSnapshot.id;
 
       // get the profile image of the university (if exists) (getting here because needs to show in home screen)
-      final imagePath = await UniveristyProfile.withId(profileDocId: profileDocId).getProfileImagePath() ??
+      final imagePath = await UniveristyProfile.withId(
+                  profileDocId: profileDocId)
+              .getProfileImagePath() ??
           ''; // set empty path if there is no image found i.e. null is returned
 
       // return stream of type university profile object

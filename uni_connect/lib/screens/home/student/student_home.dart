@@ -315,11 +315,17 @@ class _StudentHomeState extends State<StudentHome> {
 
           // if search option is clicked
           if (title == "Search") {
-            // show search screen and wait for a result
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SearchScreen()),
-            );
+            // if student profile id is fetched then show search screen (for suggestions profile id needed)
+            if (stdProfileDocId != null) {
+              // show search screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SearchScreen(
+                          stdProfileId: stdProfileDocId!,
+                        )),
+              );
+            }
 
             // print("result: $result");
 

@@ -8,7 +8,7 @@ class UniversitiesList extends StatefulWidget {
 
   UniversitiesList({required this.searchQuery});
 
-  String searchQuery;
+  String searchQuery; // search query
 
   @override
   State<UniversitiesList> createState() => _UniversitiesListState();
@@ -85,11 +85,11 @@ class _UniversitiesListState extends State<UniversitiesList> {
         // if the query is not empty show those unis which have search query in their name
         Column(
             children: unis
-            // search
+                // search
                 .where((uni) => uni!.name
                     .toLowerCase()
                     .contains(widget.searchQuery.toLowerCase()))
-                    // convert each object to tile 
+                // convert each object to tile
                 .map((uni) => UniversityTile(
                       uniObj: uni,
                     ))
@@ -98,12 +98,11 @@ class _UniversitiesListState extends State<UniversitiesList> {
 }
 
 class UniversityTile extends StatefulWidget {
-  const UniversityTile({
-    super.key,
+  UniversityTile({
     required this.uniObj,
   });
 
-  final UniveristyProfile uniObj; // uni object
+  UniveristyProfile uniObj; // uni object
 
   @override
   State<UniversityTile> createState() => _UniversityTileState();
@@ -135,11 +134,24 @@ class _UniversityTileState extends State<UniversityTile> {
     // TODO: implement initState
     super.initState();
     _getProfilePhoto(); // fetch the uni profile image
+    // print('here'); // when search query is updated and left to single uni in list (i.e. filtering uni) initstate is not being called on that object
+  }
+
+  @override
+  void didUpdateWidget(UniversityTile oldWidget) {
+    if (oldWidget.uniObj != widget.uniObj) {
+      _getProfilePhoto();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   // build method
   @override
   Widget build(BuildContext context) {
+    print('profileImage $profileImage');
+    // if (profileImage == '') {
+    //   _getProfilePhoto();
+    // }
     // tile tree
     return Container(
         decoration: BoxDecoration(

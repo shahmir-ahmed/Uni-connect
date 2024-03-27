@@ -121,6 +121,9 @@ class StudentProfile {
   // with id only
   StudentProfile.withId({required this.profileDocId});
 
+  // with id only
+  StudentProfile.withFieldsOfInterest({required this.fieldsOfInterest});
+
   // for updating profile constructor
   // for profile
   StudentProfile.forUpdateProfile(
