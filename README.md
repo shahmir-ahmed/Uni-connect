@@ -6,7 +6,7 @@
     <img src="https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png" alt="Main Screen" style="display: block; margin-left: auto; margin-right: auto;" width="250" height="550/>
 </p>-->
 
-Uniconnect is a social platform where universities can create accounts and high school/college students can follow them.
+Uni-connect is a social platform where universities can create accounts and high school/college students can follow them.
 
 ![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
 
@@ -52,7 +52,7 @@ Install Uni-connect by downloading this repo and make sure you have flutter inst
 
 ## Demo
 
-Link to demo: <a href="https://drive.google.com/file/d/1cIE_-3hWPr10qDAaq4w2Uu6en7BclS3d/view?usp=drive_link" target="_blank">Right click here and select open in new tab </br> or on phone long press here and tap on open in new window</a>
+Link to demo: <a href="https://drive.google.com/file/d/1cIE_-3hWPr10qDAaq4w2Uu6en7BclS3d/view?usp=drive_link" target="_blank">Right click here and select open in new tab </br> or on mobile browser long press here and tap on open in new window </br> or on mobile app just click here</a>
 
 
 ## Tech Stack
