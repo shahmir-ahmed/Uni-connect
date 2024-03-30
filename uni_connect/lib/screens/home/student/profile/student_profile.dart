@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/home/student/profile/edit_profile.dart';
+import 'package:uni_connect/screens/home/student/profile/following_unis.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 
@@ -74,6 +75,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     }
 
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text('Profile'),
           backgroundColor: Colors.blue[400],
@@ -158,14 +160,44 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                 ),
                                 // space
                                 SizedBox(
-                                  height: 12.0,
+                                  height: 4.0,
                                 ),
                                 // followers count
+                                /*
                                 Text(
                                   studentProfileObj.followingUnis.length
                                       .toString(),
                                   style: TextStyle(fontSize: 16.0),
                                 ),
+                                */
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // show screen which shows the unis student is following
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              FollowingUnisScreen(
+                                                followingUnisIds:
+                                                    studentProfileObj
+                                                        .followingUnis,
+                                              )),
+                                    );
+                                  },
+                                  child: Text(
+                                      studentProfileObj.followingUnis.length
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.normal)),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStatePropertyAll(Colors.white),
+                                    foregroundColor:
+                                        MaterialStatePropertyAll(Colors.black),
+                                    elevation: MaterialStatePropertyAll(0.0),
+                                  ),
+                                )
                               ],
                             ),
                           )
