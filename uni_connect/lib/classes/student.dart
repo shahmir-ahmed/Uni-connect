@@ -122,7 +122,7 @@ class StudentProfile {
   StudentProfile.withId({required this.profileDocId});
 
   // with id only
-  StudentProfile.withFieldsOfInterest({required this.fieldsOfInterest});
+  StudentProfile.withFieldsAndFollowing({required this.fieldsOfInterest, required this.followingUnis});
 
   // for updating profile constructor
   // for profile

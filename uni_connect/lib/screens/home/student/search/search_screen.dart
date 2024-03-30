@@ -45,8 +45,9 @@ class _SearchScreenState extends State<SearchScreen> {
         .profileCollection
         .doc(widget.stdProfileId)
         .get()
-        .then((snapshot) => StudentProfile.withFieldsOfInterest(
-            fieldsOfInterest: snapshot.get('fields_of_interest')));
+        .then((snapshot) => StudentProfile.withFieldsAndFollowing(
+            fieldsOfInterest: snapshot.get('fields_of_interest'),
+            followingUnis: snapshot.get('following_unis')));
 
     // iterate through each uni in list
     for (var uni in unis) {
@@ -69,6 +70,15 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
 
+    // check if student has already followed this uni then not show this uni in suggestions
+    // filter out those unis which are not present in the following unis list
+    recommendedUnis = recommendedUnis
+        .where(
+          (recommendedUni) =>
+              !student.followingUnis.contains(recommendedUni.profileDocId),
+        )
+        .toList();
+
     setState(() {
       // Sort recommended posts by relevance score
       recommendedUnis
@@ -82,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    recommendUnis();
+    recommendUnis(); // set recommended unis for the student
   }
 
   @override
@@ -120,53 +130,59 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               // suggestions/ search results container
               Container(
-                  child: searchQuery.isEmpty
-                      // child: recommendedUnis.isNotEmpty
-                      ? Container(
-                          margin: EdgeInsets.only(top: 40.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                "Top Suggestions For You",
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              // space
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              // suggested unis list
-                              Column(
-                                  children: recommendedUnis
-                                      .map((recommededUni) =>
-                                          UniversityTile(uniObj: recommededUni))
-                                      .toList())
-                            ],
-                          ))
+                  // if search query is empty and suggestions list is also empty show blank screen
+                  child: (searchQuery.isEmpty && recommendedUnis.isEmpty)
+                      ? SizedBox()
                       :
-                      // search results conatiner
-                      Container(
-                          margin: EdgeInsets.only(top: 40.0),
-                          child: Column(
-                            children: [
-                              Text("Search results"),
-                              // results
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 15.0, horizontal: 0.0),
-                                // show unis in tile with logo, name
-                                // fetch the unis here from db which match the search
-                                // or
-                                // run a stream of unis profile and filter out unis according to search
-                                child: StreamProvider.value(
-                                  initialData: null,
-                                  value:
-                                      UniveristyProfile.empty().getUnisStream(),
-                                  child: UniversitiesList(
-                                      searchQuery: searchQuery),
-                                ),
-                                /*
+                      // search query is empty and suggestions are present then show suggestions
+                      (searchQuery.isEmpty && recommendedUnis.isNotEmpty)
+                          ? Container(
+                              margin: EdgeInsets.only(top: 40.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Top Suggestions For You",
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  // space
+                                  SizedBox(
+                                    height: 20.0,
+                                  ),
+                                  // suggested unis list
+                                  Column(
+                                      children: recommendedUnis
+                                          .map((recommededUni) =>
+                                              UniversityTile(
+                                                  uniObj: recommededUni))
+                                          .toList())
+                                ],
+                              ))
+                          :
+                          // otherwise show search results
+                          // search results conatiner
+                          Container(
+                              margin: EdgeInsets.only(top: 40.0),
+                              child: Column(
+                                children: [
+                                  Text("Search results"),
+                                  // results
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 15.0, horizontal: 0.0),
+                                    // show unis in tile with logo, name
+                                    // fetch the unis here from db which match the search
+                                    // or
+                                    // run a stream of unis profile and filter out unis according to search
+                                    child: StreamProvider.value(
+                                      initialData: null,
+                                      value: UniveristyProfile.empty()
+                                          .getUnisStream(),
+                                      child: UniversitiesList(
+                                          searchQuery: searchQuery),
+                                    ),
+                                    /*
                                         ListTile(
                                           leading: CircleAvatar(
                                             backgroundImage:
@@ -186,10 +202,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                           subtitle: Text("I-10"),
                                         )
                                         */
-                              )
-                            ],
-                          ),
-                        ))
+                                  )
+                                ],
+                              ),
+                            ))
             ],
           ),
         ),

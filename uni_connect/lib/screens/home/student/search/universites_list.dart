@@ -121,9 +121,12 @@ class _UniversityTileState extends State<UniversityTile> {
                   profileDocId: widget.uniObj.profileDocId)
               .getProfileImagePath() ??
           ''; // set empty path if there is no image found i.e. null is returned
-      setState(() {
-        profileImage = imagePath;
-      });
+      // Check if the widget is still mounted before calling setState
+      if (mounted) {
+        setState(() {
+          profileImage = imagePath;
+        });
+      }
     } catch (e) {
       print('Error in _getProfilePhoto: $e');
     }
@@ -148,7 +151,7 @@ class _UniversityTileState extends State<UniversityTile> {
   // build method
   @override
   Widget build(BuildContext context) {
-    print('profileImage $profileImage');
+    // print('profileImage $profileImage');
     // if (profileImage == '') {
     //   _getProfilePhoto();
     // }
