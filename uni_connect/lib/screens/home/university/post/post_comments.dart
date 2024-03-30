@@ -34,21 +34,22 @@ class _CommentsScreenState extends State<CommentsScreen> {
   @override
   Widget build(BuildContext context) {
     // show inner comments screen content with comment object stream supplied to that screen
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('Comments'),
-        backgroundColor: Colors.blue[500],
+    return
+        // Scaffold(
+        //   backgroundColor: Colors.white,
+        //   appBar: AppBar(
+        //     title: Text('Comments'),
+        //     backgroundColor: Colors.blue[500],
+        //   ),
+        //   // scrollable body
+        //   body:
+        StreamProvider.value(
+      value: Comment.id(docId: widget.commentDocId).getCommentsStream(),
+      initialData: null,
+      child: InnerCommentsScreen(
+        commenterProfileId: widget.commenterProfileId,
+        commentByType: widget.commentByType,
       ),
-      // scrollable body
-      body: StreamProvider.value(
-          value: Comment.id(docId: widget.commentDocId).getCommentsStream(),
-          initialData: null,
-          child: SingleChildScrollView(
-              child: InnerCommentsScreen(
-            commenterProfileId: widget.commenterProfileId,
-            commentByType: widget.commentByType,
-          ))),
     );
   }
 }
@@ -179,146 +180,276 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
     }
 
     // widget tree
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // if comments are present in stream && comment done by is set on the comment then show comments
-        if (postComments != null && commentBySet)
-          Container(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // _commentsWidget()
-                //  children: [
-                //  postComments!.forEach((comment) =>
-                //     Text(comment['comment'] as String)
-                //   ).toList()
-                // ],
-                //  children: postComments!.forEach((comment) =>
-                //     Text(comment['comment'] as String)
-                //   ).toList()
-
-                // get the list of the comments converted into widgets
-                children: _commentsWidgetList(),
-              ))
-        // show progress screen until comments are supplied in stream
-        else
-          WithinScreenProgress.withHeight(
-            text: '',
-            height: MediaQuery.of(context).size.height - 130,
-          ),
-
-        // comment input field section to comment
-        // form container
-        Container(
-            height: 50.0,
-            child: Container(
-              color: const Color.fromARGB(255, 209, 209, 209),
-              padding: EdgeInsets.symmetric(horizontal: 5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // comment field
-                  Container(
-                    width: MediaQuery.of(context).size.width - 66,
-                    child: TextFormField(
-                      controller: _textEditingController,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0))),
-                          hintText: widget.commentByType == 'student'
-                              ? 'Comment as Student'
-                              : 'Comment as University'),
-                      onChanged: (value) {
-                        setState(() {
-                          commentText = value.trim();
-                        });
-                      },
-                    ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Comments'),
+        backgroundColor: Colors.blue[500],
+      ),
+      bottomNavigationBar: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: BottomAppBar(
+          surfaceTintColor: Colors.white,
+          color: Colors.white,
+          child: // comment input field section to comment
+              // form container
+              Container(
+            // height: 50.0,
+            // color: const Color.fromARGB(255, 209, 209, 209),
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // comment field
+                Container(
+                  width: MediaQuery.of(context).size.width - 98,
+                  child: TextFormField(
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        hintText: widget.commentByType == 'student'
+                            ? 'Comment as Student'
+                            : 'Comment as University'),
+                    onChanged: (value) {
+                      setState(() {
+                        commentText = value.trim();
+                      });
+                    },
                   ),
-                  // comment send button
-                  // based on comment var show button
-                  commentText == ''
-                      ?
-                      // cannot send button
-                      MaterialButton(
-                          // color: Colors.pink,
-                          minWidth: 5,
-                          onPressed: () {
-                            // do nothing
-                          },
-                          child: Icon(Icons.send),
-                        )
-                      // can send button
-                      : MaterialButton(
-                          minWidth: 5,
-                          onPressed: () async {
-                            // get uni profile doc id
-                            // setState(() {
-                            // remove the comment_by_name key from map
-                            // postComments = postComments!
-                            //     .forEach((comment) =>
-                            //         comment.remove('comment_by_name'))
-                            //     .toList();
+                ),
+                // comment send button
+                // based on comment var show button
+                commentText == ''
+                    ?
+                    // cannot send button
+                    MaterialButton(
+                        // color: Colors.pink,
+                        minWidth: 5,
+                        onPressed: () {
+                          // do nothing
+                        },
+                        child: Icon(Icons.send),
+                        highlightColor: Colors.white,
+                        highlightElevation: 0.0,
+                        elevation: 0.0,
+                      )
+                    // can send button
+                    : MaterialButton(
+                        minWidth: 5,
+                        onPressed: () async {
+                          // get uni profile doc id
+                          // setState(() {
+                          // remove the comment_by_name key from map
+                          // postComments = postComments!
+                          //     .forEach((comment) =>
+                          //         comment.remove('comment_by_name'))
+                          //     .toList();
 
-                            // clear comment text field
-                            clearTextField();
+                          // clear comment text field
+                          clearTextField();
 
-                            // add the new comment in the list
-                            postComments!.add({
-                              'comment': commentText,
-                              'comment_by_profile_id':
-                                  widget.commenterProfileId,
-                              'comment_by_type':
-                                  widget.commentByType == 'student'
-                                      ? 'student'
-                                      : 'university'
-                            });
+                          // add the new comment in the list
+                          postComments!.add({
+                            'comment': commentText,
+                            'comment_by_profile_id': widget.commenterProfileId,
+                            'comment_by_type': widget.commentByType == 'student'
+                                ? 'student'
+                                : 'university'
+                          });
 
-                            // set comment as empty to change button
-                            setState(() {
-                              commentText = '';
-                            });
+                          // set comment as empty to change button
+                          setState(() {
+                            commentText = '';
+                            commentBySet =
+                                false; // so that new comment is not shown until comment by is set on that comment
+                          });
 
-                            // set name on new comment
-                            _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
-                            // });
+                          // set name on new comment
+                          _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
+                          // });
 
-                            // print(postComments);
-                            // call comment method
-                            String? result = await Comment(
-                                    docId: commentObj!.docId,
-                                    comments: postComments)
-                                .updateComments();
+                          // print(postComments);
+                          // call comment method
+                          String? result = await Comment(
+                                  docId: commentObj!.docId,
+                                  comments: postComments)
+                              .updateComments();
 
-                            if (result == 'success') {
-                              // show comment posted message
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(content: Text('Comment posted!')),
-                              // );
-                            } else if (result == null) {
-                              // set latest commments color as red
+                          if (result == 'success') {
+                            // show comment posted message
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(content: Text('Comment posted!')),
+                            // );
+                          } else if (result == null) {
+                            // set latest commments color as red
 
-                              // show error message
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(
-                              //       content: Text(
-                              //           'Something went wrong. Please try again later.')),
-                              // );
-                            }
+                            // show error message
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(
+                            //       content: Text(
+                            //           'Something went wrong. Please try again later.')),
+                            // );
+                          }
 
-                            // clear comment text field
-                            // setState(() {
-                            //   this.comment = '';
-                            // });
-                          },
-                          child: Icon(Icons.send, color: Colors.blue),
-                        )
-                ],
+                          // clear comment text field
+                          // setState(() {
+                          //   this.comment = '';
+                          // });
+                        },
+                        child: Icon(Icons.send, color: Colors.blue),
+                      )
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // if comments are present in stream && comment done by is set on the comment then show comments
+            if (postComments != null && commentBySet)
+              Container(
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // _commentsWidget()
+                    //  children: [
+                    //  postComments!.forEach((comment) =>
+                    //     Text(comment['comment'] as String)
+                    //   ).toList()
+                    // ],
+                    //  children: postComments!.forEach((comment) =>
+                    //     Text(comment['comment'] as String)
+                    //   ).toList()
+
+                    // get the list of the comments converted into widgets
+                    children: _commentsWidgetList(),
+                  ))
+            // show progress screen until comments are supplied in stream
+            else
+              WithinScreenProgress.withHeight(
+                text: '',
+                height: MediaQuery.of(context).size.height - 130,
               ),
-            ))
-      ],
+            /*
+            // comment input field section to comment
+            // form container
+            Container(
+                height: 50.0,
+                child: Container(
+                  color: const Color.fromARGB(255, 209, 209, 209),
+                  padding: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // comment field
+                      Container(
+                        width: MediaQuery.of(context).size.width - 66,
+                        child: TextFormField(
+                          controller: _textEditingController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              hintText: widget.commentByType == 'student'
+                                  ? 'Comment as Student'
+                                  : 'Comment as University'),
+                          onChanged: (value) {
+                            setState(() {
+                              commentText = value.trim();
+                            });
+                          },
+                        ),
+                      ),
+                      // comment send button
+                      // based on comment var show button
+                      commentText == ''
+                          ?
+                          // cannot send button
+                          MaterialButton(
+                              // color: Colors.pink,
+                              minWidth: 5,
+                              onPressed: () {
+                                // do nothing
+                              },
+                              child: Icon(Icons.send),
+                            )
+                          // can send button
+                          : MaterialButton(
+                              minWidth: 5,
+                              onPressed: () async {
+                                // get uni profile doc id
+                                // setState(() {
+                                // remove the comment_by_name key from map
+                                // postComments = postComments!
+                                //     .forEach((comment) =>
+                                //         comment.remove('comment_by_name'))
+                                //     .toList();
+        
+                                // clear comment text field
+                                clearTextField();
+        
+                                // add the new comment in the list
+                                postComments!.add({
+                                  'comment': commentText,
+                                  'comment_by_profile_id':
+                                      widget.commenterProfileId,
+                                  'comment_by_type':
+                                      widget.commentByType == 'student'
+                                          ? 'student'
+                                          : 'university'
+                                });
+        
+                                // set comment as empty to change button
+                                setState(() {
+                                  commentText = '';
+                                });
+        
+                                // set name on new comment
+                                _setCommentByOnComment(); // new comment update is shown b/c set state is called inside this method and so post comments varaible chhages are reflected
+                                // });
+        
+                                // print(postComments);
+                                // call comment method
+                                String? result = await Comment(
+                                        docId: commentObj!.docId,
+                                        comments: postComments)
+                                    .updateComments();
+        
+                                if (result == 'success') {
+                                  // show comment posted message
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //   SnackBar(content: Text('Comment posted!')),
+                                  // );
+                                } else if (result == null) {
+                                  // set latest commments color as red
+        
+                                  // show error message
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //   SnackBar(
+                                  //       content: Text(
+                                  //           'Something went wrong. Please try again later.')),
+                                  // );
+                                }
+        
+                                // clear comment text field
+                                // setState(() {
+                                //   this.comment = '';
+                                // });
+                              },
+                              child: Icon(Icons.send, color: Colors.blue),
+                            )
+                    ],
+                  ),
+                ))
+                */
+          ],
+        ),
+      ),
     );
   }
 }
