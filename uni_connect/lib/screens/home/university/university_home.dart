@@ -392,14 +392,19 @@ class _UniversityHomeState extends State<UniversityHome> {
               actions: [
                 // settings button
                 MaterialButton(
-                    onPressed: () {
-                      // show settings screen
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SettingsScreen()));
-                    },
-                    child: Icon(Icons.settings))
+                  onPressed: () {
+                    // show settings screen
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsScreen()));
+                  },
+                  child: Icon(
+                    Icons.settings,
+                  ),
+                  highlightElevation: 0.0,
+                  highlightColor: Colors.blue[400],
+                )
               ],
             ),
             body: DefaultTabController(

@@ -172,7 +172,9 @@ class _PostContentState extends State<PostContent> {
 
           // media container
           Container(
-            width: MediaQuery.of(context).size.width - 60,
+            // width: MediaQuery.of(context).size.width - 60,
+            padding: EdgeInsets.only(left: 6.0),
+            width: MediaQuery.of(context).size.width - 75,
             height: 200.0,
             // decoration: BoxDecoration(border: Border.all(width: 1.0)),
             child: buildMediaButton(),
@@ -323,7 +325,12 @@ class _PostContentState extends State<PostContent> {
   // Extracted a method for building the media button to improve readability.
   Widget buildMediaButton() {
     // if media path is being currently or error fetching path so '' stored in path
-    if (mediaPath == null || mediaPath == '') {
+    if (mediaPath == null || mediaPath == 'error') {
+      // if error fetching means new post media is not present in the storage now
+      if (mediaPath == 'error') {
+        // again load media path
+        _loadMediaPath();
+      }
       return WithinScreenProgress.withPadding(
         text: '',
         paddingTop: 50.0,
@@ -331,7 +338,7 @@ class _PostContentState extends State<PostContent> {
     }
     // post with video
     else if (widget.post.mediaType == "video") {
-      return ElevatedButton(
+      return MaterialButton(
         onPressed: () {
           // show video player screen on post video clicko
           Navigator.push(
@@ -343,14 +350,18 @@ class _PostContentState extends State<PostContent> {
           // print(mediaPath!);
         },
         child: Image(image: AssetImage('assets/play_video.jpg')),
-        style: ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(Colors.white),
-            elevation: MaterialStatePropertyAll(0.0)),
+        // style: ButtonStyle(
+        //     backgroundColor: MaterialStatePropertyAll(Colors.white),
+        //     elevation: MaterialStatePropertyAll(0.0)),
+        highlightElevation: 0.0,
+        elevation: 0.0,
+        color: Colors.black,
+        highlightColor: Colors.black,
       );
     }
     // 360 image post
     else if (widget.post.mediaType == '360_image') {
-      return ElevatedButton(
+      return MaterialButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -382,14 +393,18 @@ class _PostContentState extends State<PostContent> {
             ],
           ),
         ),
-        style: ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(Colors.white),
-            elevation: MaterialStatePropertyAll(0.0)),
+        // style: ButtonStyle(
+        //     backgroundColor: MaterialStatePropertyAll(Colors.white),
+        //     elevation: MaterialStatePropertyAll(0.0)),
+        highlightElevation: 0.0,
+        elevation: 0.0,
+        color: Colors.black,
+        highlightColor: Colors.black,
       );
     }
     // simple image
     else if (widget.post.mediaType == 'simple_image') {
-      return ElevatedButton(
+      return MaterialButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -403,9 +418,14 @@ class _PostContentState extends State<PostContent> {
           );
         },
         child: Image(image: NetworkImage(mediaPath!)),
-        style: ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(Colors.white),
-            elevation: MaterialStatePropertyAll(0.0)),
+        // style: ButtonStyle(
+        //     backgroundColor: MaterialStatePropertyAll(Colors.white),
+        //     elevation: MaterialStatePropertyAll(0.0)),
+        // switched from elevated to material button because of highlight elevation, color and square border
+        highlightElevation: 0.0,
+        elevation: 0.0,
+        color: Colors.black,
+        highlightColor: Colors.black,
       );
     }
     // if no media type (worst case)
