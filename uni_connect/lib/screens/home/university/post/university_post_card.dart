@@ -369,7 +369,7 @@ class _PostContentState extends State<PostContent> {
         children: [
           // post header row container
           Container(
-            margin: EdgeInsets.only(bottom: 6.0),
+            margin: EdgeInsets.only(bottom: 12.0),
             // color: Colors.pink,
             // post header row
             child: Row(
@@ -401,13 +401,15 @@ class _PostContentState extends State<PostContent> {
                     ),
                     widget.homeScreenContext != null
                         ?
-                        // uni name text
-                        widget.uniName!.length > 28
-                            ? Text('${widget.uniName!.substring(0, 28)}...')
+                        // uni name text for uni
+                        widget.uniName!.length > 30
+                            ? Text(
+                                '${widget.uniName!.substring(0, 30).trim()}...')
                             : Text('${widget.uniName!}')
                         : // uni name text for student
                         widget.uniName!.length > 32
-                            ? Text('${widget.uniName!.substring(0, 32)}...')
+                            ? Text(
+                                '${widget.uniName!.substring(0, 32).trim()}...')
                             : Text('${widget.uniName!}'),
                   ],
                 ),
@@ -479,8 +481,10 @@ class _PostContentState extends State<PostContent> {
                   child: liked == false
                       ? ElevatedButton(
                           onPressed: () async {
-                            // add the uni profile id in the liked by list of the like object
-                            like!.likedBy!.add(widget.stdProfileDocId);
+                            // add the uni profile id/std profile id in the liked by list of the like object based context which is passed only when on uni side
+                            widget.homeScreenContext != null
+                                ? like!.likedBy!.add(widget.uniProfileDocId)
+                                : like!.likedBy!.add(widget.stdProfileDocId);
                             // widget.post.postLikes!.add(widget.post.uniProfileId);
                             // call the like method
                             await like.likePost();
@@ -515,7 +519,9 @@ class _PostContentState extends State<PostContent> {
                           onPressed: () async {
                             // call the unlike method
                             // remove the uni profile id from the liked by list of the like object of this post
-                            like!.likedBy!.remove(widget.stdProfileDocId);
+                            widget.homeScreenContext != null
+                                ? like!.likedBy!.remove(widget.uniProfileDocId)
+                                : like!.likedBy!.remove(widget.stdProfileDocId);
                             // call the ulike method
                             await like.unLikePost();
                             // set liked as false

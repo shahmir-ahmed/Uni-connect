@@ -5,6 +5,7 @@ import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/stude
 class VirtualEventCard extends StatelessWidget {
   VirtualEventCard(
       {required this.uniName,
+      required this.uniImage,
       required this.virtualEvent,
       required this.stdProfileId});
 
@@ -13,6 +14,9 @@ class VirtualEventCard extends StatelessWidget {
 
   // uni name
   String uniName;
+
+  // uni profile image
+  String uniImage;
 
   // student profile id
   String stdProfileId;
@@ -29,52 +33,82 @@ class VirtualEventCard extends StatelessWidget {
             // main card
             child: Card(
               elevation: 8.0,
-              color: Colors.white,
+              color: Colors.lightBlue,
               clipBehavior: Clip.hardEdge,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
               // container inside card
               child: Container(
-                padding: EdgeInsets.all(20.0),
+                margin: const EdgeInsets.all(2.0),
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    )),
+                padding: EdgeInsets.all(15.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        // uni profile image
-                        Container(
-                          padding: EdgeInsets.only(right: 15.0),
-                          child: CircleAvatar(
-                            backgroundImage: AssetImage('assets/uni.jpg'),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // if there is no profiel picture path
+                          uniImage == ''
+                              ? CircleAvatar(
+                                  backgroundImage: AssetImage('assets/uni.jpg'),
+                                  radius: 18,
+                                )
+                              :
+                              // if there is profile picture path
+                              CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    uniImage,
+                                    // width: 100,
+                                    // height: 100,
+                                  ),
+                                  radius: 18,
+                                ),
+                          // virtualEvent.status == 'live'
+                          // ?
+                          // space
+                          SizedBox(
+                            width: 10.0,
                           ),
-                        ),
-                        // virtualEvent.status == 'live'
-                        // ?
-                        Text('${uniName.substring(0, 22)}.. is live')
-                        // : Text('${uniName.substring(0, 22)} was live')
-                      ],
+                          Text('${uniName.substring(0, 22).trim()}... is live')
+                          // : Text('${uniName.substring(0, 22)} was live')
+                        ],
+                      ),
                     ),
 
                     // video image on clicking which live stream can be joined can be joined
                     // virtualEvent.status == 'live'
                     // ?
-                    Container(
-                        height: 100.0,
-                        width: 100.0,
-                        child: MaterialButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          StudentVirtualEventScreen(
-                                              channelName: virtualEvent
-                                                  .uniProfileId as String,
-                                              virtualEvent: virtualEvent,
-                                              stdProfileId: stdProfileId)));
-                            },
-                            child: Image(
-                                image: AssetImage('assets/live-image.png')))),
+                    Center(
+                      child: Container(
+                          height: 100.0,
+                          width: 100.0,
+                          child: MaterialButton(
+                              highlightElevation: 0.0,
+                              highlightColor: Colors.black,
+                              elevation: 0.0,
+                              color: Colors.black,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            StudentVirtualEventScreen(
+                                                channelName: virtualEvent
+                                                    .uniProfileId as String,
+                                                virtualEvent: virtualEvent,
+                                                stdProfileId: stdProfileId)));
+                              },
+                              child: Image(
+                                  image: AssetImage('assets/live-image.png')))),
+                    ),
                     // :
                     // if event has ended
                     // Container(
@@ -84,11 +118,16 @@ class VirtualEventCard extends StatelessWidget {
 
                     // Space
                     SizedBox(
-                      height: 10.0,
+                      height: 20.0,
                     ),
 
                     // live stream title
                     Text(virtualEvent.title as String),
+
+                    // Space
+                    SizedBox(
+                      height: 10.0,
+                    ),
                   ],
                 ),
               ),

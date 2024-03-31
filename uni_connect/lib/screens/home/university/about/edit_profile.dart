@@ -233,6 +233,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (photo == null) return;
       final tempImage = File(photo.path);
       print(photo.path); // jpg file
+      // compress image and then set path
       // update the image and error variable and notify the widget to update its state using setState
       setState(() {
         pickedImage = tempImage;
@@ -302,6 +303,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Edit Profile'),
         backgroundColor: Colors.blue[400],

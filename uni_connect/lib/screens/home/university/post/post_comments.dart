@@ -205,6 +205,8 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                 Container(
                   width: MediaQuery.of(context).size.width - 98,
                   child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    style: TextStyle(color: Colors.black),
                     controller: _textEditingController,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(

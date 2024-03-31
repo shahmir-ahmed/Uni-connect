@@ -92,6 +92,7 @@ class _UniProfileState extends State<UniProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('University Profile'),
         backgroundColor: Colors.blue[400],
@@ -434,7 +435,7 @@ class _UniProfileState extends State<UniProfileScreen> {
                         stdProfileId: stdProfileDocId,
                       ),
                     )
-                  : WithinScreenProgress(text: 'Loading posts'),
+                  : WithinScreenProgress(text: 'Loading posts...'),
 
               // second tab bar view widget
               Container(
@@ -446,6 +447,7 @@ class _UniProfileState extends State<UniProfileScreen> {
                           value: VirtualEvent.empty().getVirtualEventsStream(),
                           initialData: null,
                           child: VirtualEventCards(
+                              uniImage: widget.uniProfile!.profileImage,
                               uniName: widget.uniProfile!.name,
                               uniProfileId: widget.uniProfile!.profileDocId,
                               stdProfileId: stdProfileDocId as String))

@@ -162,14 +162,17 @@ class _UniversityTileState extends State<UniversityTile> {
         padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
         child: ListTile(
           onTap: () {
-            // show uni profile screen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => UniProfileScreen(
-                        uniProfile: widget.uniObj,
-                      )),
-            );
+            // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile
+            // if (profileImage != '') {
+              // show uni profile screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UniProfileScreen(
+                          uniProfile: widget.uniObj,
+                        )),
+              );
+            // }
           },
           tileColor: Color.fromARGB(255, 239, 239, 239),
           shape: RoundedRectangleBorder(

@@ -183,7 +183,7 @@ class _FollowUnFollowButtonState extends State<FollowUnFollowButton> {
     // based on following list stream have no value yet then show empty container
     return followingList == null
         ? Container()
-        // now there is list so based on flag check that student is following the unis or not
+        // now there is list so based on flag check that student is following the uni or not
         : following
             ? MaterialButton(
                 onPressed: () {

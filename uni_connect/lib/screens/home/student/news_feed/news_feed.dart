@@ -56,7 +56,7 @@ class _NewsFeedState extends State<NewsFeed> {
             )
           : followingList.isEmpty ? Text("Follow universities to see posts in your news feed...") : Text('') ;
     } else {
-      return WithinScreenProgress(text: "");
+      return WithinScreenProgress(text: "Loading news feed...");
     }
   }
 }

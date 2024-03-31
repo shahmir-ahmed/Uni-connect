@@ -513,7 +513,7 @@ class _PostHeaderState extends State<PostHeader> {
   Widget build(BuildContext context) {
     // post header container
     return Container(
-      margin: EdgeInsets.only(bottom: 6.0),
+      margin: EdgeInsets.only(bottom: 12.0),
       // post header row
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

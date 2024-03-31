@@ -101,6 +101,8 @@ class _StudentHomeState extends State<StudentHome> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
+      // backgroundColor: Colors.white,
+      // surfaceTintColor: Colors.white,
       title: Text("Confirm?"),
       content: Text("Are you sure you want to logout?"),
       actions: [
@@ -197,6 +199,7 @@ class _StudentHomeState extends State<StudentHome> {
     // print('stdName $stdName');
     // _showSnackBar(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Uni-connect'),
         centerTitle: true,
@@ -264,6 +267,7 @@ class _StudentHomeState extends State<StudentHome> {
       drawer: Drawer(
         width: 280.0,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         child: SingleChildScrollView(
           child: Container(
             // color: Colors.white,
@@ -307,7 +311,9 @@ class _StudentHomeState extends State<StudentHome> {
   // function to return a list item for drawer menu
   Widget menuItem(String title, IconData icon) {
     return Material(
-      color: Colors.transparent,
+      // color: Colors.transparent,
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
       child: InkWell(
         onTap: () async {
           // close the drawer menu

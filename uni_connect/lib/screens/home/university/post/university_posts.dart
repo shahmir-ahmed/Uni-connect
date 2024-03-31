@@ -99,8 +99,11 @@ class _UniversityPostsState extends State<UniversityPosts> {
 
     // posts card widget for each post of uni
     return posts == null
-        ? WithinScreenProgress(
-            text: 'Loading posts',
+        ? Container(
+            child: WithinScreenProgress.withPadding(
+              paddingTop: 90.0,
+              text: 'Loading posts...',
+            ),
           )
         // if there are no posts in the list
         /*
@@ -123,51 +126,50 @@ class _UniversityPostsState extends State<UniversityPosts> {
                     ),
                   )
                   */
-            // university posts
-            : SingleChildScrollView(
-                child: widget.homeScreenContext != null
-                    ? Column(
-                        children:
-                            // University side posts
-                            // posts to show, mapping to individual container widget to display
-                            posts!
-                                .where((post) =>
-                                    post.uniProfileId == widget.uniProfileDocId)
-                                .map((uniPost) => UniPostCard(
-                                      key:
-                                          UniqueKey(), // because post widget child widgets should be attached
-                                      post: uniPost,
-                                      profileImage: widget.uniProfileImage,
-                                      uniName: widget.uniName,
-                                      uniProfileDocId: widget.uniProfileDocId,
-                                      homeScreenContext:
-                                          widget.homeScreenContext,
-                                      // refreshPosts: () {
-                                      //   setState(() {
-                                      //     uniPosts!.remove(uniPost);
-                                      //   });
-                                      // }
-                                    ))
-                                .toList()
-                              // Sort the posts based on postCreatedAt
-                              ..sort((a, b) => b.post.postCreatedAt!
-                                  .compareTo(a.post.postCreatedAt!)))
-                    // student side posts
-                    : Column(
-                        children: posts!
+        // university posts
+        : SingleChildScrollView(
+            child: widget.homeScreenContext != null
+                ? Column(
+                    children:
+                        // University side posts
+                        // posts to show, mapping to individual container widget to display
+                        posts!
                             .where((post) =>
                                 post.uniProfileId == widget.uniProfileDocId)
-                            .map((uniPost) => UniPostCard.ForStudent(
-                                  key: UniqueKey(),
+                            .map((uniPost) => UniPostCard(
+                                  key:
+                                      UniqueKey(), // because post widget child widgets should be attached
                                   post: uniPost,
                                   profileImage: widget.uniProfileImage,
                                   uniName: widget.uniName,
-                                  stdProfileDocId: widget.stdProfileId,
+                                  uniProfileDocId: widget.uniProfileDocId,
+                                  homeScreenContext: widget.homeScreenContext,
+                                  // refreshPosts: () {
+                                  //   setState(() {
+                                  //     uniPosts!.remove(uniPost);
+                                  //   });
+                                  // }
                                 ))
                             .toList()
                           // Sort the posts based on postCreatedAt
                           ..sort((a, b) => b.post.postCreatedAt!
-                              .compareTo(a.post.postCreatedAt!))),
-              );
+                              .compareTo(a.post.postCreatedAt!)))
+                // student side posts
+                : Column(
+                    children: posts!
+                        .where((post) =>
+                            post.uniProfileId == widget.uniProfileDocId)
+                        .map((uniPost) => UniPostCard.ForStudent(
+                              key: UniqueKey(),
+                              post: uniPost,
+                              profileImage: widget.uniProfileImage,
+                              uniName: widget.uniName,
+                              stdProfileDocId: widget.stdProfileId,
+                            ))
+                        .toList()
+                      // Sort the posts based on postCreatedAt
+                      ..sort((a, b) => b.post.postCreatedAt!
+                          .compareTo(a.post.postCreatedAt!))),
+          );
   }
 }

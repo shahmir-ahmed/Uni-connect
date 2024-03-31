@@ -5,13 +5,16 @@ import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/virtu
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class VirtualEventCards extends StatefulWidget {
-  VirtualEventCards({required this.uniName, required this.uniProfileId, required this.stdProfileId});
+  VirtualEventCards({required this.uniName, required this.uniImage ,required this.uniProfileId, required this.stdProfileId});
 
   // uni profile id
   String uniProfileId;
 
   // uni name
   String uniName;
+
+  // uni profile image
+  String uniImage;
 
   // student profile id
   String stdProfileId;
@@ -49,6 +52,7 @@ class _VirtualEventCardsState extends State<VirtualEventCards> {
                   .where((event) => event.uniProfileId == widget.uniProfileId)
                   .map((event) => VirtualEventCard(
                         uniName: widget.uniName,
+                        uniImage: widget.uniImage,
                         virtualEvent: event,
                         stdProfileId: widget.stdProfileId
                       ))

@@ -163,41 +163,44 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                   height: 4.0,
                                 ),
                                 // followers count
-                                /*
-                                Text(
-                                  studentProfileObj.followingUnis.length
-                                      .toString(),
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                */
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // show screen which shows the unis student is following
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              FollowingUnisScreen(
-                                                followingUnisIds:
-                                                    studentProfileObj
-                                                        .followingUnis,
-                                              )),
-                                    );
-                                  },
-                                  child: Text(
-                                      studentProfileObj.followingUnis.length
-                                          .toString(),
-                                      style: TextStyle(
-                                          fontSize: 16.0,
-                                          fontWeight: FontWeight.normal)),
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStatePropertyAll(Colors.white),
-                                    foregroundColor:
-                                        MaterialStatePropertyAll(Colors.black),
-                                    elevation: MaterialStatePropertyAll(0.0),
-                                  ),
-                                )
+                                studentProfileObj.followingUnis.isEmpty
+                                    ? Text(
+                                        studentProfileObj.followingUnis.length
+                                            .toString(),
+                                        style: TextStyle(fontSize: 16.0),
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: () {
+                                          // show screen which shows the unis student is following
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FollowingUnisScreen(
+                                                      followingUnisIds:
+                                                          studentProfileObj
+                                                              .followingUnis,
+                                                    )),
+                                          );
+                                        },
+                                        child: Text(
+                                            studentProfileObj
+                                                .followingUnis.length
+                                                .toString(),
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.normal)),
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.white),
+                                          foregroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.black),
+                                          elevation:
+                                              MaterialStatePropertyAll(0.0),
+                                        ),
+                                      )
                               ],
                             ),
                           )

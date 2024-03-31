@@ -42,7 +42,8 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
             "/topics/${widget.uniProfileId}_followers", // Topic to which the notification will be sent i.e users subscribed to this uni's followers topic
         "priority": "high",
         "notification": {
-          "title": "🔴 ${widget.uniName.substring(0, 19)}. is live!",
+          // "title": "🔴 ${widget.uniName.substring(0, 19)}. is live!",
+          "title": "🔴 ${widget.uniName} is live!",
           "body": "${streamTitle}",
         },
         // 'data': {'type': 'live'} for clicking notification and redirecting to live screen
@@ -111,6 +112,7 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
           title: Text(
             'Create virtual event',
@@ -169,6 +171,9 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
                 'Title',
                 style: TextStyle(fontSize: 16.0),
               ),
+
+              // space
+              SizedBox(height: 4.0),
 
               // input field
               Form(

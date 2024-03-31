@@ -54,6 +54,7 @@ class _FollowingUnisScreenState extends State<FollowingUnisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Following universities'),
         backgroundColor: Colors.blue[400],

@@ -41,6 +41,9 @@ class _VirtualEventState extends State<VirtualEventScreen> {
   // event firebase doc id
   String eventId = '';
 
+  // remote users in the stream except the streamer
+  // int users = 0;
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +88,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
       agoraEngine!.registerEventHandler(getEventHandler());
 
       // join the channel
-      agoraEngine!.joinChannel(
+      await agoraEngine!.joinChannel(
           token: "",
           channelId: channelName,
           uid: 1, // host uid
@@ -113,6 +116,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
     }
   }
 
+  // Not works at the broadcaster side
   // Handle and respond to Agora events
   RtcEngineEventHandler getEventHandler() {
     return RtcEngineEventHandler(
@@ -153,7 +157,9 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["elapsed"] = elapsed;
         // eventCallback("onUserJoined", eventArgs);
-        setState(() {});
+        setState(() {
+          // users++; // remote user (student) joined
+        });
       },
       // Occurs when a remote user leaves the channel
       onUserOffline: (RtcConnection connection, int remoteUid,
@@ -165,7 +171,9 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         eventArgs["connection"] = connection;
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["reason"] = reason;
-        setState(() {});
+        setState(() {
+          // users--; // remote user (student) left
+        });
         // eventCallback("onUserOffline", eventArgs);
       },
     );
@@ -252,6 +260,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
   // build method
   @override
   Widget build(BuildContext context) {
+    // print('widget.title ${widget.title}');
     // return agoraEngine != null ? localVideoView() : Container();
     if (agoraEngine == null) {
       return Scaffold(
@@ -280,24 +289,45 @@ class _VirtualEventState extends State<VirtualEventScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          // stream title
           Container(
-            padding: EdgeInsets.only(left: 25.0),
+            decoration: BoxDecoration(
+                // color: Color.fromARGB(255, 237, 237, 237).withOpacity(0.5),
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            margin: EdgeInsets.only(left: 25.0),
+            padding: EdgeInsets.all(8.0),
             child: Text(
-              widget.title,
+              widget.title.length > 18
+                  ? "${widget.title.substring(0, 18).trim()}..."
+                  : widget.title,
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
           ),
-          RawMaterialButton(
-            onPressed: () => _onCallEnd(context),
-            child: Icon(
-              Icons.login_outlined,
-              color: Colors.white,
-              size: 20.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(12.0),
+          // students in stream watching
+          Row(
+            children: [
+              // if event id is present then fetched user count stream and supply down to the users count widget
+              eventId.isNotEmpty
+                  ? StreamProvider.value(
+                      initialData: null,
+                      value: VirtualEvent.onlyId(eventId: eventId)
+                          .getVirtualEventUsersStream(),
+                      child: UsersCountWidget())
+                  : SizedBox(),
+              // stream end button
+              RawMaterialButton(
+                onPressed: () => _onCallEnd(context),
+                child: Icon(
+                  Icons.login_outlined,
+                  color: Colors.white,
+                  size: 20.0,
+                ),
+                shape: CircleBorder(),
+                elevation: 2.0,
+                fillColor: Colors.redAccent,
+                padding: const EdgeInsets.all(12.0),
+              ),
+            ],
           ),
         ],
       ),
@@ -317,7 +347,11 @@ class _VirtualEventState extends State<VirtualEventScreen> {
           Container(
             height: 200.0,
             width: 250.0,
-            margin: EdgeInsets.symmetric(horizontal: 12.0),
+            margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+            decoration: BoxDecoration(
+                // color: Color.fromARGB(255, 237, 237, 237).withOpacity(0.5),
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            // margin: EdgeInsets.symmetric(horizontal: 12.0),
             child: SingleChildScrollView(
                 child: eventId.isEmpty
                     ? Container()
@@ -413,6 +447,37 @@ class _VirtualEventState extends State<VirtualEventScreen> {
   }
 }
 
+class UsersCountWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final eventObj = Provider.of<VirtualEvent?>(context);
+
+    // print('userCount: $eventObj');
+
+    return eventObj != null
+        ? ElevatedButton.icon(
+            onPressed: () {},
+            icon: Icon(
+              Icons.remove_red_eye_rounded,
+              color: Colors.white,
+              size: 20.0,
+            ),
+            // shape: BeveledRectangleBorder(),
+            style: ButtonStyle(
+                elevation: MaterialStatePropertyAll(0.0),
+                backgroundColor: MaterialStatePropertyAll(Colors.black),
+                padding: MaterialStatePropertyAll(
+                  const EdgeInsets.all(12.0),
+                )),
+            label: Text(
+              eventObj.usersCount.toString(),
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        : SizedBox();
+  }
+}
+
 // comments widget
 class EventComments extends StatefulWidget {
   const EventComments({super.key});
@@ -435,23 +500,29 @@ class _EventCommentsState extends State<EventComments> {
     return eventObj != null
         ? eventObj.comments!.isEmpty
             ? Container()
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: eventObj.comments!
-                    .map((commentMap) =>
-                        // Text(commentMap['comment'])
-                        ListTile(
-                          leading: CircleAvatar(
-                            radius: 15.0,
-                            backgroundImage: AssetImage('assets/student.jpg'),
-                          ),
-                          title: Text(
-                            commentMap['comment_by_name'],
-                            style: TextStyle(fontSize: 12.0),
-                          ),
-                          subtitle: Text(commentMap['comment']),
-                        ))
-                    .toList(),
+            : Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: eventObj.comments!
+                      .map((commentMap) =>
+                          // Text(commentMap['comment'])
+                          ListTile(
+                            leading: CircleAvatar(
+                              radius: 15.0,
+                              backgroundImage: AssetImage('assets/student.jpg'),
+                            ),
+                            title: Text(
+                              commentMap['comment_by_name'],
+                              style: TextStyle(
+                                  fontSize: 12.0, color: Colors.white),
+                            ),
+                            subtitle: Text(
+                              commentMap['comment'],
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ))
+                      .toList(),
+                ),
               )
         : Container();
   }

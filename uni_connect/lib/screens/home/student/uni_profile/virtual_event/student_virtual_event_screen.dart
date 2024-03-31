@@ -34,8 +34,8 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   // agora view video container
   // Container? container;
 
-  late Map<String, dynamic> config; // Configuration parameters
-  int localUid = -1;
+  // late Map<String, dynamic> config; // Configuration parameters
+  // int localUid = -1;
   String agoraAppId = "4be7200f4d154bc0bed8a60f35b010e9", channelName = '';
   List<int> remoteUids = []; // Uids of remote users in the channel
   bool isJoined = false; // Indicates if the local user has joined the channel
@@ -55,6 +55,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   late ScrollController _scrollController;
 
   double _previousMaxScrollExtent = 0.0;
+
+  // remote users in the stream except the streamer
+  int users = 0;
 
   // function to clear comment field using controller
   void clearTextField() {
@@ -163,7 +166,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
       // if (isBroadcaster) {
       await agoraEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
       // } else {
-      //   await _engine.setClientRole(ClientRole.Audience);
+      // await _engine.setClientRole(ClientRole.Audience);
       // }
 
       // Register the event handler
@@ -217,7 +220,13 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["connection"] = connection;
         eventArgs["elapsed"] = elapsed;
         // eventCallback("onJoinChannelSuccess", eventArgs);
-        // setState(() {});
+        setState(() {
+          users++; // the student who is watching the stream count on his/her side
+        });
+        // increase the count of users field in this event document in database (for uni side live stream screen)
+        // final newUsers = widget.virtualEvent.usersCount! + 1;
+        VirtualEvent.onlyId(eventId: widget.virtualEvent.eventId)
+            .incrementUser();
       },
       // Occurs when a remote user joins the channel
       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
@@ -229,7 +238,12 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["elapsed"] = elapsed;
         // eventCallback("onUserJoined", eventArgs);
-        // setState(() {});
+        // except the stream all other users who have joined the stream increase the users count
+        if (remoteUid != 1) {
+          setState(() {
+            users++;
+          });
+        }
       },
       // Occurs when a remote user leaves the channel
       onUserOffline: (RtcConnection connection, int remoteUid,
@@ -241,7 +255,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         eventArgs["connection"] = connection;
         eventArgs["remoteUid"] = remoteUid;
         eventArgs["reason"] = reason;
-        // setState(() {});
+        setState(() {
+          users--;
+        });
         // eventCallback("onUserOffline", eventArgs);
         // if host left the channel end the stream for students also
         if (remoteUid == 1) {
@@ -322,26 +338,58 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           // event title
-          Container(
-            padding: EdgeInsets.only(left: 25.0),
-            child: Text(
-              widget.virtualEvent.title as String,
-              style: TextStyle(fontSize: 16.0, color: Colors.white),
+          widget.virtualEvent.title != null
+              ? Container(
+                  decoration: BoxDecoration(
+                      // color:
+                      //     Color.fromARGB(255, 237, 237, 237).withOpacity(0.5),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  margin: EdgeInsets.only(left: 25.0),
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    widget.virtualEvent.title!.length > 18
+                        ? widget.virtualEvent.title!.substring(0, 18).trim()
+                            as String
+                        : widget.virtualEvent.title as String,
+                    style: TextStyle(fontSize: 16.0, color: Colors.white),
+                  ),
+                )
+              : SizedBox(),
+          // students in stream watching
+          Row(children: [
+            ElevatedButton.icon(
+              onPressed: () {},
+              icon: Icon(
+                Icons.remove_red_eye_rounded,
+                color: Colors.white,
+                size: 20.0,
+              ),
+              // shape: BeveledRectangleBorder(),
+              style: ButtonStyle(
+                  elevation: MaterialStatePropertyAll(0.0),
+                  backgroundColor: MaterialStatePropertyAll(Colors.black),
+                  padding: MaterialStatePropertyAll(
+                    const EdgeInsets.all(12.0),
+                  )),
+              label: Text(
+                users.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-          // leave stream button
-          RawMaterialButton(
-            onPressed: () => _onCallEnd(context),
-            child: Icon(
-              Icons.login_outlined,
-              color: Colors.white,
-              size: 20.0,
+            // leave stream button
+            RawMaterialButton(
+              onPressed: () => _onCallEnd(context),
+              child: Icon(
+                Icons.login_outlined,
+                color: Colors.white,
+                size: 20.0,
+              ),
+              shape: CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.redAccent,
+              padding: const EdgeInsets.all(12.0),
             ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(12.0),
-          ),
+          ])
         ],
       ),
     );
@@ -360,9 +408,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
           children: [
             // comments list
             Container(
-              margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 7.0),
+              margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
               decoration: BoxDecoration(
-                  // color: Color.fromARGB(255, 237, 237, 237),
+                  // color: Color.fromARGB(255, 237, 237, 237).withOpacity(0.4),
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
               height: 200.0,
               width: 250.0,
@@ -382,9 +430,13 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
                               ),
                               title: Text(
                                 commentMap['comment_by_name'],
-                                style: TextStyle(fontSize: 12.0),
+                                style: TextStyle(
+                                    fontSize: 12.0, color: Colors.white),
                               ),
-                              subtitle: Text(commentMap['comment']),
+                              subtitle: Text(
+                                commentMap['comment'],
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ))
                         .toList(),
                   ),
@@ -401,7 +453,7 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
                 // ),
                 // comment field
                 Container(
-                  padding: EdgeInsets.only(left: 7.0),
+                  padding: EdgeInsets.only(left: 20.0),
                   width: MediaQuery.of(context).size.width - 100,
                   child: TextFormField(
                     controller: _textEditingController,
@@ -493,8 +545,11 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
   }
 
 // on call end button click
-  void _onCallEnd(BuildContext context) {
+  void _onCallEnd(BuildContext context) async {
     // showAlertDialog(context);
+    // decrease user count as user has left the stream now
+    await VirtualEvent.onlyId(eventId: widget.virtualEvent.eventId)
+        .decrementUser();
     Navigator.pop(context);
   }
 

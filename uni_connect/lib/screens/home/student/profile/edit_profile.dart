@@ -328,6 +328,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     // print(widget.studentProfile.toString());
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Edit Profile'),
         backgroundColor: Colors.blue[400],

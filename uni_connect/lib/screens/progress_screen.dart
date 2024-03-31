@@ -22,6 +22,7 @@ class ProgressScreen extends StatelessWidget {
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
+          backgroundColor: Colors.white,
           body: Container(
             color: bgColorBlack==false ? Colors.white : Colors.black,
             padding: EdgeInsets.only(top: 350.0),

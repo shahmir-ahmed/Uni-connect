@@ -7,6 +7,7 @@ class VirtualEvent {
   String? uniProfileId;
   String? status;
   List<dynamic>? comments;
+  int? usersCount;
 
   final virtualEventsCollection =
       FirebaseFirestore.instance.collection('virtual_events'); // collection
@@ -21,12 +22,17 @@ class VirtualEvent {
       required this.title,
       required this.status,
       required this.uniProfileId,
-      required this.comments});
+      required this.comments,
+      required this.usersCount
+      });
 
   VirtualEvent.onlyId({required this.eventId}); // only event id constructor
 
   VirtualEvent.onlyComments(
       {required this.comments}); // only comments constructor
+
+  VirtualEvent.onlyUsersCount(
+      {required this.usersCount}); // only users count constructor
 
   // empty constructor
   VirtualEvent.empty();
@@ -38,7 +44,8 @@ class VirtualEvent {
         'title': title,
         'status': 'live',
         'uni_profile_id': uniProfileId,
-        'comments': []
+        'comments': [],
+        'users_count': 0
       });
 
       return docRef
@@ -72,7 +79,9 @@ class VirtualEvent {
               title: doc.get('title') ?? '',
               status: doc.get('status') ?? '',
               uniProfileId: doc.get('uni_profile_id') ?? '',
-              comments: doc.get('comments') ?? []))
+              comments: doc.get('comments') ?? [],
+              usersCount: doc.get('users_count') ?? 0
+              ))
           .toList();
     } catch (e) {
       print('Error in _snapshotToVirtualEventsList $e');
@@ -92,7 +101,7 @@ class VirtualEvent {
   }
 
   // virtual event document snapshot to virtual event object having comments only
-  _snapshotToVirtualEvent(snapshot) {
+  _snapshotToVirtualEventComment(snapshot) {
     try {
       return VirtualEvent.onlyComments(
           comments: snapshot.get('comments') ?? []);
@@ -107,12 +116,13 @@ class VirtualEvent {
       return virtualEventsCollection
           .doc(eventId)
           .snapshots()
-          .map((snapshot) => _snapshotToVirtualEvent(snapshot));
+          .map((snapshot) => _snapshotToVirtualEventComment(snapshot));
     } catch (e) {
       print('Error in getVirtualEventCommentsStream: $e');
       return null;
     }
   }
+
 
   // add new comment
   Future<String> comment() async {
@@ -123,6 +133,53 @@ class VirtualEvent {
     } catch (e) {
       print('Error in comment(): $e');
       return 'error';
+    }
+  }
+
+  // increment users count
+  Future<String> incrementUser() async {
+    try {
+      // increase the user count by 1
+      await virtualEventsCollection.doc(eventId).update({'users_count': FieldValue.increment(1)});
+      return 'success';
+    } catch (e) {
+      print('Error in incrementUser(): $e');
+      return 'error';
+    }
+  }
+
+  // decrement users count
+  Future<String> decrementUser() async {
+    try {
+      // decrease the user count by 1
+      await virtualEventsCollection.doc(eventId).update({'users_count': FieldValue.increment(-1)});
+      return 'success';
+    } catch (e) {
+      print('Error in decrementUser(): $e');
+      return 'error';
+    }
+  }
+  
+  // virtual event document snapshot to virtual event object having users count only
+  _snapshotToVirtualEventUsers(snapshot) {
+    try {
+      return VirtualEvent.onlyUsersCount(
+          usersCount: snapshot.get('users_count') ?? 0);
+    } catch (e) {
+      print('Error in _snapshotToVirtualEventUsers $e');
+    }
+  }
+
+  // return stream of type virtual event object having comments only
+  Stream<VirtualEvent>? getVirtualEventUsersStream() {
+    try {
+      return virtualEventsCollection
+          .doc(eventId)
+          .snapshots()
+          .map((snapshot) => _snapshotToVirtualEventUsers(snapshot));
+    } catch (e) {
+      print('Error in getVirtualEventUsersStream: $e');
+      return null;
     }
   }
 }

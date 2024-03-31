@@ -117,7 +117,7 @@ class Post {
       // create likes document in the likes collection for this post
       await Like.empty().likesCollection.doc(postId).set({'liked_by': []});
 
-/*
+
       // create comments document in the comments collection for this post
       await Comment.empty().commentsCollection.doc(postId).set({
         'comments': [
@@ -125,7 +125,7 @@ class Post {
           // {}
         ]
       });
-      */
+      
 
       return 'success';
     } catch (e) {
