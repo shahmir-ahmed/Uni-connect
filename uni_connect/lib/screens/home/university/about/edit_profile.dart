@@ -614,6 +614,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     width:
                                         MediaQuery.of(context).size.width - 150,
                                     child: DropdownButtonFormField(
+                                      dropdownColor: Colors.white,
                                       decoration: formInputDecoration,
                                       // padding: EdgeInsets.all(10.0),
                                       isExpanded: true,

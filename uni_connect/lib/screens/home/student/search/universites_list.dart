@@ -162,7 +162,7 @@ class _UniversityTileState extends State<UniversityTile> {
         padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
         child: ListTile(
           onTap: () {
-            // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile
+            // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
             // if (profileImage != '') {
               // show uni profile screen
               Navigator.push(

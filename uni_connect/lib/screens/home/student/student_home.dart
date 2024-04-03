@@ -101,8 +101,9 @@ class _StudentHomeState extends State<StudentHome> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      // backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       // surfaceTintColor: Colors.white,
+      // shadowColor: Colors.white, // elevation colour
       title: Text("Confirm?"),
       content: Text("Are you sure you want to logout?"),
       actions: [

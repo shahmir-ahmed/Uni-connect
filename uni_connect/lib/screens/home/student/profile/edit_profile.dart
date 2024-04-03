@@ -479,6 +479,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   // gender dropdown field
                   DropdownButtonFormField(
+                    dropdownColor: Colors.white,
                     style: TextStyle(
                         fontWeight: FontWeight.normal,
                         color: Colors.black,
@@ -617,6 +618,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     width:
                                         MediaQuery.of(context).size.width - 150,
                                     child: DropdownButtonFormField(
+                                      dropdownColor: Colors.white,
                                       // style: TextStyle(
                                       //     fontWeight: FontWeight.normal,
                                       //     color: Colors.black,

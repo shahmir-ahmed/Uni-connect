@@ -95,21 +95,54 @@ class _MyAppState extends State<MyApp> {
   3. When app is opened and student logged in 1 times notifcation is showing
   4. When app is opened and student logged out notification is not showing
 
-  5. When app is in background and student is logged out 1 time notification is showing
-  6. When app is in background and student is logged in 1 time notifcation is showing
+  5. When app is in background and student is logged in 1 time notifcation is showing
+  6. When app is in background and student is logged out 1 time notification is showing
 
-  - Device switch and login on another device notification are sent on the new device, and in terminated and background notification is still showing and single not 2 times.
+  Re: (03-04-2024) (Samsung)
+  1. When app closed and student logged in 2 times notifcation is showing
+  2. When app is in background and student is logged in 2 times notifcation is showing but previous double notification changed to single.
+  3. When app is opened and student logged in 1 times notifcation is showing but previous double notification changed to single.
+
+  order changed:
+  1. When app is closed and student logged in 2 times notifcation is showing
+  2. When app is opened and student logged in 1 times notifcation is showing but previous double notification changed to single.
+  3. When app is in background and student is logged in 2 times notifcation is showing but previous single notification gone.
+
+  4. When app is closed and student logged out 1 time notifcation is showing
+  5. When app is opened and student logged out notification is not showing
+  6. When app is in background and student is logged out 1 time notification is showing
+
+
+  After removing background handler code: (Success, only background logged out notification recieving issue) (Previous double and single notification auto removed issue also gone)
+  1. When app is opened and student is logged in 1 times notifcation is showing.
+  2. When app is in background and student is logged in 1 time notifcation is showing.
+  3. When app is closed and student is logged in 1 time notifcation is showing.
+
+  4. When app is closed and student is logged out NO notifcation is showing
+  5. When app is opened and student is logged out notification is NOT showing
+  6. When app is in background and student is logged out 1 time notification is showing
+
+  When logged out from student and logged into uni from same device:
+  When app is closed and uni logged in:
+  1. Notification is recived one time.
+
+  When app is opened and uni logged in:
+  1. Not recieved.
+  
+  When app is in background and uni logged in:
+  1. Notification is recived one time.
   */
 
   @override
   void initState() {
-    // getConnectivity(); // Firestore works offline through Firestore Persistance feature
+    // getConnectivity(); // Firestore works offline through Firestore Persistance feature.
     // TODO: implement initState
     super.initState();
     // Initialize Firebase Messaging
     _initializeFirebaseMessaging();
     // Setup message handlers
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // print("Notification recieved!"); // not printed when app is in background and inside show notification function type also, then how is background notification showing?
       // Handle foreground messages
       _showNotification(message);
     });
@@ -133,8 +166,8 @@ class _MyAppState extends State<MyApp> {
     });
 
     // background notification handler
-    FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler); // double notification showing when app is closed and student logged in is also glitch
+    // FirebaseMessaging.onBackgroundMessage(
+    //     _firebaseMessagingBackgroundHandler); // double notification showing when app is closed and student logged in is also glitch (solved when remove this line of code)
   }
 
   // initialize firebase messaging
@@ -145,67 +178,6 @@ class _MyAppState extends State<MyApp> {
     // Get the token
     String? token = await _firebaseMessaging.getToken();
     print("Firebase Messaging Token: $token");
-  }
-
-  // when app in background or terminated handler (not handled by the app, notification are still being recieved in all cases (logged in - background, logged in - terminated and logged out case also))
-  static Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print("Background message received: ${message.notification?.title}");
-
-    // Handle background messages
-    // Check if student is logged in then show notification otherwise not show
-    // get the shared preferences instance
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    // get the shared preferences data
-    String? type = pref.getString('userType'); // user type
-
-    // print('type: $type');
-
-    // if a user is logged in and that user is student then show notication
-    if (type != null) {
-      if (type == 'student') {
-        // Display notification in the notification bar
-        RemoteNotification? notification = message.notification;
-        AndroidNotification? android = message.notification?.android;
-        if (notification != null && android != null) {
-          // Create a flutter local notification
-          var flutterLocalNotificationPlugin =
-              FlutterLocalNotificationsPlugin();
-          var initializationSettingsAndroid =
-              AndroidInitializationSettings('@mipmap/launcher_icon');
-          // var initializationSettingsIOS = IOSInitializationSettings();
-          var initializationSettings =
-              InitializationSettings(android: initializationSettingsAndroid);
-          // var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-          await flutterLocalNotificationPlugin
-              .initialize(initializationSettings);
-
-          // print('showing notification');
-          // print('here'); // not printed when user logged out
-
-          var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-            'your channel id',
-            'your channel name',
-            channelDescription: 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            showWhen: false,
-          );
-          // var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-          var platformChannelSpecifics =
-              NotificationDetails(android: androidPlatformChannelSpecifics);
-          // var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
-
-          await flutterLocalNotificationPlugin.show(
-            0,
-            notification.title,
-            notification.body,
-            platformChannelSpecifics,
-            payload: 'New Payload',
-          );
-        }
-      }
-    }
   }
 
   // handle foreground notification
@@ -264,6 +236,72 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  /*
+  // when app in background or terminated handler (not handled by the app, notification are still being recieved in all cases (logged in - background, logged in - terminated and logged out case also))
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    print("Background message received: ${message.notification?.title}");
+
+    // Handle background messages
+    // Check if student is logged in then show notification otherwise not show
+    // get the shared preferences instance
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    // get the shared preferences data
+    String? type = pref.getString('userType'); // user type
+
+    // Notification showing in all cases depict that in background and app is closed, this code cannot access the shared pref. or something different?
+
+    // print('type: $type');
+
+    // if a user is logged in and that user is student then show notication
+    if (type != null) {
+      if (type == 'student') {
+        // Display notification in the notification bar
+        RemoteNotification? notification = message.notification;
+        AndroidNotification? android = message.notification?.android;
+        if (notification != null && android != null) {
+          // Create a flutter local notification
+          var flutterLocalNotificationPlugin =
+              FlutterLocalNotificationsPlugin();
+          var initializationSettingsAndroid =
+              AndroidInitializationSettings('@mipmap/launcher_icon');
+          // var initializationSettingsIOS = IOSInitializationSettings();
+          var initializationSettings =
+              InitializationSettings(android: initializationSettingsAndroid);
+          // var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+          await flutterLocalNotificationPlugin
+              .initialize(initializationSettings);
+
+          // print('showing notification');
+          // print('here'); // not printed when user logged out
+
+          var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+            'your channel id',
+            'your channel name',
+            channelDescription: 'your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+            showWhen: false,
+          );
+          // var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+          var platformChannelSpecifics =
+              NotificationDetails(android: androidPlatformChannelSpecifics);
+          // var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+
+          await flutterLocalNotificationPlugin.show(
+            0,
+            notification.title,
+            notification.body,
+            platformChannelSpecifics,
+            payload: 'New Payload',
+          );
+        }
+      }
+    }
+  }
+*/
+
+  // build method
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
