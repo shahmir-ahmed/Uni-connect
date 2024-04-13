@@ -71,6 +71,9 @@ dependencies:
   flutter_local_notifications: ^17.0.0
   # http package
   http: ^1.2.1
+  # connectivity: ^3.0.6
+  connectivity_plus: ^6.0.2
+  internet_connection_checker: ^1.0.0+1
 
 
 # for panorama package

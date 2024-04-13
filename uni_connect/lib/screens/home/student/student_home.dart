@@ -193,6 +193,15 @@ class _StudentHomeState extends State<StudentHome> {
     // Moved from here to main because notification was being recived when user logs in and also after that checked where to put the code and main.dart was the correct place
   }
 
+  // refresh the feed
+  /*
+  Future<void> _refresh() async {
+    setState(() {
+      print('here')
+    });
+  }
+  */
+
   // get student profile image and name using profile doc id
 
   @override
@@ -261,7 +270,8 @@ class _StudentHomeState extends State<StudentHome> {
                   child: StreamProvider.value(
                       value: Post.empty().getPostsStream(),
                       initialData: null,
-                      child: NewsFeed(stdProfileId: stdProfileDocId as String)))
+                      child:
+                          NewsFeed(stdProfileId: stdProfileDocId as String)))
               // if no student profile id fetched yet then show loading screen
               : WithinScreenProgress.withHeight(text: "", height: 500.0)),
       // Drawer Menu
