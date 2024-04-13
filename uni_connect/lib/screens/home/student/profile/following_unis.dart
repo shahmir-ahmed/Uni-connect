@@ -33,7 +33,8 @@ class _FollowingUnisScreenState extends State<FollowingUnisScreen> {
               type: doc.get('type') ?? '',
               description: doc.get('description') ?? '',
               fieldsOffered: doc.get('fields_offered') ?? [],
-              followers: doc.get('followers') ?? []));
+              followers: doc.get('followers') ?? [],
+              uniAccountId: doc.get('university_id') ?? ''));
 
       followingUnisList.add(uniObj);
     }

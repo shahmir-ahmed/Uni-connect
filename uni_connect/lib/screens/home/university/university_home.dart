@@ -355,7 +355,7 @@ class _UniversityHomeState extends State<UniversityHome> {
     //       content: Text('Welcome $widget.email!')),
     // );
 
-    // consume the user profile object stream (i.e. get the latest value in the stream from the provider)
+    // consume the university profile object stream (i.e. get the latest value in the stream from the provider)
     uniProfile = Provider.of<UniveristyProfile?>(context);
 
     // print(uniProfile!.name);
@@ -390,21 +390,25 @@ class _UniversityHomeState extends State<UniversityHome> {
               centerTitle: true,
               backgroundColor: Colors.blue[400],
               actions: [
-                // settings button
-                MaterialButton(
-                  onPressed: () {
-                    // show settings screen
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsScreen()));
-                  },
-                  child: Icon(
-                    Icons.settings,
-                  ),
-                  highlightElevation: 0.0,
-                  highlightColor: Colors.blue[400],
-                )
+                // uni profile obj is present then show settings button
+                uniProfile != null
+                    ?
+                    // settings button
+                    MaterialButton(
+                        onPressed: () {
+                          // show settings screen
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SettingsScreen(uniAccountId: uniProfile!.uniAccountId as String,)));
+                        },
+                        child: Icon(
+                          Icons.settings,
+                        ),
+                        highlightElevation: 0.0,
+                        highlightColor: Colors.blue[400],
+                      )
+                    : SizedBox()
               ],
             ),
             body: DefaultTabController(

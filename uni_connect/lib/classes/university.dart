@@ -5,22 +5,30 @@ import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 // University class
 class University {
-  String username;
-  String password;
+  String? id;
+  String? email;
+  String? password;
 
   // university accounts collection (creates cllection if not already exists)
   final universityCollection =
       FirebaseFirestore.instance.collection('universities');
 
   // constructor
-  University({required this.username, required this.password});
+  University({required this.email, required this.password});
+
+  University.withId(
+      {required this.id, required this.email, required this.password});
+
+  University.withIdPassword({required this.id, required this.password});
+
+  University.id({required this.id});
 
   // login
   Future<String?> login() async {
     try {
       // check if account with the username and passowrd exists or not
       QuerySnapshot snapshot = await universityCollection
-          .where('username', isEqualTo: username)
+          .where('username', isEqualTo: email)
           .where('password', isEqualTo: password)
           .get();
 
@@ -46,16 +54,15 @@ class University {
   Future<String?> register(UniveristyProfile uniProfile) async {
     try {
       // check account with the username already exists or not
-      QuerySnapshot snapshot = await universityCollection
-          .where('username', isEqualTo: username)
-          .get();
+      QuerySnapshot snapshot =
+          await universityCollection.where('username', isEqualTo: email).get();
 
       // if no doc found with the username
       if (snapshot.docs.isEmpty) {
         // register university account
         // create university account document
         DocumentReference documentReference = await universityCollection
-            .add({'username': username, 'password': password});
+            .add({'username': email, 'password': password});
 
         // get the newly created document id
         String docId = documentReference.id;
@@ -80,6 +87,44 @@ class University {
       return null;
     }
   }
+/*
+  // document snapshot to university type object with id
+  _snapshotToUniObject(snapshot) {
+    try {
+      return University.withIdPassword(
+          id: snapshot.id,
+          email: snapshot.get('username') ?? '',
+          password: snapshot.get('password') ?? '');
+    } catch (e) {
+      print('Err in _snapshotToUniObject(): ${e.toString()}');
+      return null;
+    }
+  }
+
+  // get username and password stream
+  Stream<University?>? getAccountStream() {
+    try {
+      return universityCollection
+          .doc(id)
+          .snapshots()
+          .map((snapshot) => _snapshotToUniObject(snapshot));
+    } catch (e) {
+      print('Err in getAccountStream(): ${e.toString()}');
+      return null;
+    }
+  }
+  */
+
+  // update password using id
+  Future<String> updatePassword() async {
+    try {
+      await universityCollection.doc(id).update({'password': password});
+      return 'success';
+    } catch (e) {
+      print('Err in updatePassword(): ${e.toString()}');
+      return 'error';
+    }
+  }
 }
 
 // University Profile class
@@ -93,8 +138,10 @@ class UniveristyProfile {
   late String profileImage;
   late List<dynamic> fieldsOffered;
   late List<dynamic> followers;
+  String? uniAccountId;
 
-  double? relevanceScore; // relevance score of this uni for student recommendations
+  double?
+      relevanceScore; // relevance score of this uni for student recommendations
 
   // university profile collection
   final profileCollection =
@@ -108,15 +155,17 @@ class UniveristyProfile {
   UniveristyProfile.empty();
 
   // for profile
-  UniveristyProfile(
-      {required this.profileDocId,
-      required this.profileImage,
-      required this.name,
-      required this.location,
-      required this.type,
-      required this.description,
-      required this.fieldsOffered,
-      required this.followers});
+  UniveristyProfile({
+    required this.profileDocId,
+    required this.profileImage,
+    required this.name,
+    required this.location,
+    required this.type,
+    required this.description,
+    required this.fieldsOffered,
+    required this.followers,
+    required this.uniAccountId,
+  });
 
   // for profile
   UniveristyProfile.updateProfile(
@@ -214,7 +263,8 @@ class UniveristyProfile {
         type: documentSnapshot.get('type'),
         description: documentSnapshot.get('description'),
         fieldsOffered: documentSnapshot.get('fields_offered') ?? [],
-        followers: documentSnapshot.get('followers') ?? []);
+        followers: documentSnapshot.get('followers') ?? [],
+        uniAccountId: documentSnapshot.get('university_id') ?? '');
   }
 
   // get profile stream (based on university account id)
@@ -260,7 +310,8 @@ class UniveristyProfile {
               type: doc.get('type') ?? '',
               description: doc.get('description') ?? '',
               fieldsOffered: doc.get('fields_offered') ?? [],
-              followers: doc.get('followers') ?? []))
+              followers: doc.get('followers') ?? [],
+              uniAccountId: doc.get('university_id') ?? ''))
           .toList();
     } catch (e) {
       print(e.toString());

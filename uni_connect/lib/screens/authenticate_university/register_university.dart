@@ -489,7 +489,7 @@ class _RegisterUniversityState extends State<RegisterUniversity> {
 
                                     // register university account
                                     String? result = await University(
-                                            username: email, password: password)
+                                            email: email, password: password)
                                         .register(uniProfile);
 
                                     // error occured (either while creating account or profile)

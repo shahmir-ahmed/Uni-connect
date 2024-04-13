@@ -254,7 +254,7 @@ class _LoginUniversityState extends State<LoginUniversity> {
 
                                     // University class object
                                     University uni = University(
-                                        username: email, password: password);
+                                        email: email, password: password);
 
                                     // login account
                                     String? result =
