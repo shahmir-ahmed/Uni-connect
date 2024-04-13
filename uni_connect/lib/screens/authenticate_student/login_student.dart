@@ -252,7 +252,7 @@ class _LoginStudentState extends State<LoginStudent> {
                                     // print(password);
                                     // Student class object
                                     Student student = Student(
-                                        username: email, password: password);
+                                        email: email, password: password);
 
                                     // login account
                                     String? result =

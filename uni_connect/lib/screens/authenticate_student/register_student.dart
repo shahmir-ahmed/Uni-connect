@@ -442,7 +442,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
 
                                     // register student
                                     String? result = await Student(
-                                            username: email, password: password)
+                                            email: email, password: password)
                                         .register(stdProfile);
 
                                     // error occured (either while creating account or profile)

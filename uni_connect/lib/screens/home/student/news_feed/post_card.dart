@@ -532,7 +532,7 @@ class _PostHeaderState extends State<PostHeader> {
                   // if there is profile picture path
                   CircleAvatar(
                       backgroundImage: NetworkImage(profileImage),
-                      radius: 20,
+                      radius: 18,
                     ),
               // gap
               SizedBox(

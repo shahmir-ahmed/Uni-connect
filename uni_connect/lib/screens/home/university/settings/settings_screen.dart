@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/authenticate_university/authenticate_university.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
@@ -10,8 +11,13 @@ import 'package:uni_connect/shared/constants.dart';
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({required this.uniAccountId});
 
+  SettingsScreen.forStudent({required this.stdAccountId});
+
   // uni account id for updating password
-  String uniAccountId;
+  String? uniAccountId;
+
+  // student account id for updating password
+  String? stdAccountId;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -30,6 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // password 2 visible or not flag
   late bool _password2Visible;
 
+  // logout alert dialog
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
@@ -46,31 +53,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onPressed: () async {
         // close the alert dialog
         Navigator.of(context).pop();
-
-        // show progress screen (in case slow logging out)
+        // progress screen in case slow logging out
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ProgressScreen(text: 'Logging out...')));
+                builder: (context) => ProgressScreen(
+                      text: 'Logging out...',
+                    )));
 
         // logout user
         await _logoutUser();
 
-        // ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-        Navigator.pop(context); // pop progress screen
+        // pop progress screen
+        Navigator.pop(context);
         Navigator.pop(context); // pop settings screen
-        Navigator.pop(context); // pop home wrapper
-        // push main screen
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
-        // push authenticate university screen with signin true
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AuthenticateUniversity(
-                      showSignIn: true,
-                    )));
+
+        // if on uni settings screen
+        // (popping and pushing is different)
+        if (widget.uniAccountId != null) {
+          Navigator.pop(context); // pop home wrapper
+          // push main screen
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MainScreen()));
+          // push authenticate university screen with signin true
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AuthenticateUniversity(
+                        showSignIn: true,
+                      )));
+        } else {
+          Navigator.pop(context); // pop profile screen
+          Navigator.pop(context); // pop home screen
+          // push main screen
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MainScreen()));
+          // push authenticate student screen with signin true
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AuthenticateStudent(
+                        showSignIn: true,
+                      )));
+        }
+
         // logout message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Logged out successfully!')),
@@ -98,11 +124,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // confirmation alert dialog
+  // confirmation for updating password alert dialog
   showAlertDialog2(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("Cancel"),
+      child: Text("No"),
       onPressed: () {
         // close the alert dialog
         Navigator.of(context).pop();
@@ -125,36 +151,110 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 builder: (context) =>
                     ProgressScreen(text: 'Updating password...')));
 
-        // University class object
-        University uni = University.withIdPassword(
-            id: widget.uniAccountId, password: newPassword);
+        // if university settings screen
+        if (widget.uniAccountId != null) {
+          // University class object
+          University uni = University.withIdPassword(
+              id: widget.uniAccountId, password: newPassword);
 
-        // update account password
-        final result = await uni.updatePassword(); // wait here
+          // update account password
+          final result = await uni.updatePassword(); // wait here
 
-        print("result: $result");
+          // print("result: $result");
 
-        // error occured
-        if (result == 'error') {
-          // pop progress screen
-          Navigator.pop(context);
+          // error occured
+          if (result == 'error') {
+            // pop progress screen
+            Navigator.pop(context);
 
-          // show error snackbar
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error occured')),
-          );
+            // show error snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Error occured')),
+            );
+          }
+          // password updated
+          else {
+            // logout user
+            await _logoutUser();
+
+            // pop progress screen
+            Navigator.pop(context);
+            Navigator.pop(context); // pop settings screen
+            Navigator.pop(context); // pop home wrapper (popping is different)
+            // push main screen
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => MainScreen()));
+            // push authenticate university screen with signin true
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AuthenticateUniversity(
+                          showSignIn: true,
+                        )));
+
+            // showAlertDialog3(context);
+
+            // show message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please login again using new password!')),
+            );
+          }
         }
-        // password updated
+        // student settings screen
         else {
-          // pop progress screen
-          Navigator.pop(context);
-          // pop settings screen
-          Navigator.pop(context);
+          // Student class object
+          Student student = Student.withIdPassword(
+              id: widget.stdAccountId, password: newPassword);
 
-          // show welcome message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Password updated successfully!')),
-          );
+          // update account password
+          final result = await student.updatePassword(); // wait here
+
+          // print("result: $result");
+
+          // error occured
+          if (result == 'error') {
+            // pop progress screen
+            Navigator.pop(context);
+
+            // show error snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Error occured')),
+            );
+          }
+          // password updated
+          else {
+            // logout user
+            await _logoutUser();
+
+            // pop progress screen
+            Navigator.pop(context);
+            // pop settings screen
+            Navigator.pop(context);
+
+            Navigator.pop(context); // pop profile screen
+            Navigator.pop(context); // pop home screen
+            // push main screen
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => MainScreen()));
+            // push authenticate student screen with signin true
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AuthenticateStudent(
+                          showSignIn: true,
+                        )));
+
+            // showAlertDialog3(context);
+
+            // show message
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text('Password updated successfully!')),
+            // );
+            // show message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please login again using new password!')),
+            );
+          }
         }
       },
     );
@@ -178,6 +278,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
   }
+/*
+  // show alert dialog 3 to show when user has updated password and show to login again using new password
+  showAlertDialog3(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text(
+        "OK",
+      ),
+      onPressed: () async {
+        // close the alert dialog
+        Navigator.of(context).pop(); // issue here
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: Text("Login"),
+      content: Text("Please login again."),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+  */
 
   // logout function
   Future<void> _logoutUser() async {
@@ -281,9 +414,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   newPassword = value.trim();
                                 });
                               },
-                              keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               enableSuggestions: false,
+                              autocorrect: false,
                               obscureText:
                                   !_password1Visible, // This will obscure text dynamically
                               style: TextStyle(fontSize: 17.0),
@@ -292,22 +425,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     borderSide: BorderSide(
                                         width: 10.0, color: Colors.black)),
                                 // hide show icon
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    // Based on passwordVisible state choose the icon
-                                    _password1Visible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: const Color.fromARGB(
-                                        255, 123, 123, 123),
-                                  ),
-                                  onPressed: () {
-                                    // Update the state i.e. toogle the state of passwordVisible variable
-                                    setState(() {
-                                      _password1Visible = !_password1Visible;
-                                    });
-                                  },
-                                ),
+                                suffixIcon: Focus(
+                                    canRequestFocus: false,
+                                    descendantsAreFocusable: false,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        // Based on passwordVisible state choose the icon
+                                        _password1Visible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: const Color.fromARGB(
+                                            255, 123, 123, 123),
+                                      ),
+                                      onPressed: () {
+                                        // Update the state i.e. toogle the state of passwordVisible variable
+                                        setState(() {
+                                          _password1Visible =
+                                              !_password1Visible;
+                                        });
+                                      },
+                                    )),
                               ),
                               validator: (value) {
                                 // if password is empty
@@ -347,8 +484,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                             // password field
                             TextFormField(
-                              keyboardType: TextInputType.emailAddress,
                               enableSuggestions: false,
+                              autocorrect: false,
                               obscureText:
                                   !_password2Visible, // This will obscure text dynamically
                               style: TextStyle(fontSize: 17.0),

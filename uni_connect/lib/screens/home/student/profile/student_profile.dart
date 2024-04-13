@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/home/student/profile/edit_profile.dart';
 import 'package:uni_connect/screens/home/student/profile/following_unis.dart';
+import 'package:uni_connect/screens/home/university/settings/settings_screen.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 
@@ -31,7 +32,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
 
   String studentProfileId = '';
 
-  // get student profile pic path using profile id to display in the home screen
+  // get new student profile pic path using profile id to display in the profile screen
   loadNewProfileImage() async {
     try {
       final result =
@@ -42,11 +43,11 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
         // if error occured means profile image not present
       } else {
         setState(() {
-          profileImage = result;
+          profileImage = result; // set new image
         });
       }
     } catch (e) {
-      print('Error in loadProfileImage: ${e.toString()}');
+      print('Error in loadNewProfileImage: ${e.toString()}');
       return null;
     }
   }
@@ -55,8 +56,8 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // print('inside initstate of student profile'); // called first time not again when something new arrives in strea
-    profileImage = widget.profileImageUrl;
+    // print('inside initstate of student profile'); // called first time not again when something new arrives in stream
+    profileImage = widget.profileImageUrl; // set current image
   }
 
   @override
@@ -69,7 +70,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
     //   print('student profile obj fields: ${studentProfileObj.fieldsOfInterest}');
     // }
 
-    // get the student profile id if the object is present and student id is empty
+    // get the student profile id if the object is present and student id is empty (for fetching profile image when it is updated, to show here)
     if (studentProfileObj != null && studentProfileId.isEmpty) {
       studentProfileId = studentProfileObj.profileDocId;
     }
@@ -80,38 +81,36 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
           title: Text('Profile'),
           backgroundColor: Colors.blue[400],
           actions: [
+            // if profile id is present then show button
+            studentProfileId.isNotEmpty
             // settings button
-            // student profile button
-            Container(
-              margin: EdgeInsetsDirectional.only(end: 10.0),
-              // color: Colors.amberAccent,
-              // width: 50.0,
-              child: MaterialButton(
-                minWidth: 10.0,
-                highlightElevation: 0.0,
-                // splashColor: Colors.blue[400],
-                onPressed: () async {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         // show student profile screen with stream supplied to the screen
-                  //         builder: (context) => StreamProvider.value(
-                  //               initialData: null,
-                  //               value: StudentProfile.withId(
-                  //                       profileDocId: stdProfileDocId!)
-                  //                   .getStudentProfileStream(),
-                  //               child: StudentProfileScreen(),
-                  //             )));
-                },
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                ),
-                color: Colors.blue[400],
-                elevation: 0.0,
-                // minWidth: 18.0,
-              ),
-            )
+                ? Container(
+                    margin: EdgeInsetsDirectional.only(end: 10.0),
+                    // color: Colors.amberAccent,
+                    // width: 50.0,
+                    child: MaterialButton(
+                      minWidth: 10.0,
+                      highlightElevation: 0.0,
+                      // splashColor: Colors.blue[400],
+                      onPressed: () async {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                // show student profile screen with student profile id which is also student account id
+                                builder: (context) => SettingsScreen.forStudent(
+                                      stdAccountId: studentProfileId,
+                                    )));
+                      },
+                      child: Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
+                      color: Colors.blue[400],
+                      elevation: 0.0,
+                      // minWidth: 18.0,
+                    ),
+                  )
+                : SizedBox()
           ],
         ),
         body: studentProfileObj != null

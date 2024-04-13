@@ -4,21 +4,24 @@ import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 // Student class
 class Student {
-  String username;
+  String? id;
+  String? email;
   String password;
 
   // student accounts collection (creates cllection if not already exists)
   final studentsCollection = FirebaseFirestore.instance.collection('students');
 
   // constructor
-  Student({required this.username, required this.password});
+  Student({required this.email, required this.password});
+
+  Student.withIdPassword({required this.id, required this.password});
 
   // login
   Future<String?> login() async {
     try {
       // check if account with the username and passowrd exists or not
       QuerySnapshot snapshot = await studentsCollection
-          .where('username', isEqualTo: username)
+          .where('username', isEqualTo: email)
           .where('password', isEqualTo: password)
           .get();
 
@@ -44,14 +47,14 @@ class Student {
     try {
       // check account with the username already exists or not
       QuerySnapshot snapshot =
-          await studentsCollection.where('username', isEqualTo: username).get();
+          await studentsCollection.where('username', isEqualTo: email).get();
 
       // if no doc found with the username
       if (snapshot.docs.isEmpty) {
         // register new student
         // create student account document
         DocumentReference documentReference = await studentsCollection
-            .add({'username': username, 'password': password});
+            .add({'username': email, 'password': password});
 
         // get the newly created document id
         String docId = documentReference.id;
@@ -75,6 +78,17 @@ class Student {
     } catch (e) {
       print("EXCEPTION in student register() method: ${e.toString()}");
       return null;
+    }
+  }
+
+  // update password using id
+  Future<String> updatePassword() async {
+    try {
+      await studentsCollection.doc(id).update({'password': password});
+      return 'success';
+    } catch (e) {
+      print('Err in updatePassword(): ${e.toString()}');
+      return 'error';
     }
   }
 }
@@ -122,7 +136,8 @@ class StudentProfile {
   StudentProfile.withId({required this.profileDocId});
 
   // with id only
-  StudentProfile.withFieldsAndFollowing({required this.fieldsOfInterest, required this.followingUnis});
+  StudentProfile.withFieldsAndFollowing(
+      {required this.fieldsOfInterest, required this.followingUnis});
 
   // for updating profile constructor
   // for profile
