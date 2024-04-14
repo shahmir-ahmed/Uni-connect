@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -327,11 +328,41 @@ class _MyAppState extends State<MyApp> {
         // });
         if (!isDeviceConnected && isAlertSet == false) {
           // after 3 seconds show alert beacuse when first time user opens app and user is not connected to internet the splash screen is showing and above it this alert is shown and then instead of splash screen popping out after 2 secs this alert dialog is popped out
+          // print('here'); // printed once
           _showDelayedNoInternetDialog();
         }
+        /*
+        else if (isDeviceConnected && isAlertSet == false) {
+          print('Checking internet accesss 1');
+          // If connected, check internet access
+          _checkInternetAccess();
+        }
+        */
       }
     });
   }
+/*
+  // function to check if device is connected then is there internet access or not
+  Future<void> _checkInternetAccess() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      print('result: $result');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // Internet access available
+        // Navigator.of(context).pop(); // Dismiss previous dialog if any
+      } else {
+        // No internet access, show AlertDialog
+        // _showDelayedNoInternetDialog();
+        showDialogBox(); // show dialog box instantly
+      }
+    } on SocketException catch (_) {
+      print("Error accessing internet: $_");
+      // No internet access, show AlertDialog
+      // _showDelayedNoInternetDialog();
+      showDialogBox(); // show dialog box instantly
+    }
+  }
+  */
 
   // show no internet dialog delayed for 3sec
   _showDelayedNoInternetDialog() {
@@ -344,27 +375,38 @@ class _MyAppState extends State<MyApp> {
   // show no internet alert dialog
   showDialogBox() => showCupertinoDialog<String>(
         context: navigatorKey.currentState!.overlay!.context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Connection'),
-          content: const Text('Please check your internet connectivity'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context, 'Cancel');
-                // set is alert set as false
-                setState(() => isAlertSet = false);
-                // again check internet status
-                isDeviceConnected =
-                    await InternetConnectionChecker().hasConnection;
-                // show alert again if no internet and dialog is not set
-                if (!isDeviceConnected && isAlertSet == false) {
-                  showDialogBox();
-                  setState(() => isAlertSet = true);
-                }
-              },
-              child: const Text('OK'),
-            ),
-          ],
+        builder: (BuildContext context) => WillPopScope(
+          onWillPop: () async =>
+              false, // False will prevent and true will allow to dismiss
+          child: CupertinoAlertDialog(
+            title: const Text('No Connection'),
+            content: const Text('Please check your internet connectivity'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context, 'Cancel');
+                  // set is alert set as false
+                  setState(() => isAlertSet = false);
+                  // again check internet status
+                  isDeviceConnected =
+                      await InternetConnectionChecker().hasConnection;
+                  // show alert again if no internet and dialog is not set
+                  if (!isDeviceConnected && isAlertSet == false) {
+                    // print('here');
+                    showDialogBox(); // show instant when closed
+                    setState(() => isAlertSet = true);
+                  }
+                  /*else if (isDeviceConnected && isAlertSet == false) {
+                    print('Checking internet accesss 2');
+                    // check internet access if connected
+                    _checkInternetAccess();
+                  }
+                  */
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
         ),
       );
 
