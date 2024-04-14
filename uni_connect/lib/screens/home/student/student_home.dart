@@ -270,8 +270,7 @@ class _StudentHomeState extends State<StudentHome> {
                   child: StreamProvider.value(
                       value: Post.empty().getPostsStream(),
                       initialData: null,
-                      child:
-                          NewsFeed(stdProfileId: stdProfileDocId as String)))
+                      child: NewsFeed(stdProfileId: stdProfileDocId as String)))
               // if no student profile id fetched yet then show loading screen
               : WithinScreenProgress.withHeight(text: "", height: 500.0)),
       // Drawer Menu
@@ -309,6 +308,7 @@ class _StudentHomeState extends State<StudentHome> {
         children: [
           menuItem("Profile", Icons.account_circle_outlined),
           menuItem("Search", Icons.search_outlined),
+          // menuItem("Resources", Icons.auto_stories_sharp),
           menuItem("My List", Icons.list_alt_outlined),
           Divider(),
           // menuItem("Notifications", Icons.notifications_outlined),

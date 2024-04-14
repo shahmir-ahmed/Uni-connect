@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,6 +39,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // fcm object
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  // navigator keys
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  // internet connectivity variables
+  late StreamSubscription subscription;
+  bool isDeviceConnected = false;
+  bool isAlertSet = false;
+
 /*
   // internet connection check variables
   bool isDeviceConnected = false;
@@ -91,60 +99,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
   */
-
-  // navigator keys
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-  // internet connectivity variables
-  late StreamSubscription subscription;
-  bool isDeviceConnected = false;
-  bool isAlertSet = false;
-
-  // internet connection check method
-  getConnectivity() {
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> results) async {
-      for (ConnectivityResult result in results) {
-        isDeviceConnected = await InternetConnectionChecker().hasConnection;
-        if (!isDeviceConnected && isAlertSet == false) {
-          showDialogBox();
-          setState(() => isAlertSet = true);
-        }
-      }
-    });
-  }
-
-  // dispose method
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
-  }
-
-  // show no internet alert dialog
-  showDialogBox() => showCupertinoDialog<String>(
-        context: navigatorKey.currentState!.overlay!.context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Connection'),
-          content: const Text('Please check your internet connectivity'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context, 'Cancel');
-                setState(() => isAlertSet = false);
-                isDeviceConnected =
-                    await InternetConnectionChecker().hasConnection;
-                if (!isDeviceConnected && isAlertSet == false) {
-                  showDialogBox(); // Pass context here
-                  setState(() => isAlertSet = true);
-                }
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
 
   /*
   1. When app closed and student logged in 2 times notifcation is showing
@@ -359,12 +313,106 @@ class _MyAppState extends State<MyApp> {
   }
 */
 
+  // internet connection check method
+  // when app is opened first time this listener is registered
+  getConnectivity() {
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> results) async {
+      for (ConnectivityResult result in results) {
+        // listens for internet connection changes (when internet is connected or disconnected event is sent here)
+        isDeviceConnected = await InternetConnectionChecker().hasConnection;
+        // setState(() {
+        //   this.isDeviceConnected = isDeviceConnected;
+        // });
+        if (!isDeviceConnected && isAlertSet == false) {
+          // after 3 seconds show alert beacuse when first time user opens app and user is not connected to internet the splash screen is showing and above it this alert is shown and then instead of splash screen popping out after 2 secs this alert dialog is popped out
+          _showDelayedNoInternetDialog();
+        }
+      }
+    });
+  }
+
+  // show no internet dialog delayed for 3sec
+  _showDelayedNoInternetDialog() {
+    Future.delayed(Duration(seconds: 3), () {
+      showDialogBox();
+      setState(() => isAlertSet = true);
+    });
+  }
+
+  // show no internet alert dialog
+  showDialogBox() => showCupertinoDialog<String>(
+        context: navigatorKey.currentState!.overlay!.context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('No Connection'),
+          content: const Text('Please check your internet connectivity'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'Cancel');
+                // set is alert set as false
+                setState(() => isAlertSet = false);
+                // again check internet status
+                isDeviceConnected =
+                    await InternetConnectionChecker().hasConnection;
+                // show alert again if no internet and dialog is not set
+                if (!isDeviceConnected && isAlertSet == false) {
+                  showDialogBox();
+                  setState(() => isAlertSet = true);
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+
   // build method
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
       home: Wrapper(),
+/*
+      home: !isDeviceConnected && !isAlertSet
+          ? Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Material(
+                  color: Colors.transparent,
+                  child: AlertDialog(
+                    title: Text('No Connection'),
+                    content: Text('Please check your internet connectivity'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context, 'Cancel');
+                          setState(() => isAlertSet = false);
+                          final isDeviceConnected =
+                              await InternetConnectionChecker().hasConnection;
+                          setState(() {
+                            this.isDeviceConnected = isDeviceConnected;
+                          });
+                          if (!this.isDeviceConnected && isAlertSet == false) {
+                            // showDialogBox();
+                            setState(() => isAlertSet = true);
+                          }
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  )))
+          : Wrapper(),
+          */
     );
+  }
+
+  // dispose method
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 }
