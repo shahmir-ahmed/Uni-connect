@@ -155,7 +155,7 @@ class _MyAppState extends State<MyApp> {
     _initializeFirebaseMessaging();
     // Setup message handlers
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // print("Notification recieved!"); // not printed when app is in background and inside show notification function type also, then how is background notification showing?
+      print("Notification recieved!"); // not printed when app is in background and inside show notification function type also, then how is background notification showing?
       // Handle foreground messages
       _showNotification(message);
     });

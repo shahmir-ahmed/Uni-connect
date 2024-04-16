@@ -188,23 +188,27 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: MediaQuery.of(context).viewInsets,
-        child: BottomAppBar(
-          surfaceTintColor: Colors.white,
-          color: Colors.white,
-          child: // comment input field section to comment
-              // form container
-              Container(
-            // height: 50.0,
-            // color: const Color.fromARGB(255, 209, 209, 209),
+        child: Container(
+          height: 100,
+          // constraints: BoxConstraints(
+          //   minHeight: 100, // Minimum height for the input field
+          //   maxHeight: 200, // Maximum height for the input field
+          // ),
+          child: BottomAppBar(
+            surfaceTintColor: Colors.white,
             color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 5.0),
-            child: Row(
+            child: // comment input field section to comment
+                // form container
+                Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // comment field
                 Container(
                   width: MediaQuery.of(context).size.width - 98,
+                  // height: 200,
                   child: TextFormField(
+                    minLines: 1,
+                    maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
                     style: TextStyle(color: Colors.black),
                     controller: _textEditingController,

@@ -380,7 +380,7 @@ class _CreatePostState extends State<CreatePost> {
                           // text field for post description
                           TextFormField(
                             minLines: 6,
-                            maxLines: 999,
+                            maxLines: 6,
                             // expands: true,
                             // keyboardType: TextInputType.multiline,
                             textCapitalization: TextCapitalization.sentences,

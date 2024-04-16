@@ -210,6 +210,10 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         // close the alert dialog
         Navigator.of(context).pop();
 
+        // close live stream screen
+        // Navigator.of(context).pop();
+        
+
         // update stream status to ended
         final result =
             VirtualEvent.onlyId(eventId: eventId).updateVirtualEventStatus();
@@ -225,6 +229,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Virtual event ended!')),
         );
+        
       },
     );
 
@@ -257,6 +262,11 @@ class _VirtualEventState extends State<VirtualEventScreen> {
     );
   }
 
+  // called when back is pressed on the screen
+  Future<bool> _onWillPop() async {
+    return (await showAlertDialog(context)) ?? false;
+  }
+
   // build method
   @override
   Widget build(BuildContext context) {
@@ -269,19 +279,24 @@ class _VirtualEventState extends State<VirtualEventScreen> {
         text: '',
       )));
     }
-    return Scaffold(
-      body: Center(
-        child: Stack(
-          children: <Widget>[
-            localVideoView(),
-            _header(),
-            _footer(),
-          ],
+    // live screen
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: Center(
+          child: Stack(
+            children: <Widget>[
+              localVideoView(),
+              _header(),
+              _footer(),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  // header of screen
   Widget _header() {
     return Container(
       alignment: Alignment.topRight,
@@ -334,6 +349,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
     );
   }
 
+  // footer of screen
   Widget _footer() {
     return Container(
       // color: Colors.brown,
@@ -414,6 +430,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
     agoraEngine!.switchCamera();
   }
 
+
 // on screen dispose
   @override
   void dispose() {
@@ -424,6 +441,27 @@ class _VirtualEventState extends State<VirtualEventScreen> {
 
   // Leave the channel when the local user ends the call
   Future<void> leave() async {
+  /*
+    // update stream status to ended
+    final result =
+        VirtualEvent.onlyId(eventId: eventId).updateVirtualEventStatus();
+
+    if (result == 'error') {
+      print('Error updating stream status');
+    }
+    */
+
+    // message
+    // after 2 sec show
+    // Future.delayed(Duration(seconds: 2), () {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Virtual event ended!')),
+    //   );
+    // });
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(content: Text('Virtual event ended!')),
+    // );
+
     // Clear saved remote Uids
     remoteUids.clear();
 
@@ -447,6 +485,7 @@ class _VirtualEventState extends State<VirtualEventScreen> {
   }
 }
 
+// user count widget that shows users in stream count
 class UsersCountWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

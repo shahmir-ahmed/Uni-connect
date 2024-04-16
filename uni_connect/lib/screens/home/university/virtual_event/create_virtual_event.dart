@@ -103,6 +103,8 @@ class _CreateVirtualEventState extends State<CreateVirtualEvent> {
 
   @override
   void dispose() {
+    // Stop camera preview before disposing of the controller
+    // _controller.stopImageStream();
     // Dispose of the controller when the widget is disposed.
     _controller.dispose();
     super.dispose();

@@ -146,8 +146,8 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
 
   Future<void> initializeAgora() async {
     try {
-      // Retrieve or request camera and microphone permissions
-      await [Permission.microphone, Permission.camera].request();
+      // Retrieve or request camera and microphone permissions (dont ask on student side)
+      // await [Permission.microphone, Permission.camera].request();
 
       // print(status); // granted
 
@@ -547,9 +547,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
 // on call end button click
   void _onCallEnd(BuildContext context) async {
     // showAlertDialog(context);
-    // decrease user count as user has left the stream now
-    await VirtualEvent.onlyId(eventId: widget.virtualEvent.eventId)
-        .decrementUser();
+    // // decrease user count as user has left the stream now
+    // await VirtualEvent.onlyId(eventId: widget.virtualEvent.eventId)
+    //     .decrementUser();
     Navigator.pop(context);
   }
 
@@ -564,6 +564,9 @@ class _StudentVirtualEventState extends State<StudentVirtualEventScreen> {
 
   // Leave the channel when the local user ends the call
   Future<void> leave() async {
+    // decrease user count as user has left the stream now
+    await VirtualEvent.onlyId(eventId: widget.virtualEvent.eventId)
+        .decrementUser();
     // Clear saved remote Uids
     remoteUids.clear();
 

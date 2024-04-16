@@ -8,13 +8,14 @@ class ProgressScreen extends StatelessWidget {
   late String text;
 
   // bg color of progress screen
-  late bool bgColorBlack=false;
+  late bool bgColorBlack = false;
 
   // constructor to take the text
   ProgressScreen({required this.text});
 
   // constructor to take the text and make the bg color of container black
-  ProgressScreen.withBgColorBlack({required this.text, this.bgColorBlack=true});
+  ProgressScreen.withBgColorBlack(
+      {required this.text, this.bgColorBlack = true});
 
   @override
   Widget build(BuildContext context) {
@@ -24,24 +25,28 @@ class ProgressScreen extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.white,
           body: Container(
-            color: bgColorBlack==false ? Colors.white : Colors.black,
-            padding: EdgeInsets.only(top: 350.0),
+            color: bgColorBlack == false ? Colors.white : Colors.black,
+            // color: Colors.pink,
+            // padding: EdgeInsets.only(top: 350.0),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // text
                 Text(
                   text,
-                  style: TextStyle(fontSize: 20.0, color: bgColorBlack ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      color: bgColorBlack ? Colors.white : Colors.black),
                 ),
-
+                        
                 // space
                 SizedBox(
                   height: 7.0,
                 ),
-
+                        
                 // spin kit
                 SpinKitFadingFour(
                   color: Colors.blue,
@@ -61,20 +66,21 @@ class PoppableProgressScreen extends StatelessWidget {
   late String text;
 
   // bg color of progress screen
-  late bool bgColorBlack=false;
+  late bool bgColorBlack = false;
 
   // constructor to take the text
   PoppableProgressScreen({required this.text});
 
   // constructor to take the text and make the bg color of container black
-  PoppableProgressScreen.withBgColorBlack({required this.text, this.bgColorBlack=true});
+  PoppableProgressScreen.withBgColorBlack(
+      {required this.text, this.bgColorBlack = true});
 
   @override
   Widget build(BuildContext context) {
     // on will pop scope prevents the page from being popped by the system. You'll still be able to use Navigator.of(context).pop()
     return Scaffold(
       body: Container(
-        color: bgColorBlack==false ? Colors.white : Colors.black,
+        color: bgColorBlack == false ? Colors.white : Colors.black,
         padding: EdgeInsets.only(top: 350.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -84,7 +90,9 @@ class PoppableProgressScreen extends StatelessWidget {
             // text
             Text(
               text,
-              style: TextStyle(fontSize: 20.0, color: bgColorBlack ? Colors.white : Colors.black),
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: bgColorBlack ? Colors.white : Colors.black),
             ),
 
             // space

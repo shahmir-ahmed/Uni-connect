@@ -51,10 +51,15 @@ class _NewsFeedState extends State<NewsFeed> {
                       key: ValueKey<String>(feedPost.postId as String),
                       post: feedPost,
                       stdProfileId: widget.stdProfileId);
-                }).toList(),
+                }).toList()
+                  // Sort the posts based on postCreatedAt
+                  ..sort((a, b) =>
+                      b.post.postCreatedAt!.compareTo(a.post.postCreatedAt!)),
               ),
             )
-          : followingList.isEmpty ? Text("Follow universities to see posts in your news feed...") : Text('') ;
+          : followingList.isEmpty
+              ? Text("Follow universities to see posts in your news feed...")
+              : Text('');
     } else {
       return WithinScreenProgress(text: "Loading news feed...");
     }
