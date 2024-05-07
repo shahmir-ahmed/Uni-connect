@@ -540,7 +540,7 @@ class _PostHeaderState extends State<PostHeader> {
               ),
               // uni name text
               uniName.length > 33
-                  ? Text('${uniName.substring(0, 33)}...')
+                  ? Text('${uniName.substring(0, 33).trim()}...')
                   : Text(uniName),
             ],
           ),

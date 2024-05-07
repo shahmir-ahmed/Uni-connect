@@ -206,6 +206,13 @@ class UniveristyProfile {
     required this.fieldsOffered,
   });
 
+  // for saved unis list
+  UniveristyProfile.forSavedUni({
+    required this.profileDocId,
+    required this.profileImage,
+    required this.name,
+  });
+
   // create profile in database (when registering)
   Future<String?> createProfile(String uniDocId) async {
     try {

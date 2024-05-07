@@ -6,6 +6,7 @@ import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/home/student/news_feed/news_feed.dart';
 import 'package:uni_connect/screens/home/student/profile/student_profile.dart';
+import 'package:uni_connect/screens/home/student/saved_unis_list/saved_unis_list_screen.dart';
 import 'package:uni_connect/screens/home/student/search/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -256,23 +257,48 @@ class _StudentHomeState extends State<StudentHome> {
       ),
       // News Feed
       // student following unis list stream setup
-      body: Center(
-          // based on student profile id show news feed or loading screen
-          // double stream setup
-          child: stdProfileDocId != null
-              // following list stream
-              ? StreamProvider.value(
-                  initialData: null,
-                  value: StudentProfile.withId(
-                          profileDocId: stdProfileDocId as String)
-                      .getFollowingUnisStream(),
-                  // all posts stream setup
-                  child: StreamProvider.value(
-                      value: Post.empty().getPostsStream(),
-                      initialData: null,
-                      child: NewsFeed(stdProfileId: stdProfileDocId as String)))
-              // if no student profile id fetched yet then show loading screen
-              : WithinScreenProgress.withHeight(text: "", height: 500.0)),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 18.0,
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20.0,
+                ),
+                Text(
+                  'News Feed',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 7.0,
+            ),
+            Center(
+                // based on student profile id show news feed or loading screen
+                // double stream setup
+                child: stdProfileDocId != null
+                    // following list stream
+                    ? StreamProvider.value(
+                        initialData: null,
+                        value: StudentProfile.withId(
+                                profileDocId: stdProfileDocId as String)
+                            .getFollowingUnisStream(),
+                        // all posts stream setup
+                        child: StreamProvider.value(
+                            value: Post.empty().getPostsStream(),
+                            initialData: null,
+                            child: NewsFeed(
+                                stdProfileId: stdProfileDocId as String)))
+                    // if no student profile id fetched yet then show loading screen
+                    : WithinScreenProgress.withHeight(text: "", height: 500.0)),
+          ],
+        ),
+      ),
       // Drawer Menu
       drawer: Drawer(
         width: 280.0,
@@ -308,8 +334,9 @@ class _StudentHomeState extends State<StudentHome> {
         children: [
           menuItem("Profile", Icons.account_circle_outlined),
           menuItem("Search", Icons.search_outlined),
+          menuItem("Resources", Icons.play_lesson_outlined),
           // menuItem("Resources", Icons.auto_stories_sharp),
-          menuItem("My List", Icons.list_alt_outlined),
+          menuItem("My List", Icons.format_list_numbered_outlined),
           Divider(),
           // menuItem("Notifications", Icons.notifications_outlined),
           menuItem("Settings", Icons.settings_outlined),
@@ -380,6 +407,22 @@ class _StudentHomeState extends State<StudentHome> {
                             profileImageUrl: stdProfileImageUrl,
                           ),
                         )));
+          }
+          // if my list (saved unis list option) is clicked
+          else if (title == "My List") {
+            if (stdProfileDocId != null) {
+              // show student saved unis list screen
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      // show student saved unis list screen with stream supplied to the screen
+                      builder: (context) => StreamProvider.value(
+                          value: StudentProfile.withId(
+                                  profileDocId: stdProfileDocId!)
+                              .getSavedAndFollowingUnisListStream(),
+                          initialData: null,
+                          child: SavedUnisListScreen())));
+            }
           }
         },
         child: Padding(

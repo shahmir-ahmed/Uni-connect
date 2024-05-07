@@ -102,7 +102,18 @@ class UniversityTile extends StatefulWidget {
     required this.uniObj,
   });
 
+  UniversityTile.forSavedUniList(
+      {required this.uniObj,
+      required this.addUniInSavedUniList,
+      this.forSavedUniList = true}); // by default true for this const.
+
   UniveristyProfile uniObj; // uni object
+
+  // for saved uni list tile (add university screen)
+  bool forSavedUniList = false;
+
+  // add uni in saved uni list method of following unis screen
+  Function? addUniInSavedUniList;
 
   @override
   State<UniversityTile> createState() => _UniversityTileState();
@@ -130,6 +141,54 @@ class _UniversityTileState extends State<UniversityTile> {
     } catch (e) {
       print('Error in _getProfilePhoto: $e');
     }
+  }
+
+  // show alert dialog for adding uni in list
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("No"),
+      onPressed: () {
+        // close the alert dialog
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text(
+        "Yes",
+      ),
+      onPressed: () async {
+        // close the alert dialog
+        Navigator.of(context).pop();
+
+        // call add uni method of following unis screen
+        widget.addUniInSavedUniList!(widget.uniObj);
+
+        // show scaffold message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('University added in the list!')),
+        );
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      // title: Text("Confirm?"),
+      content: Text("Add university in list?"),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -162,8 +221,13 @@ class _UniversityTileState extends State<UniversityTile> {
         padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
         child: ListTile(
           onTap: () {
-            // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
-            // if (profileImage != '') {
+            // if for saved uni list tile (add university screen)
+            if (widget.forSavedUniList) {
+              // then on tap ask from user to add this uni in list
+              showAlertDialog(context);
+            } else {
+              // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
+              // if (profileImage != '') {
               // show uni profile screen
               Navigator.push(
                 context,
@@ -172,6 +236,7 @@ class _UniversityTileState extends State<UniversityTile> {
                           uniProfile: widget.uniObj,
                         )),
               );
+            }
             // }
           },
           tileColor: Color.fromARGB(255, 239, 239, 239),

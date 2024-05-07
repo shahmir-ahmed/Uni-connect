@@ -107,6 +107,9 @@ class StudentProfile {
   // following unis list
   late List<dynamic> followingUnis;
 
+  // saved unis list
+  List<dynamic>? savedUnis;
+
   // student profile collection
   final profileCollection =
       FirebaseFirestore.instance.collection('student_profiles');
@@ -135,7 +138,7 @@ class StudentProfile {
   // with id only
   StudentProfile.withId({required this.profileDocId});
 
-  // with id only
+  // with fields of interest and following unis only (for recommeding unis)
   StudentProfile.withFieldsAndFollowing(
       {required this.fieldsOfInterest, required this.followingUnis});
 
@@ -149,6 +152,18 @@ class StudentProfile {
       required this.college,
       required this.fieldsOfInterest});
 
+  // for saved unis list screen
+  StudentProfile.forSavedAndFollowingUnisList(
+      {required this.profileDocId,
+      required this.savedUnis,
+      required this.followingUnis});
+
+  // for save new list in edit list screen
+  StudentProfile.withIdAndSavedUnisList({
+    required this.profileDocId,
+    required this.savedUnis,
+  });
+
   // create student profile in database (when registering)
   Future<String?> createProfile(String studentDocId) async {
     try {
@@ -160,11 +175,12 @@ class StudentProfile {
         'fields_of_interest': [],
         'uni_locations_preferred': [],
         'following_unis': [],
+        'saved_unis': [],
       });
 
       return 'success'; // success message
     } catch (e) {
-      print("EXCEPTION: ${e.toString()}");
+      print("EXCEPTION in createProfile: ${e.toString()}");
       return null;
     }
   }
@@ -323,7 +339,7 @@ class StudentProfile {
     }
   }
 
-  // get student name and profile image for student home screen
+  // get student name for student home screen
   Future<String> getName() async {
     try {
       // get name field using doc id
@@ -336,6 +352,46 @@ class StudentProfile {
     } catch (e) {
       // print error
       print("ERR in getName: ${e.toString()}");
+      return 'error';
+    }
+  }
+
+  // student profile doc snapshot to student profile type object having saved unis list only
+  StudentProfile? _snapshotToSavedAndFollowingUnisListObject(doc) {
+    try {
+      return StudentProfile.forSavedAndFollowingUnisList(
+          profileDocId: doc.id,
+          savedUnis: doc.get('saved_unis'),
+          followingUnis: doc.get('following_unis'));
+    } catch (e) {
+      // print error
+      print(
+          "ERR in _snapshotToSavedAndFollowingUnisListObject: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // get student saved unis list and following unis stream
+  Stream<StudentProfile?>? getSavedAndFollowingUnisListStream() {
+    try {
+      return profileCollection.doc(profileDocId).snapshots().map(
+          (snapshot) => _snapshotToSavedAndFollowingUnisListObject(snapshot));
+    } catch (e) {
+      // print error
+      print("ERR in getSavedUnisListStream: ${e.toString()}");
+      return null;
+    }
+  }
+
+  // update saved unis list in db
+  Future updateSavedUnisList() async {
+    try {
+      await profileCollection
+          .doc(profileDocId)
+          .update({'saved_unis': savedUnis});
+      return 'success';
+    } catch (e) {
+      print('Err in updateSavedUnisList: $e');
       return 'error';
     }
   }

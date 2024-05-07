@@ -77,7 +77,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // reg exp variable for name, gender field
   static final RegExp nameRegExp = RegExp(r'^[A-Za-z ]+$');
 
-  // show alert dialog for delete post
+  // show alert dialog for update profile
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
