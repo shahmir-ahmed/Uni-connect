@@ -295,7 +295,8 @@ class _StudentHomeState extends State<StudentHome> {
                             child: NewsFeed(
                                 stdProfileId: stdProfileDocId as String)))
                     // if no student profile id fetched yet then show loading screen
-                    : WithinScreenProgress.withHeight(text: "", height: 500.0)),
+                    // : WithinScreenProgress.withHeight(text: "", height: 500.0)),
+                    : WithinScreenProgress(text: "")),
           ],
         ),
       ),

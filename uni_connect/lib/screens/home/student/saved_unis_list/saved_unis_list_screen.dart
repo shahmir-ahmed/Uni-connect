@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/classes/university.dart';
 import 'package:uni_connect/screens/home/student/saved_unis_list/edit_list_screen.dart';
+import 'package:uni_connect/screens/home/student/search/universites_list.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
 
@@ -36,6 +37,7 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
                 profileDocId: doc.id ?? '',
                 profileImage: '',
                 name: doc.get("name").toString() ?? '',
+                location: doc.get("location").toString() ?? '',
               ));
       // fetch profile image
 
@@ -65,7 +67,7 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
       appBar: AppBar(
           title: const Text('My List'), backgroundColor: Colors.blue[400]),
       body: SingleChildScrollView(
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,19 +123,54 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
               ),
               // if value in stream is null then show loading screen
               stdProfileObj == null
-                  ? WithinScreenProgress(text: '')
+                  ? WithinScreenProgress.withPadding(
+                      text: '',
+                      paddingTop: 0.0,
+                    )
                   :
                   // if list is not empty then show unis
                   stdProfileObj!.savedUnis!.isNotEmpty
-                      ?
-                      // saved unis list container
-                      Container(
-                          width: MediaQuery.of(context).size.width - 100,
-                          child: ListView.builder(
+                      ? savedUnisList.isEmpty
+                          ? WithinScreenProgress.withPadding(
+                              text: '',
+                              paddingTop: 0.0,
+                            )
+                          :
+                          // saved unis list container
+                          ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: savedUnisList.length,
                               itemBuilder: (context, index) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    // numbering
+                                    // serial number
+                                    Text(
+                                      '${index + 1}.',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0),
+                                    ),
+                                    // space
+                                    SizedBox(
+                                      width: 10.0,
+                                    ),
+                                    // uni details tile
+                                    UniversityTile.unTappable(
+                                      uniObj: savedUnisList[index],
+                                      trailing: false,
+                                    ),
+                                    // space
+                                    SizedBox(
+                                      width: 20.0,
+                                    )
+                                  ],
+                                );
+
+                                /*
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8.0),
@@ -143,7 +180,9 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
                                         : '${index + 1}. ${savedUnisList[index].name}'),
                                   ]),
                                 );
-                              }))
+                                */
+                              })
+
                       // if list is empty then show message of not saved any yet
                       : Center(
                           child:

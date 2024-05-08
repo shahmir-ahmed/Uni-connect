@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class WithinScreenProgress extends StatelessWidget {
   // Text to show in progress screen
   late String text;
-  
+
   // padding from top
   double? paddingTop;
 
@@ -15,7 +15,8 @@ class WithinScreenProgress extends StatelessWidget {
   WithinScreenProgress({required this.text});
 
   // constructor to take the text
-  WithinScreenProgress.withPadding({required this.text, required this.paddingTop});
+  WithinScreenProgress.withPadding(
+      {required this.text, required this.paddingTop});
 
   // height
   WithinScreenProgress.withHeight({required this.text, required this.height});
@@ -23,7 +24,9 @@ class WithinScreenProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: paddingTop==null ? 150.0 : paddingTop as double),
+      // color: Colors.pink,
+      padding: EdgeInsets.only(
+          top: paddingTop == null ? 150.0 : paddingTop as double),
       width: MediaQuery.of(context).size.width,
       height: height == null ? MediaQuery.of(context).size.height : height,
       child: Column(

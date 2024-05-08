@@ -98,19 +98,34 @@ class _UniversitiesListState extends State<UniversitiesList> {
 }
 
 class UniversityTile extends StatefulWidget {
+  // const. for following uni list on profile
   UniversityTile({
     required this.uniObj,
   });
 
+  // const. that do nothing on tile tap
+  UniversityTile.unTappable(
+      {super.key,
+      required this.uniObj,
+      required this.trailing,
+      this.unTappable = true});
+
+  // for add university screen in saved uni list
   UniversityTile.forSavedUniList(
       {required this.uniObj,
       required this.addUniInSavedUniList,
-      this.forSavedUniList = true}); // by default true for this const.
+      this.forAddUniInSavedUniList = true}); // by default true for this const.
 
   UniveristyProfile uniObj; // uni object
 
-  // for saved uni list tile (add university screen)
-  bool forSavedUniList = false;
+  // for add uni in saved uni list tile (add university screen)
+  bool forAddUniInSavedUniList = false;
+
+  // for saved uni list tile (my list, edit list screen)
+  bool unTappable = false;
+
+  // trailing for edit list screen tile
+  bool? trailing = false;
 
   // add uni in saved uni list method of following unis screen
   Function? addUniInSavedUniList;
@@ -199,6 +214,7 @@ class _UniversityTileState extends State<UniversityTile> {
     // print('here'); // when search query is updated and left to single uni in list (i.e. filtering uni) initstate is not being called on that object
   }
 
+  // if widget changed (while searching filters new uni so change dp also)
   @override
   void didUpdateWidget(UniversityTile oldWidget) {
     if (oldWidget.uniObj != widget.uniObj) {
@@ -218,40 +234,87 @@ class _UniversityTileState extends State<UniversityTile> {
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10.0))),
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
-        child: ListTile(
-          onTap: () {
-            // if for saved uni list tile (add university screen)
-            if (widget.forSavedUniList) {
-              // then on tap ask from user to add this uni in list
-              showAlertDialog(context);
-            } else {
-              // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
-              // if (profileImage != '') {
-              // show uni profile screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => UniProfileScreen(
-                          uniProfile: widget.uniObj,
-                        )),
-              );
-            }
-            // }
-          },
-          tileColor: Color.fromARGB(255, 239, 239, 239),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          leading: profileImage == ''
-              ? CircleAvatar(
-                  backgroundImage: AssetImage("assets/uni.jpg"),
-                  // radius: 30.0,
-                )
-              : CircleAvatar(
-                  backgroundImage: NetworkImage(profileImage),
+        padding: widget.unTappable
+            ? EdgeInsets.symmetric(vertical: 15.0, horizontal: 2.0)
+            : EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+        child: widget.unTappable
+            ? Container(
+                width: MediaQuery.of(context).size.width - 100,
+                child: ListTile(
+                  onTap: () {
+                    // if for saved uni list tile (add university screen)
+                    if (widget.forAddUniInSavedUniList) {
+                      // then on tap ask from user to add this uni in list
+                      showAlertDialog(context);
+                    } else if (widget.unTappable) {
+                      // if untappable is true then do nothing on tap
+                    } else {
+                      // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
+                      // if (profileImage != '') {
+                      // show uni profile screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UniProfileScreen(
+                                  uniProfile: widget.uniObj,
+                                )),
+                      );
+                    }
+                    // }
+                  },
+                  tileColor: Color.fromARGB(255, 239, 239, 239),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  leading: profileImage == ''
+                      ? CircleAvatar(
+                          backgroundImage: AssetImage("assets/uni.jpg"),
+                          // radius: 30.0,
+                        )
+                      : CircleAvatar(
+                          backgroundImage: NetworkImage(profileImage),
+                        ),
+                  title: Text("${widget.uniObj.name}"),
+                  // subtitle: Text("${widget.uniObj.location}"),
+                  trailing: widget.trailing == true
+                      ? Icon(Icons.drag_indicator_rounded)
+                      : null,
                 ),
-          title: Text("${widget.uniObj!.name}"),
-          subtitle: Text("${widget.uniObj.location}"),
-        ));
+              )
+            : ListTile(
+                onTap: () {
+                  // if for saved uni list tile (add university screen)
+                  if (widget.forAddUniInSavedUniList) {
+                    // then on tap ask from user to add this uni in list
+                    showAlertDialog(context);
+                  } else if (widget.unTappable) {
+                    // if untappable is true then do nothing on tap
+                  } else {
+                    // if profile image is not fetched yet then do nothing on tap, if profile image is present then goto uni profile (refetched again at uni profile screen)
+                    // if (profileImage != '') {
+                    // show uni profile screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UniProfileScreen(
+                                uniProfile: widget.uniObj,
+                              )),
+                    );
+                  }
+                  // }
+                },
+                tileColor: Color.fromARGB(255, 239, 239, 239),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                leading: profileImage == ''
+                    ? CircleAvatar(
+                        backgroundImage: AssetImage("assets/uni.jpg"),
+                        // radius: 30.0,
+                      )
+                    : CircleAvatar(
+                        backgroundImage: NetworkImage(profileImage),
+                      ),
+                title: Text("${widget.uniObj.name}"),
+                subtitle: Text("${widget.uniObj.location}"),
+              ));
   }
 }

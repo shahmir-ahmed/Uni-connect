@@ -58,7 +58,11 @@ class _NewsFeedState extends State<NewsFeed> {
               ),
             )
           : followingList.isEmpty
-              ? Text("Follow universities to see posts in your news feed...")
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 80.0),
+                  child: Text(
+                      "Follow universities to see posts in your news feed..."),
+                )
               : Text('');
     } else {
       return WithinScreenProgress(text: "Loading news feed...");

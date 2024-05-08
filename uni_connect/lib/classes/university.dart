@@ -211,6 +211,7 @@ class UniveristyProfile {
     required this.profileDocId,
     required this.profileImage,
     required this.name,
+    required this.location,
   });
 
   // create profile in database (when registering)

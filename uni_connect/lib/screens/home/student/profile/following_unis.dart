@@ -32,6 +32,9 @@ class _FollowingUnisScreenState extends State<FollowingUnisScreen> {
   // new saved unis profile id list
   List<dynamic> newSavedUnisIds = [];
 
+  // flag taht list to display is loaded yet or not
+  bool followingUnisListloaded = false; // by default false
+
   // remove a uni which is added (after clicking on the uni by user) in the saved uni list, from following uni list
   _removeUniFromList(uniObj) {
     // remove and reflect change
@@ -103,6 +106,7 @@ class _FollowingUnisScreenState extends State<FollowingUnisScreen> {
     // sorting unis by name
     setState(() {
       followingUnisList!.sort((a, b) => a.name.compareTo(b.name));
+      followingUnisListloaded = true;
     }); // Instead of performing asynchronous work inside a call to setState(), first execute the work (without updating the widget state), and then synchronously update the state inside a call to setState().
   }
 
@@ -136,30 +140,41 @@ class _FollowingUnisScreenState extends State<FollowingUnisScreen> {
               : Text('Add university in list'),
           backgroundColor: Colors.blue[400],
         ),
-        body: followingUnisList == null
-            ? Center(child: WithinScreenProgress(text: 'Loading...'))
-            // if no uni present in the list (when all following unis are added in the saved unis list) (this screen will not be shown in profilw when user has not followed any uni)
-            : followingUnisList!.isEmpty
+        body: // if student is not following any unis (for adding uni in saved uni list)
+            widget.followingUnisIds.length == 0
                 ? Padding(
                     padding: EdgeInsets.all(50.0),
                     child: Center(
                       child: Text(
-                          'All universities are already added in the saved universities list.'),
+                          'Please follow universities to add university in the list.'),
                     ))
-                : Container(
-                    padding: EdgeInsets.only(top: 20.0),
-                    // color: Colors.blueAccent,
-                    child: Column(
-                      // map each following uni to a tile
-                      children: followingUnisList!
-                          .map((followingUni) => widget.screenTitle == null
-                              ? UniversityTile(uniObj: followingUni)
-                              : UniversityTile.forSavedUniList(
-                                  uniObj: followingUni,
-                                  addUniInSavedUniList: addUniInSavedUniList))
-                          .toList(),
-                    ),
-                  ),
+                // if ids list is not empty then check list to display is ready, if not ready then show loading
+                : (followingUnisList == null || !followingUnisListloaded)
+                    ? Center(child: WithinScreenProgress(text: 'Loading...'))
+                    // if no uni present in the list (when all following unis are added in the saved unis list) (this screen will not be shown in profilw when user has not followed any uni)
+                    : followingUnisList!.isEmpty
+                        ? Padding(
+                            padding: EdgeInsets.all(50.0),
+                            child: Center(
+                              child: Text(
+                                  'All universities are already added in the saved universities list.'),
+                            ))
+                        : Container(
+                            padding: EdgeInsets.only(top: 20.0),
+                            // color: Colors.blueAccent,
+                            child: Column(
+                              // map each following uni to a tile
+                              children: followingUnisList!
+                                  .map((followingUni) =>
+                                      widget.screenTitle == null
+                                          ? UniversityTile(uniObj: followingUni)
+                                          : UniversityTile.forSavedUniList(
+                                              uniObj: followingUni,
+                                              addUniInSavedUniList:
+                                                  addUniInSavedUniList))
+                                  .toList(),
+                            ),
+                          ),
       ),
     );
   }
