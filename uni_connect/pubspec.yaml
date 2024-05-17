@@ -74,6 +74,7 @@ dependencies:
   # connectivity: ^3.0.6
   connectivity_plus: ^6.0.2
   internet_connection_checker: ^1.0.0+1
+  webview_flutter: ^4.7.0
 
 
 # for panorama package

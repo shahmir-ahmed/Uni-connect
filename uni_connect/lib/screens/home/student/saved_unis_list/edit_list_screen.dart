@@ -28,7 +28,6 @@ class _EditSavedUnisListScreenState extends State<EditSavedUnisListScreen> {
   _loadSavedUnisList() async {
     // initailize list
     savedUnisList = [];
-    // get all unis student is following
     // for all saved unis ids fetch the uni with complete details and add in the list
     for (var i = 0; i < widget.studentProfile.savedUnis!.length; i++) {
       final uniObj = await UniveristyProfile.empty()
@@ -41,7 +40,6 @@ class _EditSavedUnisListScreenState extends State<EditSavedUnisListScreen> {
                 name: doc.get("name").toString() ?? '',
                 location: doc.get("location").toString() ?? '',
               ));
-      // fetch profile image
 
       savedUnisList.add(uniObj);
     }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +27,18 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+/*
+  for (var i = 0; i < 10; i++) {
+    FirebaseFirestore.instance.collection('blogs').add({
+      'category': 'counseling',
+      'cover_image_url': '',
+      'url': '',
+      'title': '',
+      'date_published': Timestamp.now()
+    });
+  }
+  */
+
   runApp(
       const MyApp()); // fires this function runApp which registers this MyApp() as our root widget
 }
@@ -155,7 +168,8 @@ class _MyAppState extends State<MyApp> {
     _initializeFirebaseMessaging();
     // Setup message handlers
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("Notification recieved!"); // not printed when app is in background and inside show notification function type also, then how is background notification showing?
+      print(
+          "Notification recieved!"); // not printed when app is in background and inside show notification function type also, then how is background notification showing?
       // Handle foreground messages
       _showNotification(message);
     });

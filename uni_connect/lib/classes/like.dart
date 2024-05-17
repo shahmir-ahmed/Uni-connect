@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Post ---> has 1..* likes
+// Post ---> has 1..* likes (edit: so need to make it a property of post not a seperate class)
 class Like {
   // atts.
 

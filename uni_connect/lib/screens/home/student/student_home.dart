@@ -6,6 +6,7 @@ import 'package:uni_connect/classes/student.dart';
 import 'package:uni_connect/screens/authenticate_student/authenticate_student.dart';
 import 'package:uni_connect/screens/home/student/news_feed/news_feed.dart';
 import 'package:uni_connect/screens/home/student/profile/student_profile.dart';
+import 'package:uni_connect/screens/home/student/resources/resources_screen.dart';
 import 'package:uni_connect/screens/home/student/saved_unis_list/saved_unis_list_screen.dart';
 import 'package:uni_connect/screens/home/student/search/search_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
@@ -424,6 +425,12 @@ class _StudentHomeState extends State<StudentHome> {
                           initialData: null,
                           child: SavedUnisListScreen())));
             }
+          }
+          // if resources (self-help resources option) is clicked
+          else if (title == "Resources") {
+            // show self-help resources screen
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ResourcesScreen()));
           }
         },
         child: Padding(

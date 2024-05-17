@@ -26,7 +26,6 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
   // show unis with dp, name
   // load saved unis list to display
   _loadSavedUnisList() async {
-    // get all unis student is following
     // for all saved unis ids fetch the uni with complete details and add in the list
     for (var i = 0; i < stdProfileObj!.savedUnis!.length; i++) {
       final uniObj = await UniveristyProfile.empty()
@@ -39,7 +38,6 @@ class _SavedUnisListScreenState extends State<SavedUnisListScreen> {
                 name: doc.get("name").toString() ?? '',
                 location: doc.get("location").toString() ?? '',
               ));
-      // fetch profile image
 
       savedUnisList.add(uniObj);
     }

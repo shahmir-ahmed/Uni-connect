@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// (edit: Need to make it a property of post not a seperate class)
 class Comment {
   // attributes
 
