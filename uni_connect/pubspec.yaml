@@ -72,9 +72,15 @@ dependencies:
   # http package
   http: ^1.2.1
   # connectivity: ^3.0.6
+  # packages for internet checker
   connectivity_plus: ^6.0.2
   internet_connection_checker: ^1.0.0+1
+  # flutter web view package
   webview_flutter: ^4.7.0
+  # youtube player package for video preview
+  youtube_player_flutter: ^8.0.0
+  # package to launch youtube video in youtube app
+  url_launcher: ^6.0.9
 
 
 # for panorama package

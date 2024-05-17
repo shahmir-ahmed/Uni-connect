@@ -36,7 +36,9 @@ class _BlogWebViewState extends State<BlogWebView> {
               title: Text('Blog'),
               backgroundColor: Colors.blue[400],
             ),
-            body: WithinScreenProgress(text: ''))
+            body: Container(
+                color: Colors.red,
+                child: Center(child: WithinScreenProgress(text: ''))))
         : Scaffold(
             appBar: AppBar(
               title: Text('Blog'),

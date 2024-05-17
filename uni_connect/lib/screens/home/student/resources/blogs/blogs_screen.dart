@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/blog.dart';
-import 'package:uni_connect/screens/home/student/resources/blogs/blog_tile.dart';
+import 'package:uni_connect/screens/home/student/resources/blogs/blog_card.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class BlogsScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _BlogsScreenState extends State<BlogsScreen> {
                 .where((blog) =>
                     blog.category == "counseling" ||
                     blog.category == "school mgmt")
-                .map((blog) => BlogTile(
+                .map((blog) => BlogCard(
                     title: blog.title,
                     url: blog.url,
                     publishingDate: blog.publishingDate,
@@ -32,9 +32,9 @@ class _BlogsScreenState extends State<BlogsScreen> {
                     category: blog.category))
                 .toList()
               // Sort the posts based on category
-              ..sort((a, b) => b.category!.compareTo(a.category!))
+              // ..sort((a, b) => b.category!.compareTo(a.category!))
             // then based on date published
-            // ..sort((a, b) => b.publishingDate!.compareTo(a.publishingDate!)),
+            ..sort((a, b) => b.publishingDate!.compareTo(a.publishingDate!)),
             )
         : WithinScreenProgress.withPadding(text: '', paddingTop: 10.0);
   }

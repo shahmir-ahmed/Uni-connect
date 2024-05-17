@@ -2,13 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_connect/screens/home/student/resources/blogs/blog_web_view.dart';
 
-class BlogTile extends StatelessWidget {
-  // const BlogTile({super.key});
-
+class BlogCard extends StatelessWidget {
   // blog id (for image)
-  // blog title
-  // blog publishing date
-  // blog url
   // blog title
   String? title;
   // blog url
@@ -20,7 +15,7 @@ class BlogTile extends StatelessWidget {
   // blog publishing date
   Timestamp? publishingDate;
 
-  BlogTile(
+  BlogCard(
       {required this.title,
       required this.url,
       required this.publishingDate,
@@ -35,7 +30,7 @@ class BlogTile extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10.0))),
       margin: EdgeInsets.symmetric(vertical: 10.0),
       // color: Colors.amber,
-      height: 200.0,
+      height: 160.0,
       width: MediaQuery.of(context).size.width - 20,
       child: GestureDetector(
         onTap: () {
