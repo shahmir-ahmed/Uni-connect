@@ -5,7 +5,11 @@ import 'package:uni_connect/screens/home/student/uni_profile/virtual_event/virtu
 import 'package:uni_connect/screens/within_screen_progress.dart';
 
 class VirtualEventCards extends StatefulWidget {
-  VirtualEventCards({required this.uniName, required this.uniImage ,required this.uniProfileId, required this.stdProfileId});
+  VirtualEventCards(
+      {required this.uniName,
+      required this.uniImage,
+      required this.uniProfileId,
+      required this.stdProfileId});
 
   // uni profile id
   String uniProfileId;
@@ -46,19 +50,23 @@ class _VirtualEventCardsState extends State<VirtualEventCards> {
 
     // check for this uni virtual events, filter out those and show only those
     return virtualEvents != null
-        ? SingleChildScrollView(
-            child: Column(
-              children: virtualEvents
-                  .where((event) => event.uniProfileId == widget.uniProfileId)
-                  .map((event) => VirtualEventCard(
-                        uniName: widget.uniName,
-                        uniImage: widget.uniImage,
-                        virtualEvent: event,
-                        stdProfileId: widget.stdProfileId
-                      ))
-                  .toList(),
-            ),
-          )
+        // if there is live virtual event in the list
+        ? virtualEvents.contains(VirtualEvent.onlyStatus(status: "live"))
+            ? SingleChildScrollView(
+                child: Column(
+                  children: virtualEvents
+                      .where(
+                          (event) => event.uniProfileId == widget.uniProfileId)
+                      .map((event) => VirtualEventCard(
+                          uniName: widget.uniName,
+                          uniImage: widget.uniImage,
+                          virtualEvent: event,
+                          stdProfileId: widget.stdProfileId))
+                      .toList(),
+                ),
+              )
+            // if there is no live event in the list (i.e. uni is not live now)
+            : Center(child: Text('No live stream now.'))
         : Container(
             child: WithinScreenProgress(text: 'Loading...'),
           );

@@ -263,7 +263,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.white,
       title: Text("Confirm?"),
-      content: Text("Are you sure you want to update password?"),
+      content: Text("Are you sure you want to change password?"),
       actions: [
         continueButton,
         cancelButton,
@@ -336,7 +336,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-            title: Text('Update password'),
+            title: Text('Change password'),
             // title: Text('Uni-connect'),
             // centerTitle: true,
             backgroundColor: Colors.blue[400],

@@ -34,6 +34,9 @@ class VirtualEvent {
   VirtualEvent.onlyUsersCount(
       {required this.usersCount}); // only users count constructor
 
+  VirtualEvent.onlyStatus(
+      {required this.status}); // only status count constructor
+
   // empty constructor
   VirtualEvent.empty();
 

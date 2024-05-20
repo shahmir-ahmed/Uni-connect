@@ -81,6 +81,7 @@ dependencies:
   youtube_player_flutter: ^8.0.0
   # package to launch youtube video in youtube app
   url_launcher: ^6.0.9
+  #intl: ^0.17.0
 
 
 # for panorama package

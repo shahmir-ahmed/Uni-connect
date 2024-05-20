@@ -452,15 +452,43 @@ class _PostContentState extends State<PostContent> {
           // post description
           Text(widget.post.description as String),
           // Text(widget.post.uniProfileId as String),
-          // space
-          SizedBox(
-            height: 20.0,
-          ),
+          // if there are no likes and comments then hide space
+          (likesCount == 0 && commentsCount == 0)
+              ? SizedBox()
+              :
+              // space
+              SizedBox(
+                  height: 20.0,
+                ),
           // post number of likes and comments row
           Row(
             children: [
+              /*
               Expanded(child: Text('❤️ $likesCount')),
               Expanded(child: Text('💬 $commentsCount comments')),
+              */
+              Expanded(
+                  child: likesCount > 0
+                      ? liked
+                          ? likesCount > 1
+                              ? likesCount - 1 == 1
+                                  ? Text('❤️ You and ${likesCount - 1} other')
+                                  // if including this user more than 1 user has likes this post
+                                  : Text('❤️ You and ${likesCount - 1} others')
+                              // if post is only liked by this user
+                              : Text('❤️ You')
+                          // if not likes by this user
+                          : Text('❤️ $likesCount')
+                          // if no likes are on the post
+                      : SizedBox()),
+              // if there are comments then show comments count
+              commentsCount > 0
+                  ? Expanded(
+                      child: commentsCount == 1
+                          ? Text('💬 $commentsCount comment')
+                          // if more than 1 comment then put s
+                          : Text('💬 $commentsCount comments'))
+                  : const SizedBox()
             ],
           ),
           // space

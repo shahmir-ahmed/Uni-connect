@@ -91,6 +91,28 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
     _textEditingController.clear();
   }
 
+  // time ago function to calculate and return how much time has passed since the comment posted
+  String timeAgo(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds}s';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d';
+    } else if (difference.inDays < 30) {
+      return '${(difference.inDays / 7).floor()}w';
+    } else if (difference.inDays < 365) {
+      return '${(difference.inDays / 30).floor()}mo';
+    } else {
+      return '${(difference.inDays / 365).floor()}y';
+    }
+  }
+
   // converts comment at each index in post comments list to a widget
   // return a list of widgets for post comments
   List<Widget> _commentsWidgetList() {
@@ -99,12 +121,48 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
 
     // for loop (b/c for each not working below)
     for (int i = 0; i < postComments!.length; i++) {
+      // calculate time ago for this comment
+      final timeAgoTime =
+          timeAgo(postComments![i]['comment_created_at'].toDate());
+/*
+      // commenter profile image path
+      // based on comment by student/uni fetch image
+      final profileImage = 
+                postComments![i]['comment_by_type'] == "student" ? await StudentProfile.withId(profileDocId: postComments![i]['comment_by_profile_id']).getProfileImage() : await UniveristyProfile.withId(profileDocId: postComments![i]['comment_by_profile_id']).getProfileImagePath(); (cannot await here beacuse this is UI list which is required by the Ui below so need to fetch image seperately in setCommentByOnComment function set there in map and show image here)
+                */
+
       // add widget in the list for the each comment
       commentsWidgetsList.add(Container(
         margin: EdgeInsets.symmetric(vertical: 15.0),
-        child: Text(
-          '${postComments![i]['comment_by_name'] ?? ''}',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                // commenter profile image
+                // commenter name
+                postComments![i]['comment_by_name'].length > 32
+                    ? Text(
+                        '${postComments![i]['comment_by_name'].substring(0, 32).trim()}...' ??
+                            '',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    : Text(
+                        '${postComments![i]['comment_by_name'] ?? ''}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+              ],
+            ),
+            Container(
+              padding: EdgeInsets.only(right: 10.0),
+              child: Text(
+                timeAgoTime,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 143, 143, 143)),
+              ),
+            ),
+          ],
         ),
       ));
       // comment text widget
@@ -263,7 +321,8 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
                             'comment_by_profile_id': widget.commenterProfileId,
                             'comment_by_type': widget.commentByType == 'student'
                                 ? 'student'
-                                : 'university'
+                                : 'university',
+                            'comment_created_at': Timestamp.now()
                           });
 
                           // set comment as empty to change button

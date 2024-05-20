@@ -1,11 +1,14 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_connect/classes/comment.dart';
 import 'package:uni_connect/classes/like.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:uni_connect/classes/university.dart';
+import 'package:uni_connect/screens/home/student/uni_profile/university_profile_screen.dart';
 import 'package:uni_connect/screens/home/university/post/post_comments.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/image_view.dart';
@@ -189,15 +192,39 @@ class _PostContentState extends State<PostContent> {
           Text(widget.post.description as String),
           // Text(widget.post.uniProfileId as String),
 
-          // space
-          SizedBox(
-            height: 20.0,
-          ),
+          // if there are no likes and comments then hide space
+          (likesCount == 0 && commentsCount == 0)
+              ? SizedBox()
+              :
+              // space
+              SizedBox(
+                  height: 20.0,
+                ),
           // post number of likes and comments row
           Row(
             children: [
-              Expanded(child: Text('❤️ $likesCount')),
-              Expanded(child: Text('💬 $commentsCount comments')),
+              Expanded(
+                  child: likesCount > 0
+                      ? liked
+                          ? likesCount > 1
+                              ? likesCount - 1 == 1
+                                  ? Text('❤️ You and ${likesCount - 1} other')
+                                  // if including this user more than 1 user has likes this post
+                                  : Text('❤️ You and ${likesCount - 1} others')
+                              // if post is only liked by this user
+                              : Text('❤️ You')
+                          // if not likes by this user
+                          : Text('❤️ $likesCount')
+                      // if no likes are on the post
+                      : SizedBox()),
+              // if there are comments then show comments count
+              commentsCount > 0
+                  ? Expanded(
+                      child: commentsCount == 1
+                          ? Text('💬 $commentsCount comment')
+                          // if more than 1 comment then put s
+                          : Text('💬 $commentsCount comments'))
+                  : const SizedBox()
             ],
           ),
           // space
@@ -519,30 +546,64 @@ class _PostHeaderState extends State<PostHeader> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // uni name & logo row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // if there is no profile picture path
-              profileImage == ''
-                  ? CircleAvatar(
-                      backgroundImage: AssetImage('assets/uni.jpg'),
-                      radius: 20,
-                    )
-                  :
-                  // if there is profile picture path
-                  CircleAvatar(
-                      backgroundImage: NetworkImage(profileImage),
-                      radius: 18,
-                    ),
-              // gap
-              SizedBox(
-                width: 10.0,
-              ),
-              // uni name text
-              uniName.length > 33
-                  ? Text('${uniName.substring(0, 33).trim()}...')
-                  : Text(uniName),
-            ],
+          GestureDetector(
+            onTap: () {
+              // get the uni details and show uni profile screen
+              UniveristyProfile.empty()
+                  .profileCollection
+                  .doc(widget.uniProfileId)
+                  .get()
+                  .then((doc) {
+                final uniProfileObj = UniveristyProfile(
+                    profileDocId: doc.id ?? '',
+                    profileImage: '',
+                    name: doc.get("name").toString() ?? '',
+                    location: doc.get("location").toString() ?? '',
+                    type: doc.get('type') ?? '',
+                    description: doc.get('description') ?? '',
+                    fieldsOffered: doc.get('fields_offered') ?? [],
+                    followers: doc.get('followers') ?? [],
+                    uniAccountId: doc.get('university_id') ?? '');
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UniProfileScreen(
+                              uniProfile: uniProfileObj,
+                            )));
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // if there is no profile picture path
+                profileImage == ''
+                    ? CircleAvatar(
+                        backgroundImage: AssetImage('assets/uni.jpg'),
+                        radius: 20,
+                      )
+                    :
+                    // if there is profile picture path
+                    CircleAvatar(
+                        backgroundImage: NetworkImage(profileImage),
+                        radius: 18,
+                      ),
+                // gap
+                SizedBox(
+                  width: 10.0,
+                ),
+                // uni name text
+                SizedBox(
+                  child: uniName.length > 33
+                      ? Text('${uniName.substring(0, 33).trim()}...',
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                      : Text(
+                          uniName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                )
+              ],
+            ),
           ),
         ],
       ),
