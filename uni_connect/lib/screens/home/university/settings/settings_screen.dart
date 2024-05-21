@@ -263,7 +263,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.white,
       title: Text("Confirm?"),
-      content: Text("Are you sure you want to change password?"),
+      content: Text("Are you sure you want to update password?"),
       actions: [
         continueButton,
         cancelButton,

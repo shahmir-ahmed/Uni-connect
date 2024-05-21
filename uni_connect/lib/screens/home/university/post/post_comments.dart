@@ -179,6 +179,9 @@ class _InnerCommentsScreenState extends State<InnerCommentsScreen> {
       ));
     }
 
+    // sort by time posted (last comment in array will be latest)
+    // commentsWidgetsList.sort((a,b)=> )
+
     // return list of widgets for the post
     return commentsWidgetsList;
   }
