@@ -11,7 +11,11 @@ import 'package:uni_connect/shared/constants.dart';
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({required this.uniAccountId});
 
-  SettingsScreen.forStudent({required this.stdAccountId});
+  SettingsScreen.forStudent(
+      {required this.stdAccountId, required this.fromProfileScreen});
+
+  // from profile screen this settings screen is opened
+  bool? fromProfileScreen;
 
   // uni account id for updating password
   String? uniAccountId;
@@ -83,7 +87,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         showSignIn: true,
                       )));
         } else {
-          Navigator.pop(context); // pop profile screen
+          // if from profile screen came here
+          if (widget.fromProfileScreen!) {
+            Navigator.pop(context); // pop profile screen
+          }
           Navigator.pop(context); // pop home screen
           // push main screen
           Navigator.push(
@@ -231,7 +238,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // pop settings screen
             Navigator.pop(context);
 
-            Navigator.pop(context); // pop profile screen
+            // if from profile screen came here
+            if (widget.fromProfileScreen!) {
+              Navigator.pop(context); // pop profile screen
+            }
+
             Navigator.pop(context); // pop home screen
             // push main screen
             Navigator.push(

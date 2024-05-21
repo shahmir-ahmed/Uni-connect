@@ -99,6 +99,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                 // show student profile screen with student profile id which is also student account id
                                 builder: (context) => SettingsScreen.forStudent(
                                       stdAccountId: studentProfileId,
+                                      fromProfileScreen: true,
                                     )));
                       },
                       child: Icon(
