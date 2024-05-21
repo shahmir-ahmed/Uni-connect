@@ -9,6 +9,7 @@ import 'package:uni_connect/screens/home/student/profile/student_profile.dart';
 import 'package:uni_connect/screens/home/student/resources/resources_screen.dart';
 import 'package:uni_connect/screens/home/student/saved_unis_list/saved_unis_list_screen.dart';
 import 'package:uni_connect/screens/home/student/search/search_screen.dart';
+import 'package:uni_connect/screens/home/university/settings/settings_screen.dart';
 import 'package:uni_connect/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
@@ -431,6 +432,20 @@ class _StudentHomeState extends State<StudentHome> {
             // show self-help resources screen
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ResourcesScreen()));
+          }
+          // if settings option is clicked
+          else if (title == "Settings") {
+            // show settings screen
+            if (stdProfileDocId != null) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      // show student profile screen with student profile id which is also student account id
+                      builder: (context) => SettingsScreen.forStudent(
+                            stdAccountId: stdProfileDocId,
+                            fromProfileScreen: false,
+                          )));
+            }
           }
         },
         child: Padding(
