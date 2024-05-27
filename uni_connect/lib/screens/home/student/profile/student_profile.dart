@@ -8,6 +8,7 @@ import 'package:uni_connect/screens/home/student/profile/following_unis.dart';
 import 'package:uni_connect/screens/home/university/settings/settings_screen.dart';
 import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:uni_connect/shared/constants.dart';
+import 'package:uni_connect/shared/image_view.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   StudentProfileScreen(
@@ -83,7 +84,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
           actions: [
             // if profile id is present then show button
             studentProfileId.isNotEmpty
-            // settings button
+                // settings button
                 ? Container(
                     margin: EdgeInsetsDirectional.only(end: 10.0),
                     // color: Colors.amberAccent,
@@ -140,10 +141,22 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                           AssetImage('assets/student.jpg'),
                                       radius: 45.0,
                                     )
-                                  : CircleAvatar(
-                                      backgroundImage:
-                                          NetworkImage(profileImage),
-                                      radius: 45.0,
+                                  : GestureDetector(
+                                      onTap: () {
+                                        // show image in image view screen
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ImageView(
+                                                    assetName: profileImage,
+                                                    isNetworkImage: true,
+                                                    isPanorama: false)));
+                                      },
+                                      child: CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(profileImage),
+                                        radius: 45.0,
+                                      ),
                                     )),
 
                           // following count column

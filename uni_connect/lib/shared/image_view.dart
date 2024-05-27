@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 // import 'package:photo_view/photo_view.dart';
 import 'package:panorama/panorama.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 // import 'package:uni_connect/screens/within_screen_progress.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:uni_connect/screens/within_screen_progress.dart';
 
 // widget to view an image when clicked in a photo view widget
 
@@ -13,11 +16,13 @@ class ImageView extends StatelessWidget {
   ImageView(
       {required this.assetName,
       required this.isNetworkImage,
-      required this.isPanorama});
+      required this.isPanorama,
+      this.file});
 
   final String assetName; // image path
   late final bool isNetworkImage; // is the image network image
   late final bool isPanorama; // is the image panorama
+  File? file; // file object of file image
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +42,19 @@ class ImageView extends StatelessWidget {
       return InteractiveViewer(
           child: Container(child: Image(image: NetworkImage(assetName))));
     }
-    // if the image is nor network nor panorama i.e. no media type of post in db (worst case)
+    // if the image is not network and not panorama i.e file image in cache of system
+    else if (!isNetworkImage && !isPanorama) {
+      return InteractiveViewer(
+          child: Container(child: Image(image: FileImage(file!))));
+    }
+    // if the image is nor network nor panorama and nor asset image i.e. no media type of post in db (worst case)
     // show progress screen
     else {
-      return ProgressScreen.withBgColorBlack(text: '');
+      // return ProgressScreen.withBgColorBlack(text: '');
+      return WithinScreenProgress.withPadding(
+        text: '',
+        paddingTop: 350.0,
+      );
     }
   }
 }

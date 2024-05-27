@@ -79,9 +79,12 @@ dependencies:
   webview_flutter: ^4.7.0
   # youtube player package for video preview
   youtube_player_flutter: ^8.0.0
-  # package to launch youtube video in youtube app
+  # package to launch youtube video in youtube app/browser
   url_launcher: ^6.0.9
-  #intl: ^0.17.0
+  # intl: ^0.17.0
+  # flutter image compressor package
+  flutter_image_compress: ^2.3.0
+  path: ^1.9.0
 
 
 # for panorama package

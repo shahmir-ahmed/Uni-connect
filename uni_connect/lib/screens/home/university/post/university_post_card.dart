@@ -402,9 +402,9 @@ class _PostContentState extends State<PostContent> {
                     widget.homeScreenContext != null
                         ?
                         // uni name text for uni
-                        widget.uniName!.length > 28
+                        widget.uniName!.length > 33
                             ? Text(
-                                '${widget.uniName!.substring(0, 28).trim()}...')
+                                '${widget.uniName!.substring(0, 33).trim()}...')
                             : Text('${widget.uniName!}')
                         : // uni name text for student
                         widget.uniName!.length > 32
@@ -479,7 +479,7 @@ class _PostContentState extends State<PostContent> {
                               : Text('❤️ You')
                           // if not likes by this user
                           : Text('❤️ $likesCount')
-                          // if no likes are on the post
+                      // if no likes are on the post
                       : SizedBox()),
               // if there are comments then show comments count
               commentsCount > 0

@@ -14,6 +14,7 @@ import 'package:uni_connect/screens/home/university/virtual_event/create_virtual
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uni_connect/shared/image_view.dart';
 
 class UniversityHome extends StatefulWidget {
   // String email; // university email
@@ -359,6 +360,7 @@ class _UniversityHomeState extends State<UniversityHome> {
     uniProfile = Provider.of<UniveristyProfile?>(context);
 
     // print(uniProfile!.name);
+    // print(uniProfile!.profileImage);
 
     // get all the posts stream
     // if posts stream is null
@@ -368,17 +370,18 @@ class _UniversityHomeState extends State<UniversityHome> {
 
     // print('posts stream: $postsStream'); // present
 
-    // load uni profile id if object is got and image path is not empty
-    /*
+    // load uni profile id if object is got and image path is empty
     if (uniProfile != null) {
-      if (uniProfile!.profileImage != '') {
+      if (uniProfile!.profileImage.isEmpty) {
+        /*
         setState(() {
           uniProfile!.profileImage =
-              _loadProfileImage(uniProfile!.profileDocId);
+              loadProfileImage(uniProfile!.profileDocId);
         });
+        */
+        loadProfileImage();
       }
     }
-      */
 
     // if stream is setup but theere is no value passed down in the stream yet then show loading
     return uniProfile == null
@@ -400,7 +403,10 @@ class _UniversityHomeState extends State<UniversityHome> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SettingsScreen(uniAccountId: uniProfile!.uniAccountId as String,)));
+                                  builder: (context) => SettingsScreen(
+                                        uniAccountId:
+                                            uniProfile!.uniAccountId as String,
+                                      )));
                         },
                         child: Icon(
                           Icons.settings,
@@ -454,10 +460,27 @@ class _UniversityHomeState extends State<UniversityHome> {
                                             )
                                           :
                                           // if there is profile picture path
-                                          CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                  uniProfile!.profileImage),
-                                              radius: 45,
+                                          GestureDetector(
+                                              onTap: () {
+                                                // show image in image view screen
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ImageView(
+                                                                assetName:
+                                                                    uniProfile!
+                                                                        .profileImage,
+                                                                isNetworkImage:
+                                                                    true,
+                                                                isPanorama:
+                                                                    false)));
+                                              },
+                                              child: CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    uniProfile!.profileImage),
+                                                radius: 45,
+                                              ),
                                             ),
 
                                       // space

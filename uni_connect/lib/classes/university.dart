@@ -250,7 +250,7 @@ class UniveristyProfile {
       final imageUrl = await ref
           .getDownloadURL(); // get the image path // error is here of object not found so null is returned in catch block
 
-      // print('imageurl: $imageUrl');
+      print('imageurl: $imageUrl');
 
       return imageUrl;
     } catch (e) {
@@ -261,11 +261,15 @@ class UniveristyProfile {
 
   // document snapshot to university profile object
   UniveristyProfile _documentSnapshotToUniversityProfile(
-      DocumentSnapshot documentSnapshot, String imagePath) {
+      // DocumentSnapshot documentSnapshot, String imagePath) 
+      DocumentSnapshot documentSnapshot) 
+      {
+    // print('imagePath: $imagePath');
+    // get the image path again when document data is update so that the same image path when setting up stream is not used again when document data is updated (edit cannot get here so get in the UI when new obj arrives)
     // return profile object with all the details set
     return UniveristyProfile(
         profileDocId: documentSnapshot.id,
-        profileImage: imagePath,
+        profileImage: '',
         name: documentSnapshot.get('name'),
         location: documentSnapshot.get('location'),
         type: documentSnapshot.get('type'),
@@ -288,16 +292,19 @@ class UniveristyProfile {
 
       // get the profile doc id
       String profileDocId = queryDocumentSnapshot.id;
-
+/*
       // get the profile image of the university (if exists) (getting here because needs to show in home screen)
       final imagePath = await UniveristyProfile.withId(
                   profileDocId: profileDocId)
               .getProfileImagePath() ??
           ''; // set empty path if there is no image found i.e. null is returned
+          */
 
       // return stream of type university profile object
       return profileCollection.doc(profileDocId).snapshots().map((snapshot) =>
-          _documentSnapshotToUniversityProfile(snapshot, imagePath!));
+          // _documentSnapshotToUniversityProfile(snapshot, imagePath!)
+          _documentSnapshotToUniversityProfile(snapshot)
+          );
     } catch (e) {
       print(e.toString());
       return null;
