@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
@@ -171,6 +172,8 @@ class _EditPostState extends State<EditPost> {
                       type == "Video"
                           ? pickVideo(ImageSource.camera)
                           : pickImage(ImageSource.camera);
+                      // close modal bottom sheet
+                      Navigator.of(context).pop();
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
@@ -182,6 +185,8 @@ class _EditPostState extends State<EditPost> {
                         type == "Video"
                             ? pickVideo(ImageSource.gallery)
                             : pickImage(ImageSource.gallery);
+                        // close modal bottom sheet
+                        Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.image),
                       label: const Text("Gallery"),
@@ -198,30 +203,81 @@ class _EditPostState extends State<EditPost> {
     );
   }
 
+  // flutter_image_compress
+  // The flutter_image_compress package is fairly simple to use and it appears to be much better at actually reducing the file size.
+  Future<File?> compressFile(File file) async {
+    try {
+      final filePath = file.absolute.path;
+
+      // Create output file path with .jpg extension
+      final outPath =
+          "${filePath.substring(0, filePath.lastIndexOf('.'))}_out.jpg";
+
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        outPath,
+        format: CompressFormat.jpeg, // Ensure the format is set to JPEG
+        quality: 25,
+      );
+
+      if (result == null) {
+        print("Compression failed");
+        return null;
+      }
+
+      print('Original file size: ${file.lengthSync()} bytes');
+      result
+          .length()
+          .then((value) => print('Compressed file size: ${value} bytes'));
+
+      return File(result.path);
+    } catch (e) {
+      print("Error in compressing image: $e");
+      return null;
+    }
+  }
+
   // Pick image
   void pickImage(ImageSource imageType) async {
     try {
       final photo = await ImagePicker().pickImage(source: imageType);
       if (photo == null) return;
-      final tempImage = File(photo.path);
-      // update the image and error variable and notify the widget to update its state using setState
-      setState(() {
-        pickedImage = tempImage; // set picked image value
 
-        fileError = ''; // clear file error
+      const maxFileSize = 15 * 1024 * 1024; // 15 MB in bytes
 
-        // no other media type variable value should be present
-        initialVideo =
-            null; // set initial video as null which is being shown as current video of post (if there)
-        pickedVideo =
-            null; // set picked video as null if user already picked a video first which is being shown at the preview
+      // if image size is more than 15mb show error
+      if (File(photo.path).lengthSync() > maxFileSize) {
+        // print('large image');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text(
+                'The image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please select a smaller image.')));
+        // return; (not closes the modal sheet so snackbar not visible so commented this)
+      } else {
+        // final tempImage = File(photo.path);
+        // compress photo using flutter image compress package
+        File? tempImage = await compressFile(File(photo.path));
+        // if error compressing
+        if (tempImage == null) tempImage = File(photo.path);
+        // update the image and error variable and notify the widget to update its state using setState
+        setState(() {
+          pickedImage = tempImage; // set picked image value
 
-        initialImage =
-            null; // set initial image as null b/c new image has been selected now by user so no initial image now
-      });
+          fileError = ''; // clear file error
+
+          // no other media type variable value should be present
+          initialVideo =
+              null; // set initial video as null which is being shown as current video of post (if there)
+          pickedVideo =
+              null; // set picked video as null if user already picked a video first which is being shown at the preview
+
+          initialImage =
+              null; // set initial image as null b/c new image has been selected now by user so no initial image now
+        });
+      }
 
       // Close the image picker screen
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
     }
@@ -232,29 +288,50 @@ class _EditPostState extends State<EditPost> {
     try {
       final video = await ImagePicker().pickVideo(source: videoType);
       if (video == null) return;
-      final tempVideo = File(video.path);
-      // update the preview by the selected video and error variable and notify the widget to update its state using setState
-      setState(() {
-        pickedVideo = tempVideo; // set picked video value
-        // set video player controller object
-        _controller = VideoPlayerController.file(pickedVideo!)
-          ..initialize().then((_) {
-            setState(() {});
-            _controller!.play();
-            // _controller!.setLooping(true); // loop
-            _controller!.setVolume(0.0); // muted
-          });
-        fileError = '';
-        initialVideo = null; // no initial video now as new video is picked
-        pickedImage =
-            null; // set picked image as null if user already picked an image first which is being shown at the preview
-        initialImage =
-            null; // set initial image as null b/c video has been selected now by user so no initial image now
-      });
+      const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
+
+      video.length().then((value) => print('video.length(): $value'));
+
+      // if video size is more than 50mb show error
+      if (File(video.path).lengthSync() > maxFileSize) {
+        // print('large video');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text(
+                'The video you selected is too large. The maximum file size allowed is 50 MB. Please select a smaller video.')));
+        // return; (not closes the modal sheet so snackbar not visible so commented this)
+      } else {
+        final tempVideo = File(video.path);
+        // update the preview by the selected video and error variable and notify the widget to update its state using setState
+        setState(() {
+          pickedVideo = tempVideo; // set picked video value
+          print('pickedVideo!.path: ${pickedVideo!.path}');
+          // set video player controller object
+          try {
+            _controller = VideoPlayerController.file(pickedVideo!)
+              ..initialize().then((_) {
+                setState(() {});
+                _controller!.play();
+                // _controller!.setLooping(true); // loop
+                _controller!.setVolume(0.0); // muted
+              });
+          } catch (e) {
+            print('Err in playing video: $e');
+          }
+
+          fileError = '';
+          initialVideo = null; // no initial video now as new video is picked
+          pickedImage =
+              null; // set picked image as null if user already picked an image first which is being shown at the preview
+          initialImage =
+              null; // set initial image as null b/c video has been selected now by user so no initial image now
+        });
+      }
 
       // Close the video picker screen
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (error) {
+      print('Err in pickVideo():');
       debugPrint(error.toString());
     }
   }
@@ -367,17 +444,69 @@ class _EditPostState extends State<EditPost> {
                                                     child: VideoPlayer(
                                                         _controller!),
                                                   )
+                                                // initial image (network image)
+                                                // as initial image is network image so created a seperate object for it to display it
                                                 : initialImage != null
-                                                    // as initial image is network image so created a sperate object for it to display it
-                                                    ? Image.network(
-                                                        initialImage!.path,
-                                                        width: 170,
-                                                        height: 170,
-                                                        fit: BoxFit.contain,
-                                                      )
+                                                    ?
+                                                    // 360 image
+                                                    isImage360
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              // show 360 initial image in image view screen
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ImageView(
+                                                                            assetName:
+                                                                                initialImage!.path,
+                                                                            isNetworkImage:
+                                                                                true,
+                                                                            isPanorama:
+                                                                                true,
+                                                                          )));
+                                                            },
+                                                            child:
+                                                                Image.network(
+                                                              initialImage!
+                                                                  .path,
+                                                              width: 170,
+                                                              height: 170,
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                            ),
+                                                          )
+                                                        // simple intial image
+                                                        : GestureDetector(
+                                                            onTap: () {
+                                                              // show simple initial image in image view screen
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ImageView(
+                                                                            assetName:
+                                                                                initialImage!.path,
+                                                                            isNetworkImage:
+                                                                                true,
+                                                                            isPanorama:
+                                                                                false,
+                                                                          )));
+                                                            },
+                                                            child:
+                                                                Image.network(
+                                                              initialImage!
+                                                                  .path,
+                                                              width: 170,
+                                                              height: 170,
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                            ),
+                                                          )
                                                     // otherwise if image is picked by user then show the image preview
                                                     : pickedImage != null
                                                         ? isImage360
+                                                            // 360 image
                                                             ? GestureDetector(
                                                                 onTap: () {
                                                                   // show image in image view screen
@@ -400,6 +529,7 @@ class _EditPostState extends State<EditPost> {
                                                                       .contain,
                                                                 ),
                                                               )
+                                                            // simple image
                                                             : GestureDetector(
                                                                 onTap: () {
                                                                   // show image in image view screen
@@ -427,6 +557,18 @@ class _EditPostState extends State<EditPost> {
                                   ],
                                 ),
                               ),
+                              // any initial or picked image is present then check that image is 360 o rnot then show icon
+                              (initialImage != null || pickedImage != null)
+                                  ? isImage360
+                                      ?
+                                      // 360 icon
+                                      Image(
+                                          width: 40,
+                                          height: 40,
+                                          image:
+                                              AssetImage('assets/360-icon.png'))
+                                      : SizedBox()
+                                  : SizedBox(),
                               // image error
                               Padding(
                                 padding: const EdgeInsets.only(left: 9.0),

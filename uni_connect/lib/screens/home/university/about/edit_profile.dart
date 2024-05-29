@@ -299,7 +299,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             duration: Duration(seconds: 10),
             content: Text(
-                'Error: File Size Exceeds Limit\nThe image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please compress your image or select a smaller file and try again.')));
+                'The image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please select a smaller image.')));
         // return; (not closes the modal sheet so snackbar not visible so commented this)
       } else {
         // final tempImage = File(photo.path);

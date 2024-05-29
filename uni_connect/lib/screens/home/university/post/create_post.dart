@@ -10,6 +10,7 @@ import 'package:uni_connect/shared/image_view.dart';
 import 'package:video_player/video_player.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:http/http.dart' as http;
+import 'package:video_compress/video_compress.dart';
 
 class CreatePost extends StatefulWidget {
   // const CreatePost({super.key});
@@ -152,6 +153,8 @@ class _CreatePostState extends State<CreatePost> {
                       type == "Video"
                           ? pickVideo(ImageSource.camera)
                           : pickImage(ImageSource.camera);
+                      // close modal
+                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
@@ -163,6 +166,8 @@ class _CreatePostState extends State<CreatePost> {
                       type == "Video"
                           ? pickVideo(ImageSource.gallery)
                           : pickImage(ImageSource.gallery);
+                      // close modal
+                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Gallery"),
@@ -227,26 +232,56 @@ class _CreatePostState extends State<CreatePost> {
       final photo = await ImagePicker().pickImage(source: imageType);
       if (photo == null) return;
 
-      // final tempImage = File(photo.path);
-      // print('photo.path: ${photo.path}'); // jpg file
-      // compress photo using flutter image compress package
-      File? tempImage = await compressFile(File(photo.path));
-      // if error compressing
-      if (tempImage == null) tempImage = File(photo.path);
-      // print(photo.path); // jpg file
-      // print('tempImage.path: ${tempImage.path}');
-      // update the image and error variable and notify the widget to update its state using setState
-      setState(() {
-        pickedImage = tempImage;
-        fileError = '';
-        pickedVideo =
-            null; // set picked video as null if user already picked a video first which is being shown at the preview
-      });
+      const maxFileSize = 15 * 1024 * 1024; // 15 MB in bytes
 
-      // Close the image picker screen
-      Navigator.pop(context);
+      // if image size is more than 15mb show error
+      if (File(photo.path).lengthSync() > maxFileSize) {
+        // print('large image');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text(
+                'The image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please select a smaller image.')));
+        // return; (not closes the modal sheet so snackbar not visible so commented this)
+      } else {
+        // final tempImage = File(photo.path);
+        // print('photo.path: ${photo.path}'); // jpg file
+        // compress photo using flutter image compress package
+        File? tempImage = await compressFile(File(photo.path));
+        // if error compressing
+        if (tempImage == null) tempImage = File(photo.path);
+        // print(photo.path); // jpg file
+        // print('tempImage.path: ${tempImage.path}');
+        // update the image and error variable and notify the widget to update its state using setState
+        setState(() {
+          pickedImage = tempImage;
+          fileError = '';
+          pickedVideo =
+              null; // set picked video as null if user already picked a video first which is being shown at the preview
+        });
+      }
+
+      // Close the image picker screen (image picker screen is closed when image is selected or not selected (i.e.e back pressed) (so this closes the modal bottom sheet so not close modal bottom sheet here but close it in that modal bottom sheet widget)
+      // Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
+    }
+  }
+
+  // compress video using video_compress package (Takes too long while compressing)
+  Future<File?> compressVideo(String path) async {
+    try {
+      MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+        path,
+        quality: VideoQuality.DefaultQuality,
+        deleteOrigin: false, // It's false by default
+      );
+
+      print('mediaInfo!.filesize: ${mediaInfo!.filesize}');
+
+      return mediaInfo!.file;
+    } catch (e) {
+      print('Err in compressing video: $e');
+      return null;
     }
   }
 
@@ -255,26 +290,55 @@ class _CreatePostState extends State<CreatePost> {
     try {
       final video = await ImagePicker().pickVideo(source: videoType);
       if (video == null) return;
-      final tempVideo = File(video.path);
-      // update the preview by the selected video and error variable and notify the widget to update its state using setState
-      setState(() {
-        pickedVideo = tempVideo;
-        // print(pickedVideo!.path); // mp4 file
-        // set video player controller object
-        _controller = VideoPlayerController.file(pickedVideo!) // plays mp4 file
-          ..initialize().then((_) {
-            setState(() {});
-            _controller!.play();
-            // _controller!.setLooping(true); // loop
-            _controller!.setVolume(0.0); // muted
-          });
-        fileError = '';
-        pickedImage =
-            null; // set picked image as null if user already picked an image first which is being shown at the preview
-      });
+
+      // close modal bottom sheet
+      // Navigator.pop(context);
+
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(const SnackBar(content: Text('Uploading video...')));
+
+      const maxFileSize = 50 * 1024 * 1024; // 50 MB in bytes
+
+      video.length().then((value) => print('video.length(): $value'));
+
+      // if video size is more than 50mb show error
+      if (File(video.path).lengthSync() > maxFileSize) {
+        // print('large video');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text(
+                'The video you selected is too large. The maximum file size allowed is 50 MB. Please select a smaller video.')));
+        // return; (not closes the modal sheet so snackbar not visible so commented this)
+      } else {
+        // compress video
+        // File? tempVideo = await compressVideo(video.path);
+
+        // if null returned then set orginal video as video uploaded
+        // tempVideo ??= File(video.path);
+
+        final tempVideo = File(video.path);
+
+        // update the preview by the selected video and error variable and notify the widget to update its state using setState
+        setState(() {
+          pickedVideo = tempVideo;
+          // print(pickedVideo!.path); // mp4 file
+          // set video player controller object
+          _controller =
+              VideoPlayerController.file(pickedVideo!) // plays mp4 file
+                ..initialize().then((_) {
+                  setState(() {});
+                  _controller!.play();
+                  // _controller!.setLooping(true); // loop
+                  _controller!.setVolume(0.0); // muted
+                });
+          fileError = '';
+          pickedImage =
+              null; // set picked image as null if user already picked an image first which is being shown at the preview
+        });
+      }
 
       // Close the video picker screen
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
     }
@@ -368,7 +432,7 @@ class _CreatePostState extends State<CreatePost> {
                                               // if image is picked by user the show the image preview
                                               pickedImage != null
                                                   ? isImage360
-                                                  // 360 image
+                                                      // 360 image
                                                       ? GestureDetector(
                                                           onTap: () {
                                                             // show image in image view screen
@@ -391,7 +455,8 @@ class _CreatePostState extends State<CreatePost> {
                                                             fit: BoxFit.contain,
                                                           ),
                                                         )
-                                                        // simple image
+
+                                                      // simple image
                                                       : GestureDetector(
                                                           onTap: () {
                                                             // show image in image view screen
@@ -426,6 +491,17 @@ class _CreatePostState extends State<CreatePost> {
                                   ],
                                 ),
                               ),
+                              pickedImage != null
+                                  ? isImage360
+                                      ?
+                                      // 360 icon
+                                      Image(
+                                          width: 40,
+                                          height: 40,
+                                          image:
+                                              AssetImage('assets/360-icon.png'))
+                                      : SizedBox()
+                                  : SizedBox(),
                               // image error
                               Text(fileError,
                                   style: TextStyle(color: Colors.red)),
@@ -572,6 +648,20 @@ class _CreatePostState extends State<CreatePost> {
                                                       text:
                                                           'Publishing post...')));
 
+                                      // close create post screen
+                                      // Navigator.of(context).pop();
+                                      /*
+                                      // instead of waiting the user show user snackbar of publishing post until post is published
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            // show for 2 minutes highest (because 22mb post takes 1min and 2sec to upload so max 50mb video will take 2 mins)
+                                            duration: Duration(minutes: 2),
+                                            content:
+                                                Text('Publishing post...')),
+                                      );
+                                      */
+
                                       // create new post document with media in db
                                       // String? result;
                                       String? result = await post.createPost();
@@ -581,6 +671,11 @@ class _CreatePostState extends State<CreatePost> {
                                         print('Error creating new post');
                                         Navigator.pop(
                                             context); // close progress screen
+
+                                        // close publishing post snackbar
+                                        // ScaffoldMessenger.of(context)
+                                        //     .hideCurrentSnackBar();
+
                                         // show snack bar
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
@@ -605,6 +700,9 @@ class _CreatePostState extends State<CreatePost> {
                                             context); // close progress screen
                                         // close the current create post screen
                                         Navigator.pop(context);
+                                        // close publishing post snackbar
+                                        // ScaffoldMessenger.of(context)
+                                        //     .hideCurrentSnackBar();
                                         // show snack bar
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
