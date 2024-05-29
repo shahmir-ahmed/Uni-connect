@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
+import 'package:uni_connect/shared/image_view.dart';
 import 'package:video_player/video_player.dart';
 import 'package:uni_connect/classes/post.dart';
 import 'package:http/http.dart' as http;
@@ -178,14 +180,61 @@ class _CreatePostState extends State<CreatePost> {
     );
   }
 
+  // flutter_image_compress
+  // The flutter_image_compress package is fairly simple to use and it appears to be much better at actually reducing the file size.
+  Future<File?> compressFile(File file) async {
+    try {
+      final filePath = file.absolute.path;
+
+      // Create output file path with .jpg extension
+      final outPath =
+          "${filePath.substring(0, filePath.lastIndexOf('.'))}_out.jpg";
+
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        outPath,
+        format: CompressFormat.jpeg, // Ensure the format is set to JPEG
+        quality: 25,
+      );
+
+      if (result == null) {
+        print("Compression failed");
+        return null;
+      }
+
+      print('Original file size: ${file.lengthSync()} bytes');
+      result
+          .length()
+          .then((value) => print('Compressed file size: ${value} bytes'));
+
+      return File(result.path);
+    } catch (e) {
+      print("Error in compressing image: $e");
+      return null;
+    }
+  }
+
   // Pick image
   void pickImage(ImageSource imageType) async {
     try {
       // app crashes if heavy image is selected
+      /*
       final photo = await ImagePicker().pickImage(source: imageType);
       if (photo == null) return;
       final tempImage = File(photo.path);
       // print(photo.path); // jpg file
+      */
+      final photo = await ImagePicker().pickImage(source: imageType);
+      if (photo == null) return;
+
+      // final tempImage = File(photo.path);
+      // print('photo.path: ${photo.path}'); // jpg file
+      // compress photo using flutter image compress package
+      File? tempImage = await compressFile(File(photo.path));
+      // if error compressing
+      if (tempImage == null) tempImage = File(photo.path);
+      // print(photo.path); // jpg file
+      // print('tempImage.path: ${tempImage.path}');
       // update the image and error variable and notify the widget to update its state using setState
       setState(() {
         pickedImage = tempImage;
@@ -318,12 +367,53 @@ class _CreatePostState extends State<CreatePost> {
                                               :
                                               // if image is picked by user the show the image preview
                                               pickedImage != null
-                                                  ? Image.file(
-                                                      pickedImage!,
-                                                      width: 170,
-                                                      height: 170,
-                                                      fit: BoxFit.contain,
-                                                    )
+                                                  ? isImage360
+                                                  // 360 image
+                                                      ? GestureDetector(
+                                                          onTap: () {
+                                                            // show image in image view screen
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ImageView(
+                                                                              assetName: '',
+                                                                              isNetworkImage: false,
+                                                                              isPanorama: true,
+                                                                              file: pickedImage,
+                                                                            )));
+                                                          },
+                                                          child: Image.file(
+                                                            pickedImage!,
+                                                            width: 170,
+                                                            height: 170,
+                                                            fit: BoxFit.contain,
+                                                          ),
+                                                        )
+                                                        // simple image
+                                                      : GestureDetector(
+                                                          onTap: () {
+                                                            // show image in image view screen
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ImageView(
+                                                                              assetName: '',
+                                                                              isNetworkImage: false,
+                                                                              isPanorama: false,
+                                                                              file: pickedImage,
+                                                                            )));
+                                                          },
+                                                          child: Image.file(
+                                                            pickedImage!,
+                                                            width: 170,
+                                                            height: 170,
+                                                            fit: BoxFit.contain,
+                                                          ),
+                                                        )
                                                   // by default image (if both image and video is not picked by user initially)
                                                   : Image(
                                                       image: AssetImage(

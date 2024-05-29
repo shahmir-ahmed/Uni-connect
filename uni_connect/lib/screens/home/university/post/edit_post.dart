@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uni_connect/screens/progress_screen.dart';
 import 'package:uni_connect/shared/constants.dart';
+import 'package:uni_connect/shared/image_view.dart';
 import 'package:video_player/video_player.dart';
 import 'package:uni_connect/classes/post.dart';
 
@@ -176,16 +177,15 @@ class _EditPostState extends State<EditPost> {
                     style: mainScreenButtonStyle,
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      // if selected media type is video then call pick video otherwise image
-                      type == "Video"
-                          ? pickVideo(ImageSource.gallery)
-                          : pickImage(ImageSource.gallery);
-                    },
-                    icon: const Icon(Icons.image),
-                    label: const Text("Gallery"),
-                    style: mainScreenButtonStyle
-                  ),
+                      onPressed: () {
+                        // if selected media type is video then call pick video otherwise image
+                        type == "Video"
+                            ? pickVideo(ImageSource.gallery)
+                            : pickImage(ImageSource.gallery);
+                      },
+                      icon: const Icon(Icons.image),
+                      label: const Text("Gallery"),
+                      style: mainScreenButtonStyle),
                   const SizedBox(
                     height: 10,
                   ),
@@ -377,12 +377,51 @@ class _EditPostState extends State<EditPost> {
                                                       )
                                                     // otherwise if image is picked by user then show the image preview
                                                     : pickedImage != null
-                                                        ? Image.file(
-                                                            pickedImage!,
-                                                            width: 170,
-                                                            height: 170,
-                                                            fit: BoxFit.contain,
-                                                          )
+                                                        ? isImage360
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  // show image in image view screen
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) => ImageView(
+                                                                                assetName: '',
+                                                                                isNetworkImage: false,
+                                                                                isPanorama: true,
+                                                                                file: pickedImage,
+                                                                              )));
+                                                                },
+                                                                child:
+                                                                    Image.file(
+                                                                  pickedImage!,
+                                                                  width: 170,
+                                                                  height: 170,
+                                                                  fit: BoxFit
+                                                                      .contain,
+                                                                ),
+                                                              )
+                                                            : GestureDetector(
+                                                                onTap: () {
+                                                                  // show image in image view screen
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) => ImageView(
+                                                                                assetName: '',
+                                                                                isNetworkImage: false,
+                                                                                isPanorama: false,
+                                                                                file: pickedImage,
+                                                                              )));
+                                                                },
+                                                                child:
+                                                                    Image.file(
+                                                                  pickedImage!,
+                                                                  width: 170,
+                                                                  height: 170,
+                                                                  fit: BoxFit
+                                                                      .contain,
+                                                                ),
+                                                              )
                                                         : Container() // empty container
                                         ),
                                   ],

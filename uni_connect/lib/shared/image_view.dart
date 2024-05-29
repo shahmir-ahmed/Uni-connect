@@ -42,8 +42,12 @@ class ImageView extends StatelessWidget {
       return InteractiveViewer(
           child: Container(child: Image(image: NetworkImage(assetName))));
     }
-    // if the image is not network and not panorama i.e file image in cache of system
-    else if (!isNetworkImage && !isPanorama) {
+    // if the image has no asset name and is panorama i.e file image in cache of system and in create post image is 360
+    else if (assetName.isEmpty && isPanorama) {
+      return Container(child: Panorama(child: Image(image: FileImage(file!))));
+    }
+    // if the image has no asset name i.e file image in cache of system
+    else if (assetName.isEmpty) {
       return InteractiveViewer(
           child: Container(child: Image(image: FileImage(file!))));
     }

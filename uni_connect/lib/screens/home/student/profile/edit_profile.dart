@@ -290,24 +290,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Pick image
   void pickImage(ImageSource imageType) async {
     try {
-      // app crashes if heavy image is selected
+      // app crashes if heavy image is selected (so not more than 15mb image should be allowed to be uploaded)
       final photo = await ImagePicker().pickImage(source: imageType);
       if (photo == null) return;
-      // final tempImage = File(photo.path);
-      print('photo.path: ${photo.path}'); // jpg file
-      // compress photo using flutter image compress package
-      File? tempImage = await compressFile(File(photo.path));
-      // if error compressing
-      if (tempImage == null) tempImage = File(photo.path);
-      // print(photo.path); // jpg file
-      print('tempImage.path: ${tempImage.path}');
-      // update the image and error variable and notify the widget to update its state using setState
-      setState(() {
-        pickedImage = tempImage;
-        fileError = '';
-      });
 
-      // Close the image picker screen
+      const maxFileSize = 15 * 1024 * 1024; // 15 MB in bytes
+
+      // if image size is more than 15mb show error
+      if (File(photo.path).lengthSync() > maxFileSize) {
+        // print('large image');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text(
+                'Error: File Size Exceeds Limit\nThe image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please compress your image or select a smaller file and try again.')));
+        // return; (not closes the modal sheet so snackbar not visible so commented this)
+      } else {
+        // print('photo.path: ${photo.path}'); // jpg file
+
+        // if image is less than or equal to 15MB
+        // compress photo using flutter image compress package
+        File? tempImage = await compressFile(File(photo.path));
+
+        // if error compressing
+        if (tempImage == null) tempImage = File(photo.path);
+
+        // print(photo.path); // jpg file
+
+        // print('tempImage.path: ${tempImage.path}');
+
+        // update the image and error variable and notify the widget to update its state using setState
+        setState(() {
+          pickedImage = tempImage;
+          fileError = '';
+        });
+      }
+
+      // Close the image picker screen (but it closes the modal bottom sheet)
       Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
@@ -499,8 +517,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         ImageView(
-                                                          assetName:
-                                                              '',
+                                                          assetName: '',
                                                           isNetworkImage: false,
                                                           isPanorama: false,
                                                           file: pickedImage,
