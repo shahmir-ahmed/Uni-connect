@@ -238,7 +238,7 @@ class _CreatePostState extends State<CreatePost> {
       if (File(photo.path).lengthSync() > maxFileSize) {
         // print('large image');
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 10),
+            duration: Duration(seconds: 6),
             content: Text(
                 'The image you are trying to upload is too large. The maximum file size allowed is 15 MB. Please select a smaller image.')));
         // return; (not closes the modal sheet so snackbar not visible so commented this)
@@ -305,7 +305,7 @@ class _CreatePostState extends State<CreatePost> {
       if (File(video.path).lengthSync() > maxFileSize) {
         // print('large video');
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 10),
+            duration: Duration(seconds: 6),
             content: Text(
                 'The video you selected is too large. The maximum file size allowed is 50 MB. Please select a smaller video.')));
         // return; (not closes the modal sheet so snackbar not visible so commented this)
