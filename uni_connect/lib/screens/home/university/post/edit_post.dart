@@ -168,12 +168,12 @@ class _EditPostState extends State<EditPost> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
+                      // close modal bottom sheet
+                      Navigator.of(context).pop();
                       // if selected media type is video then call pick video otherwise image
                       type == "Video"
                           ? pickVideo(ImageSource.camera)
                           : pickImage(ImageSource.camera);
-                      // close modal bottom sheet
-                      Navigator.of(context).pop();
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
@@ -181,12 +181,12 @@ class _EditPostState extends State<EditPost> {
                   ),
                   ElevatedButton.icon(
                       onPressed: () {
+                        // close modal bottom sheet
+                        Navigator.of(context).pop();
                         // if selected media type is video then call pick video otherwise image
                         type == "Video"
                             ? pickVideo(ImageSource.gallery)
                             : pickImage(ImageSource.gallery);
-                        // close modal bottom sheet
-                        Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.image),
                       label: const Text("Gallery"),

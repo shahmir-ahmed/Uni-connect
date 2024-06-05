@@ -227,6 +227,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
+                      // close this modal bottom sheet
+                      Navigator.pop(context);
                       pickImage(ImageSource.camera);
                     },
                     icon: const Icon(Icons.camera),
@@ -235,6 +237,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
+                      // close this modal bottom sheet
+                      Navigator.pop(context);
                       pickImage(ImageSource.gallery);
                     },
                     icon: const Icon(Icons.image),
@@ -326,7 +330,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       // Close the image picker screen (but it closes the modal bottom sheet)
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (error) {
       debugPrint(error.toString());
     }

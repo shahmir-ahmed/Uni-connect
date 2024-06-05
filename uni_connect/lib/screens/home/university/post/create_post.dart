@@ -149,12 +149,12 @@ class _CreatePostState extends State<CreatePost> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
+                      // close modal
+                      Navigator.pop(context);
                       // if selected media type is video then call pick video otherwise image
                       type == "Video"
                           ? pickVideo(ImageSource.camera)
                           : pickImage(ImageSource.camera);
-                      // close modal
-                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.camera),
                     label: const Text("Camera"),
@@ -162,12 +162,12 @@ class _CreatePostState extends State<CreatePost> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
+                      // close modal
+                      Navigator.pop(context);
                       // if selected media type is video then call pick video otherwise image
                       type == "Video"
                           ? pickVideo(ImageSource.gallery)
                           : pickImage(ImageSource.gallery);
-                      // close modal
-                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.image),
                     label: const Text("Gallery"),
