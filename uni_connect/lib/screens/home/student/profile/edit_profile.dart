@@ -43,7 +43,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String stdGender = '';
   String stdCollege = '';
   List<dynamic>? fieldsOfInterest = [];
-  List<dynamic> uniLocationsPreferred = [];
+  // List<dynamic> uniLocationsPreferred = [];
 
   // posssible fields of interest list
   List<String> possibleFieldsOfInterest = [

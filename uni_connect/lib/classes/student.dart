@@ -102,7 +102,7 @@ class StudentProfile {
   late String gender;
   late String college;
   late List<dynamic> fieldsOfInterest;
-  late List<dynamic> uniLocationsPreferred;
+  // late List<dynamic> uniLocationsPreferred;
 
   // following unis list
   late List<dynamic> followingUnis;
@@ -124,7 +124,7 @@ class StudentProfile {
     required this.college,
     required this.gender,
     required this.fieldsOfInterest,
-    required this.uniLocationsPreferred,
+    // required this.uniLocationsPreferred,
     required this.followingUnis,
     required this.profileImageUrl,
   });
@@ -173,7 +173,7 @@ class StudentProfile {
         'gender': "",
         'college': college,
         'fields_of_interest': [],
-        'uni_locations_preferred': [],
+        // 'uni_locations_preferred': [],
         'following_unis': [],
         'saved_unis': [],
       });
@@ -243,7 +243,7 @@ class StudentProfile {
         gender: doc.get('gender') ?? '',
         fieldsOfInterest: doc.get('fields_of_interest') ?? [],
         followingUnis: doc.get('following_unis') ?? [],
-        uniLocationsPreferred: doc.get('uni_locations_preferred') ?? [],
+        // uniLocationsPreferred: doc.get('uni_locations_preferred') ?? [],
         profileImageUrl: '',
       );
     } catch (e) {
