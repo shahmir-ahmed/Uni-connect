@@ -8,7 +8,9 @@
 
 Uni-connect is a social platform where universities can create accounts and high school/college students can follow them.
 
-![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)
+![banner](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/banner.png)
+
+<!--![Main Screen](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/FYP%20Mockups%20v2.0%40Main%20Screen.png)-->
 
     
 <!--
@@ -45,6 +47,9 @@ Uni-connect is a social platform where universities can create accounts and high
 - Student interact with university profile, posts, virtual events
 - Student and university account settings
 
+## User Interface
+
+![UI](https://github.com/shahmir-ahmed/Uni-connect/blob/main/uni_connect/assets/ui.png)
 
 ## Installation
 
